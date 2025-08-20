@@ -1,14 +1,18 @@
 'use client';
 
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type loginInputs } from "@/lib/schemas/login";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Eye, EyeOff, Loader } from "lucide-react";
 
 export const LoginForm = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const form = useForm<loginInputs>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -18,9 +22,12 @@ export const LoginForm = () => {
         mode: "onChange"
     });
 
-    const onSubmit = (data: loginInputs) => {
+    const onSubmit = async (data: loginInputs) => {
         // Handle login logic here
-        console.log("Login data submitted:", data);
+        setError(null);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        console.log("Login successful");
+        setError('Email and password don\'t match, try again');
     };
 
     return (
@@ -65,17 +72,38 @@ export const LoginForm = () => {
                             <FormItem className="space-y-1">
                                 <FormLabel className="font-semibold text-sm text-gray-text-strong/90">Password</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="password"
-                                        placeholder="Enter your password"
-                                        className="w-full h-10 rounded-md border-gray-stroke-strong/30 py-2 px-3"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Enter your password"
+                                            className="w-full h-10 rounded-md border-gray-stroke-strong/30 py-2 px-3"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </FormControl>
                                 <FormMessage className="" />
                             </FormItem>
                         )}
                     />
+
+                    {
+                        error && (
+                            <p className="text-red-text text-sm tracking-normal">
+                                {error}
+                            </p>
+                        )
+                    }
 
                     <div className="flex justify-end">
                         <Link href="#" className="text-brand-primary-text text-sm">
@@ -87,10 +115,10 @@ export const LoginForm = () => {
                         type="submit"
                         size="lg"
                         disabled={form.formState.isSubmitting}
-                        className="w-full rounded-lg px-6"
+                        className="w-full rounded-lg px-6 cursor-pointer"
                     >
                         {
-                            form.formState.isSubmitting ? 'Logging In...' : 'Log In'
+                            form.formState.isSubmitting ? <><Loader className="animate-spin" /> Logging In...</> : 'Log In'
                         }
                     </Button>
                     <div className="flex justify-center space-x-1">
