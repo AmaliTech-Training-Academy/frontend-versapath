@@ -1,0 +1,22 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [dev, staging, production]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint with ESLint
+        run: pnpm exec eslint "app/**/*.{js,jsx,ts,tsx}" "components/**/*.{js,jsx,ts,tsx}" "lib/**/*.{js,jsx,ts,tsx}"
