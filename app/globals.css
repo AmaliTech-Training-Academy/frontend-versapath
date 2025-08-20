@@ -125,15 +125,15 @@
   --chart-5: var(--brand-primary-text);
 
   /* Sidebar */
-  --sidebar: var(--base-light-raised);
+  --sidebar: var(--base-light-white);
   --sidebar-foreground: var(--gray-text);
   --sidebar-primary: var(--brand-primary-text);
   --sidebar-primary-foreground: var(--base-light-white);
-  --sidebar-accent: var(--brand-secondary-fill);
-  --sidebar-accent-foreground: var(--brand-secondary-text);
+  --sidebar-accent: var(--brand-primary-stroke-weak);
+  --sidebar-accent-foreground: var(--brand-primary-text);
   --sidebar-border: var(--gray-stroke-weak);
   --sidebar-ring: var(--brand-primary-stroke-weak);
-
+  
   /* CUSTOM DECLARED BASE PALLETTE (BASED ON FIGMA) */
   --brand-primary-text: oklch(50.499% 0.09286 221.349);
   --brand-primary-stroke-strong: oklch(50.499% 0.09286 221.349 / 0.8);
