@@ -24,7 +24,6 @@ export const LoginForm = () => {
     });
 
     const onSubmit = async (data: loginInputs) => {
-        // Handle login logic here
         setError(null);
         signIn("credentials", data);
     };
