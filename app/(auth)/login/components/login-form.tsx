@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
 import { loginSchema, type loginInputs } from "@/lib/schemas/login";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -25,9 +26,7 @@ export const LoginForm = () => {
     const onSubmit = async (data: loginInputs) => {
         // Handle login logic here
         setError(null);
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        console.log("Login successful");
-        setError('Email and password don\'t match, try again');
+        signIn("credentials", data);
     };
 
     return (
@@ -123,7 +122,7 @@ export const LoginForm = () => {
                     </Button>
                     <div className="flex justify-center space-x-1">
                         <span className="font-medium text-sm tracking-normal text-gray-text-weak/70">
-                            Don't have an account?
+                            {`Don't have an account?`}
                         </span>
                         <Link href="#" className="text-brand-primary-text text-sm font-medium tracking-normal">
                             Sign Up
