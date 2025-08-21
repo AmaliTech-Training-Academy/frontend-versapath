@@ -21,6 +21,9 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { MoreVertical, User } from "lucide-react";
+import { CustomPopover } from "./custom-popover";
+import { Button } from "../ui/button";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -67,10 +70,27 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="pb-10">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Versapath. All rights reserved.
+        <div className="flex gap-2 p-2 justify-between items-center rounded-xl bg-base-light-overlay">
+          <User
+            size={50}
+            className="rounded-full h-10 w-10  border aspect-square "
+            strokeWidth={1.2}
+          />
+          <p className="flex flex-col gap-1">
+            <span className="font-bold text-base">Brooklyn Simons </span>
+            <span className="text-xs text-gray-text-weak font-light">
+              brooklyn@simmons.com
+            </span>
           </p>
+          <CustomPopover
+            trigger={
+              <Button size={"icon"} variant={"ghost"}>
+                <MoreVertical className="text-gray-text-strong" />
+              </Button>
+            }
+          >
+            <div>Popover contents will be here</div>
+          </CustomPopover>
         </div>
       </SidebarFooter>
       <SidebarRail />

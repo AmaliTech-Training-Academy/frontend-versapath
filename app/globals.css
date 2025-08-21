@@ -218,8 +218,8 @@
   --sidebar-foreground: var(--base-light-white);
   --sidebar-primary: var(--brand-primary-text);
   --sidebar-primary-foreground: var(--base-light-white);
-  --sidebar-accent: var(--brand-secondary-fill);
-  --sidebar-accent-foreground: var(--brand-secondary-text);
+ --sidebar-accent: var(--brand-primary-stroke-weak);
+  --sidebar-accent-foreground: var(--brand-primary-text);
   --sidebar-border: var(--gray-stroke-weaker);
   --sidebar-ring: var(--brand-primary-stroke-weak);
 }
