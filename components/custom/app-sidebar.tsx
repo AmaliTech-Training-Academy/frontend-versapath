@@ -1,6 +1,5 @@
 "use client";
 import {
-  Bars4Icon,
   BookOpenIcon,
   Squares2X2Icon,
   UsersIcon,
@@ -17,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
@@ -37,9 +37,9 @@ export function AppSidebar() {
                 width={50}
                 alt="VersaPathAI logo"
               />
-              <span className=" font-black text-2xl">VersaPath</span>
+              <span className="text-2xl font-black ">VersaPath</span>
             </Link>
-            <Bars4Icon fontSize={20} className="h-6 w-6 " strokeWidth={2} />
+            <SidebarTrigger />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -63,18 +63,6 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-            {/* <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu> */}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

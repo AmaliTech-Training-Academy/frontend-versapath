@@ -5,10 +5,10 @@ import { AddUserSheet } from "../user-management/components/add-user-sheet";
 
 export const TopActions = () => {
   return (
-    <section className="w-full flex justify-between gap-2 items-start">
-      <article className="flex flex-row gap-3 w-full">
+    <section className="flex flex-col items-start justify-between w-full gap-3 sm:flex-row">
+      <article className="flex flex-col w-full gap-3 md:flex-row">
         <SearchComponent />
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           Filter:
           <Select placeholder="All roles" options={rolesOptions} />
           <Select placeholder="All statuses" options={statusOptions} />
@@ -30,7 +30,7 @@ const statusOptions = [
 const SearchComponent = () => {
   return (
     <form className="flex items-center max-w-[340px] w-full">
-      <Input placeholder="Search..." />
+      <Input placeholder="Search..." name="searchInput" />
     </form>
   );
 };

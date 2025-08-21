@@ -35,6 +35,12 @@ export const RadioGroupComponent: React.FC<{
           </FormItem>
           <FormItem className="flex items-center gap-3">
             <FormControl>
+              <RadioGroupItem value="mentor" />
+            </FormControl>
+            <FormLabel className="font-normal">Mentor</FormLabel>
+          </FormItem>
+          <FormItem className="flex items-center gap-3">
+            <FormControl>
               <RadioGroupItem value="learner" />
             </FormControl>
             <FormLabel className="font-normal">Learner</FormLabel>

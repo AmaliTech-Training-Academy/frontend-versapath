@@ -39,12 +39,12 @@ export const RegisterForm = () => {
         className="max-w-[484px] w-full mx-auto rounded-lg p-6 sm:shadow-lg shadow-black/10 space-y-10"
       >
         <FormDescription className="space-y-2 text-center">
-          <h5 className="text-[32px] font-semibold text-gray-text-strong/90">
+          <span className="text-[32px] font-semibold text-gray-text-strong/90">
             Sign up
-          </h5>
-          <p className="text-gray-text-weak/70">
+          </span>
+          <span className="text-gray-text-weak/70">
             Sign up to access your dashboard
-          </p>
+          </span>
         </FormDescription>
 
         <div className="space-y-6">
@@ -89,12 +89,6 @@ export const RegisterForm = () => {
               {form.formState.errors.root.message}
             </p>
           )}
-
-          <div className="flex justify-end">
-            <Link href="#" className="text-sm text-brand-primary-text">
-              Forgot Password?
-            </Link>
-          </div>
 
           <Button
             type="submit"
