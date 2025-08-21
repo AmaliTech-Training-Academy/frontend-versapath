@@ -5,7 +5,7 @@ export default function UserManagementPage() {
   return (
     <>
       <DashboardHeader title="User Management" />
-      <section className="bg-sidebar p-3 rounded-lg  h-full">
+      <section className="p-3 mb-5 rounded-lg bg-sidebar h-fit">
         <TopActions />
         <UsersList />
       </section>

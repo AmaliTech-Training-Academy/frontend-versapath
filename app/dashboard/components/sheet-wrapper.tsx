@@ -14,16 +14,14 @@ export function SheetWrapper({
   headerDescription,
   children,
 }: PropsWithChildren<{
-  trigger: React.ReactNode;
+  trigger: React.ReactNode | React.ReactElement;
   saveChangeButton?: React.ReactNode;
   headerTitle: string;
   headerDescription: string;
 }>) {
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        {trigger}
-      </SheetTrigger>
+      <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle className="text-2xl">{headerTitle}</SheetTitle>
