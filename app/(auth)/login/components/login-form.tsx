@@ -3,15 +3,18 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { loginSchema, type loginInputs } from "@/lib/schemas/login";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff, Loader } from "lucide-react";
+import { toast } from "sonner";
+import { apiLogin } from "@/lib/api/login";
 
 export const LoginForm = () => {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const form = useForm<loginInputs>({
@@ -24,9 +27,16 @@ export const LoginForm = () => {
     });
 
     const onSubmit = async (data: loginInputs) => {
-        // Handle login logic here
         setError(null);
-        signIn("credentials", data);
+        const { email, password } = await loginSchema.parseAsync(data);
+        const result = await apiLogin(email, password);
+
+        if (result?.error) {
+            setError(result.error);
+        } else {
+            toast.success("Login successful! Redirecting...");
+            router.push('/dashboard');
+        }
     };
 
     return (
