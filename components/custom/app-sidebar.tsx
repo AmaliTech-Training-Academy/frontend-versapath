@@ -24,7 +24,7 @@ import { usePathname } from "next/navigation";
 import { MoreVertical, User } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
-import { signOut } from "next-auth/react";
+import { handleLogOut } from "@/lib/api/logout";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -90,7 +90,7 @@ export function AppSidebar() {
             }
           >
             <div>
-              <Button variant="ghost" className="w-full text-left cursor-pointer" onClick={async () => await signOut({ redirectTo: "/login" })}>
+              <Button variant="ghost" className="w-full text-left cursor-pointer" onClick={handleLogOut}>
                 Sign out
               </Button>
             </div>
