@@ -1,7 +1,5 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { apiLogin } from "./lib/api/login";
-import { loginSchema } from "./lib/schemas/login";
 
 declare module "next-auth" {
     interface Session {
@@ -47,14 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
             },
             authorize: async (credentials) => {
-                const { email, password } = await loginSchema.parseAsync(credentials);
-                const response = await apiLogin(email, password);
-
-                if (response.errors) {
-                    throw new Error(response.errors.message || "Email and password don't match, try again");
+                const { user } = credentials as {
+                    user: string
                 }
-
-                return response.data.user;
+                return JSON.parse(user);
             }
         })
     ],
