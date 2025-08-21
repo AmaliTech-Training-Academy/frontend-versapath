@@ -1,12 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -27,7 +22,6 @@ export function SheetWrapper({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        {/* <Button variant="outline">Open</Button> */}
         {trigger}
       </SheetTrigger>
       <SheetContent>
@@ -36,13 +30,6 @@ export function SheetWrapper({
           <SheetDescription>{headerDescription}</SheetDescription>
         </SheetHeader>
         <div className="px-3">{children}</div>
-      
-        {/* <SheetFooter>
-          {saveChangeButton || <Button type="submit">Save changes</Button>}
-          <SheetClose asChild>
-            <Button variant="outline">Close</Button>
-          </SheetClose>
-        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   );

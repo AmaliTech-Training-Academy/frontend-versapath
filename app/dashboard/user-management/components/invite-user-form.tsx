@@ -48,6 +48,7 @@ export const InviteUserForm = () => {
           name="role"
           render={({ field }) => <RadioGroupComponent field={field} />}
         />
+        {error && <p className="text-red-text text-sm mt-2">{error}</p>}
         <div className="flex justify-end space-x-3">
           <SheetClose asChild>
             <Button variant={"outline"}>Cancel</Button>

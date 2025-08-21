@@ -1,8 +1,8 @@
 import { AppSidebar } from "@/components/custom/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import React, { PropsWithChildren } from "react";
 
-export default function DashboardLayout({ children }: PropsWithChildren<{}>) {
+export default function DashboardLayout({ children }: PropsWithChildren) {
   return (
     <SidebarProvider className="bg-background">
       <AppSidebar />

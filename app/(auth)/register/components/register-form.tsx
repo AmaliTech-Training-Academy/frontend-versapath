@@ -1,14 +1,8 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormDescription,
-  FormField,
-
-} from "@/components/ui/form";
+import { Form, FormDescription, FormField } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Loader } from "lucide-react";
@@ -16,7 +10,6 @@ import { CustomInput } from "@/components/custom/custom-input";
 import { RegisterInputs, registerSchema } from "@/lib/schemas/register";
 
 export const RegisterForm = () => {
-  const [error, setError] = useState<string | null>(null);
   const form = useForm<RegisterInputs>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,7 +25,7 @@ export const RegisterForm = () => {
     // form.reset();
     await new Promise((resolve) => setTimeout(resolve, 5000));
     console.log("Login successful");
-
+    console.log(data);
     form.setError("root", {
       type: "manual",
       message: "Unable to register, please try again. ",
