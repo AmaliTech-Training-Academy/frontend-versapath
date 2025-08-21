@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import { MoreVertical, User } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
+import { signOut } from "next-auth/react";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -70,26 +71,29 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="pb-10">
-        <div className="flex gap-2 p-2 justify-between items-center rounded-xl bg-base-light-overlay">
+        <div className="flex gap-2 py-6 px-4 justify-between items-center">
           <User
             size={50}
-            className="rounded-full h-10 w-10  border aspect-square "
-            strokeWidth={1.2}
+            className="rounded-full h-10 w-10 flex-shrink-0"
           />
-          <p className="flex flex-col gap-1">
-            <span className="font-bold text-base">Brooklyn Simons </span>
-            <span className="text-xs text-gray-text-weak font-light">
+          <div className="space-y-2">
+            <span className="font-semibold text-gray-text-strong/90">Brooklyn Simons </span>
+            <span className="text-xs text-gray-text-weak/70">
               brooklyn@simmons.com
             </span>
-          </p>
+          </div>
           <CustomPopover
             trigger={
               <Button size={"icon"} variant={"ghost"}>
-                <MoreVertical className="text-gray-text-strong" />
+                <MoreVertical className="text-gray-text-weak" />
               </Button>
             }
           >
-            <div>Popover contents will be here</div>
+            <div>
+              <Button variant="ghost" className="w-full text-left cursor-pointer" onClick={async () => await signOut({ redirectTo: "/login" })}>
+                Sign out
+              </Button>
+            </div>
           </CustomPopover>
         </div>
       </SidebarFooter>
