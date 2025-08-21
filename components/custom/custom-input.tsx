@@ -28,16 +28,20 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+  const id = field.name || field.id || `input-${label.toLowerCase()}`;
   return (
     <FormItem className="space-y-1">
-      <FormLabel className="font-semibold text-sm text-gray-text-strong/90">
+      <FormLabel htmlFor={id} className="font-semibold text-sm text-gray-text-strong/90">
         {label}
       </FormLabel>
       <FormControl>
         <div className="relative">
           <Input
             {...field}
+            id={id}
+            name={field.name}
             type={inputType}
+            aria-label={label}
             data-error={!!error}
             placeholder={placeholder || "Type here..."}
             className={cn(
