@@ -14,14 +14,14 @@ export const Select: React.FC<{
 }> = ({ placeholder, options, handlevalueChange }) => {
   return (
     <SelectComponent onValueChange={handlevalueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="max-w-[180px] w-fit">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
         {options.map(({ value, label }) => (
-          <SelectItem value={value}>{label}</SelectItem>
+          <SelectItem key={value} value={value}>
+            {label}
+          </SelectItem>
         ))}
       </SelectContent>
     </SelectComponent>

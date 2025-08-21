@@ -3,44 +3,41 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { loginSchema, type loginInputs } from "@/lib/schemas/login";
 import {
   Form,
   FormDescription,
   FormField,
+
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Loader } from "lucide-react";
-import { toast } from "sonner";
-import { apiLogin } from "@/lib/api/login";
 import { CustomInput } from "@/components/custom/custom-input";
+import { RegisterInputs, registerSchema } from "@/lib/schemas/register";
 
-export const LoginForm = () => {
-    const router = useRouter();
+export const RegisterForm = () => {
   const [error, setError] = useState<string | null>(null);
-  const form = useForm<loginInputs>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<RegisterInputs>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
+      fullName: "",
     },
     mode: "onChange",
   });
 
-    const onSubmit = async (data: loginInputs) => {
-        setError(null);
-        const { email, password } = await loginSchema.parseAsync(data);
-        const result = await apiLogin(email, password);
+  const onSubmit = async (data: RegisterInputs) => {
+    // Handle login logic here
+    // form.reset();
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    console.log("Login successful");
 
-        if (result?.error) {
-            setError(result.error);
-        } else {
-            toast.success("Login successful! Redirecting...");
-            router.push('/dashboard');
-        }
-    };
+    form.setError("root", {
+      type: "manual",
+      message: "Unable to register, please try again. ",
+    });
+  };
 
   return (
     <Form {...form}>
@@ -50,10 +47,10 @@ export const LoginForm = () => {
       >
         <FormDescription className="space-y-2 text-center">
           <h5 className="text-[32px] font-semibold text-gray-text-strong/90">
-            Login
+            Sign up
           </h5>
           <p className="text-gray-text-weak/70">
-            Login to access your dashboard
+            Sign up to access your dashboard
           </p>
         </FormDescription>
 
@@ -61,13 +58,9 @@ export const LoginForm = () => {
           {/* email */}
           <FormField
             control={form.control}
-            name="email"
+            name="fullName"
             render={({ field }) => (
-              <CustomInput
-                label="Email"
-                placeholder="Enter your email address"
-                {...field}
-              />
+              <CustomInput label="Email" placeholder="Full Name" {...field} />
             )}
           />
 
@@ -84,9 +77,24 @@ export const LoginForm = () => {
               />
             )}
           />
+          {/*Confirm  Password */}
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <CustomInput
+                label="Confirm Password"
+                placeholder="Confirm your password"
+                type="password"
+                {...field}
+              />
+            )}
+          />
 
-          {error && (
-            <p className="text-sm tracking-normal text-red-text">{error}</p>
+          {form.formState.errors.root && (
+            <p className="text-sm tracking-normal text-red-text">
+              {form.formState.errors.root.message}
+            </p>
           )}
 
           <div className="flex justify-end">
@@ -103,21 +111,22 @@ export const LoginForm = () => {
           >
             {form.formState.isSubmitting ? (
               <>
-                <Loader className="animate-spin" /> Logging In...
+                <Loader className="animate-spin" />
+                Signing up...
               </>
             ) : (
-              "Log In"
+              "Sign Up"
             )}
           </Button>
           <div className="flex justify-center space-x-1">
             <span className="text-sm font-medium tracking-normal text-gray-text-weak/70">
-              Don't have an account?
+              Arleady have an account?
             </span>
             <Link
-              href="/register"
+              href="/login"
               className="text-sm font-medium tracking-normal text-brand-primary-text"
             >
-              Sign Up
+              Sign in
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
-import { SheetWrapper } from "../../components/sheet";
+import { SheetWrapper } from "../../components/sheet-wrapper";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { InviteUserForm } from "./invite-user-form";
 
 export const AddUserSheet = () => {
   return (
@@ -13,7 +14,7 @@ export const AddUserSheet = () => {
         </Button>
       }
     >
-      Adding user will be implemented soon.
+      <InviteUserForm />
     </SheetWrapper>
   );
 };

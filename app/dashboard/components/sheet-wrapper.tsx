@@ -17,7 +17,6 @@ export function SheetWrapper({
   trigger,
   headerTitle,
   headerDescription,
-  saveChangeButton,
   children,
 }: PropsWithChildren<{
   trigger: React.ReactNode;
@@ -37,22 +36,13 @@ export function SheetWrapper({
           <SheetDescription>{headerDescription}</SheetDescription>
         </SheetHeader>
         <div className="px-3">{children}</div>
-        {/* <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-username">Username</Label>
-            <Input id="sheet-demo-username" defaultValue="@peduarte" />
-          </div>
-        </div> */}
-        <SheetFooter>
+      
+        {/* <SheetFooter>
           {saveChangeButton || <Button type="submit">Save changes</Button>}
           <SheetClose asChild>
             <Button variant="outline">Close</Button>
           </SheetClose>
-        </SheetFooter>
+        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   );
