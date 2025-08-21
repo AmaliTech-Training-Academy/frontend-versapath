@@ -54,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new Error(response.errors.message || "Email and password don't match, try again");
                 }
 
-                return response.data;
+                return response.data.user;
             }
         })
     ],
