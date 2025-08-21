@@ -10,6 +10,8 @@ export const apiLogin = async (email: string, password: string): Promise<ApiResp
     // }).then(res => res.json());
 
     // return response;
+    console.log('Email: ', email);
+    console.log('Password: ', password);
     return {
         "status": true,
         "message": "Login successful",
