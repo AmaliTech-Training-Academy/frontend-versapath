@@ -1,8 +1,8 @@
+type AuthInfo = { user?: { role?: string } };
 import { NextRequest, NextResponse } from "next/server";
 import type { NextMiddleware } from "next/server";
-import type { NextURL } from "next/dist/server/web/next-url";
 import middleware from "../middleware";
-import { publicPaths, protectedPaths } from "../lib/constants/routes";
+import { publicPaths } from "../lib/constants/routes";
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 
 interface AuthenticatedRequest extends NextRequest {
@@ -58,7 +58,7 @@ describe("Middleware", () => {
         });
     });
 
-    const createRequest = (pathname: string, auth?: any): AuthenticatedRequest => {
+    const createRequest = (pathname: string, auth?: AuthInfo): AuthenticatedRequest => {
         const request = new Request(`http://localhost:3000${pathname}`, {
             method: 'GET',
         });
