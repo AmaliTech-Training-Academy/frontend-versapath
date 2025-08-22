@@ -84,13 +84,22 @@ export function AppSidebar() {
           </div>
           <CustomPopover
             trigger={
-              <Button size={"icon"} variant={"ghost"}>
+              <Button 
+                size={"icon"} 
+                variant={"ghost"}
+                aria-label="User options"
+              >
                 <MoreVertical className="text-gray-text-weak" />
               </Button>
             }
           >
             <div>
-              <Button variant="ghost" className="w-full text-left cursor-pointer" onClick={handleLogOut}>
+              <Button 
+                variant="ghost" 
+                className="w-full text-left cursor-pointer" 
+                onClick={handleLogOut}
+                aria-label="Sign out"
+              >
                 Sign out
               </Button>
             </div>

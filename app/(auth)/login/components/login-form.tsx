@@ -17,7 +17,7 @@ import { apiLogin } from "@/lib/api/login";
 import { CustomInput } from "@/components/custom/custom-input";
 
 export const LoginForm = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const form = useForm<loginInputs>({
     resolver: zodResolver(loginSchema),
@@ -28,18 +28,18 @@ export const LoginForm = () => {
     mode: "onChange",
   });
 
-    const onSubmit = async (data: loginInputs) => {
-        setError(null);
-        const { email, password } = await loginSchema.parseAsync(data);
-        const result = await apiLogin(email, password);
+  const onSubmit = async (data: loginInputs) => {
+    setError(null);
+    const { email, password } = await loginSchema.parseAsync(data);
+    const result = await apiLogin(email, password);
 
-        if (result?.error) {
-            setError(result.error);
-        } else {
-            toast.success("Login successful! Redirecting...");
-            router.push('/dashboard');
-        }
-    };
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      toast.success("Login successful! Redirecting...");
+      router.push('/dashboard');
+    }
+  };
 
   return (
     <Form {...form}>
