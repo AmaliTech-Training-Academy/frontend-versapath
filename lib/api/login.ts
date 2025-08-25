@@ -28,7 +28,7 @@ export const apiLogin = async (
                 username: "admin@example.com",
                 fullName: "Admin User",
                 email: "admin@example.com",
-                role: "LEARNER"
+                role: "ADMIN"
             }
         },
         errors: null

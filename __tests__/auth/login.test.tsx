@@ -7,8 +7,23 @@ import { toast } from "sonner";
 import { apiLogin } from "@/lib/api/login";
 
 // Create a wrapper component with necessary providers
-const renderLoginForm = () => {
-  return render(<LoginForm />);
+const renderLoginForm = () => render(<LoginForm />);
+
+// Helper to fill and submit the form
+function getSubmitButton() {
+  // Get all buttons and filter for type="submit"
+  const submitBtn = screen.getAllByRole("button").find(
+    (btn) => btn.getAttribute("type") === "submit"
+  );
+  if (!submitBtn) {
+    throw new Error("Submit button not found. Make sure the form has a button with type='submit'.");
+  }
+  return submitBtn;
+}
+const fillAndSubmit = async (email: string, password: string) => {
+  fireEvent.change(screen.getByRole('textbox', { name: 'Email' }), { target: { value: email } });
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: password } });
+  fireEvent.click(getSubmitButton());
 };
 
 vi.mock("@/lib/api/login", () => ({
@@ -32,40 +47,44 @@ describe("LoginForm", () => {
     renderLoginForm();
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
+    expect(getSubmitButton()).toBeInTheDocument();
   });
 
   it("shows validation errors for empty fields", async () => {
     renderLoginForm();
-    const submitButton = screen.getByRole("button", { name: /log in/i });
-    
-    fireEvent.click(submitButton);
-    
+    fireEvent.click(getSubmitButton());
     await waitFor(() => {
-      const emailError = screen.getByText('Email required');
-      const passwordError = screen.getByText('Password required');
-      expect(emailError).toBeInTheDocument();
-      expect(passwordError).toBeInTheDocument();
+      expect(screen.getByText('Email required')).toBeInTheDocument();
+      expect(screen.getByText('Password required')).toBeInTheDocument();
     });
   });
 
-  it("shows error on invalid login", async () => {
+  it("shows validation error for invalid email format", async () => {
+    renderLoginForm();
+    await fillAndSubmit("invalid-email", "password123");
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows validation error for missing password only", async () => {
+    renderLoginForm();
+    await fillAndSubmit("test@example.com", "");
+    await waitFor(() => {
+      expect(screen.getByText('Password required')).toBeInTheDocument();
+    });
+  });
+
+  it("shows error on invalid login and does not call toast", async () => {
     mockApiLogin.mockResolvedValueOnce({ 
       success: false,
       error: "Invalid credentials"
     });
     renderLoginForm();
-    
-    const emailInput = screen.getByRole('textbox', { name: 'Email' });
-    const passwordInput = screen.getByLabelText('Password');
-    const submitButton = screen.getByRole("button", { name: /log in/i });
-
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "wrongpass" } });
-    fireEvent.click(submitButton);
-
+    await fillAndSubmit("test@example.com", "wrongpass");
     await waitFor(() => {
       expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+      expect(mockToast).not.toHaveBeenCalled();
     });
   });
 
@@ -75,52 +94,32 @@ describe("LoginForm", () => {
       error: undefined
     });
     renderLoginForm();
-    
-    const emailInput = screen.getByRole('textbox', { name: 'Email' });
-    const passwordInput = screen.getByLabelText('Password');
-    const submitButton = screen.getByRole("button", { name: /log in/i });
-
-    await fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    await fireEvent.change(passwordInput, { target: { value: "password123" } });
-    await fireEvent.click(submitButton);
-
+    await fillAndSubmit("test@example.com", "password123");
     await waitFor(() => {
       expect(mockApiLogin).toHaveBeenCalledWith("test@example.com", "password123");
     });
-    
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith(expect.stringMatching(/login successful/i));
     });
-    
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
     }, { timeout: 2000 });
   });
 
-  it("shows loading state while submitting", async () => {
+  it("shows loading state while submitting and re-enables button after", async () => {
     let resolvePromise!: ((value: { success: boolean; error?: string }) => void);
     const promise = new Promise<{ success: boolean; error?: string }>((resolve) => {
       resolvePromise = resolve;
     });
     mockApiLogin.mockImplementation(() => promise);
-    
     renderLoginForm();
-    
-    const emailInput = screen.getByRole('textbox', { name: 'Email' });
-    const passwordInput = screen.getByLabelText('Password');
-    const submitButton = screen.getByRole("button", { name: /log in/i });
-
-    await fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    await fireEvent.change(passwordInput, { target: { value: "password123" } });
-    await fireEvent.click(submitButton);
-
+    await fillAndSubmit("test@example.com", "password123");
     expect(screen.getByText(/logging in/i)).toBeInTheDocument();
-    expect(submitButton).toBeDisabled();
-
+    expect(getSubmitButton()).toBeDisabled();
     resolvePromise({ success: true, error: undefined });
-    
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
+      expect(getSubmitButton()).not.toBeDisabled();
     }, { timeout: 2000 });
   });
 });
