@@ -12,7 +12,7 @@ export const DashboardHeader = ({ title }: { title: string }) => {
           className="flex items-center justify-center w-full gap-1"
         >
           <Image
-            src={"/logo.svg"}
+            src={"/Logo.svg"}
             height={50}
             width={50}
             alt="VersaPathAI logo"

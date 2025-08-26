@@ -36,7 +36,7 @@ export function AppSidebar() {
             <Link href={"/"} className="flex items-center gap-1">
               {" "}
               <Image
-                src={"/logo.svg"}
+                src={"/Logo.svg"}
                 height={50}
                 width={50}
                 alt="VersaPathAI logo"
