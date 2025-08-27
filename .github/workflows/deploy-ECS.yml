@@ -1,4 +1,4 @@
-name: Deploy Frontend to Amazon ECS
+name: CD Frontend
 
 on:
   push:
