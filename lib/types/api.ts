@@ -9,6 +9,6 @@ export interface User {
 export interface ApiResponse<T> {
   status: boolean;
   message: string;
-  data: Record<string, T>;
+  data: Record<string, T> | null;
   errors: Record<string, string> | null;
 }

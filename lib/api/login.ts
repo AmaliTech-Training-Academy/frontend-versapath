@@ -1,4 +1,5 @@
 import { signIn } from "next-auth/react";
+import { ApiResponse, User } from "../types/api";
 
 export const apiLogin = async (
     email: string,
@@ -15,7 +16,11 @@ export const apiLogin = async (
     //     body: JSON.stringify({ email, password })
     // }).then(res => res.json());
 
-    // return response;
+    // const result: ApiResponse<User> = await response.json();
+
+    // if(result.errors) {
+    //     return { success: false, error: result.errors.message || 'Unable to log in. Please try again.' }
+    // }
 
     console.log('Email: ', email);
     console.log('Password: ', password);
@@ -40,7 +45,7 @@ export const apiLogin = async (
     });
 
     if (nextAuthRes?.error) {
-        return { success: false, error: nextAuthRes.error };
+        return { success: false, error: nextAuthRes.error || 'Unable to log in. Please try again.' };
     }
 
     return { success: true };
