@@ -8,22 +8,43 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-    //     method: 'post',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({ email, password })
-    // }).then(res => res.json());
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+    }).then(res => res.json());
 
-    // const result: ApiResponse<User> = await response.json();
+    const result: ApiResponse<User> = await response.json();
 
-    // if(result.errors) {
-    //     return { success: false, error: result.errors.message || 'Unable to log in. Please try again.' }
-    // }
+    if (result.errors) {
+        return { success: false, error: result.errors.message || 'Unable to log in. Please try again.' }
+    }
 
-    console.log('Email: ', email);
-    console.log('Password: ', password);
+    const nextAuthRes = await signIn("credentials", {
+        user: JSON.stringify(response.data.user),
+        redirect: false
+    });
+
+    if (nextAuthRes?.error) {
+        return { success: false, error: nextAuthRes.error || 'Unable to log in. Please try again.' };
+    }
+
+    return { success: true };
+}
+
+export const mockApiLogin = async (
+    email: string,
+    password: string
+): Promise<{
+    success: boolean,
+    error?: string
+}> => {
+    if(email !== 'admin@example.com' || password !== 'asdfgh') {
+        return { success: false, error: "Email and password don't match. Please try again." }
+    }
+
     const response = {
         status: true,
         message: "Login successful",
