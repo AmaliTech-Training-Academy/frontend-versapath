@@ -1,18 +1,17 @@
-name: Deploy Frontend to Amazon ECS
+name: CD Frontend
 
 on:
-  workflow_run:
-    workflows: ["CI Pipeline"] # Name of your CI workflow for frontend
-    types:
-      - completed
-    branches: [ production, staging, dev ]
+  push:
+    branches:
+      - dev
+      - staging  
+      - production
   workflow_dispatch:
 
 jobs:
   deploy:
     name: Deploy Frontend
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       AWS_ECR_REPOSITORY_NAME: versapath/frontend
       AWS_ECS_CLUSTER_NAME: versapath-cluster
