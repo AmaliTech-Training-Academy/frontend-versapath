@@ -38,8 +38,8 @@ ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs \
+RUN addgroup -g 1001 nodejs \
+    && adduser -D -G nodejs nextjs || true \
     && mkdir -p .next ./public \
     && chown nextjs:nodejs .next ./public
 
@@ -49,9 +49,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/public/ ./public/
 
-USER nextjsdocker tag your-image-name your-dockerhub-username/your-image-namedocker tag your-image-name your-dockerhub-username/your-image-namedocker tag your-image-name your-dockerhub-username/your-image-namedocker tag your-image-name your-dockerhub-username/your-image-namedocker tag your-image-name your-dockerhub-username/your-image-namedocker tag your-image-name your-dockerhub-username/your-image-name
+USER nextjs
 
 EXPOSE 3000
 
-# Ensure server.js exists or fallback to Next.js built-in server
+# Run the Next.js built-in server
 CMD ["node", "server"]
