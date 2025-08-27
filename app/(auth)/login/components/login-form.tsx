@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { apiLogin } from "@/lib/api/login";
+import { mockApiLogin } from "@/lib/api/login";
 import { CustomInput } from "@/components/custom/custom-input";
 
 export const LoginForm = () => {
@@ -31,7 +31,7 @@ export const LoginForm = () => {
   const onSubmit = async (data: loginInputs) => {
     setError(null);
     const { email, password } = await loginSchema.parseAsync(data);
-    const result = await apiLogin(email, password);
+    const result = await mockApiLogin(email, password);
 
     if (result?.error) {
       setError(result.error);
