@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
-import { SheetWrapper } from "@/app/dashboard/components/sheet-wrapper";
+import Link from "next/link";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -61,28 +61,12 @@ const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium ">
-          <SheetWrapper
-            headerDescription="User details"
-            headerTitle={"User information"}
-            trigger={
-              <p className="text-[14px] text-gray-text-strong font-semibold hover:underline  cursor-pointer">
-                {row.original.user}
-              </p>
-            }
+          <Link
+            href={`/dashboard/user-management/${row.original.id}`}
+            className="text-[14px] text-gray-text-strong font-semibold hover:underline  cursor-pointer"
           >
-            <div className="space-y-3">
-              {Object.entries(row.original)
-                .filter((row) => row[0] !== "id")
-                .map(([key, value]) => (
-                  <div key={key} className="">
-                    <p className="font-normal capitalize text-gray-stroke-strong">
-                      {key}
-                    </p>
-                    <p className="font-medium">{value}</p>
-                  </div>
-                ))}
-            </div>
-          </SheetWrapper>
+            {row.original.user}
+          </Link>
           <p className="text-[14px] font-normal text-gray-text-weak">
             {row.original.email}
           </p>

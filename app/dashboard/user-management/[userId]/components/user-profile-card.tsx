@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-export const UserProfileCard = () => {
+export const UserProfileCard: React.FC<{ user: User }> = ({ user }) => {
   return (
     <>
       <div className="flex items-center justify-start w-full gap-2">
@@ -12,9 +12,9 @@ export const UserProfileCard = () => {
           alt="Avatar"
         />
         <div className="w-full space-y-1 ">
-          <p className="text-lg font-semibold leading-relaxed ">Mary Mensah</p>
+          <p className="text-lg font-semibold leading-relaxed ">{user.user}</p>
           <p className="text-xs font-normal leading-tight text-gray-text-weak">
-            Learner
+            {user.role}
           </p>
         </div>
       </div>
@@ -24,7 +24,7 @@ export const UserProfileCard = () => {
             Email:
           </p>
           <p className="text-sm font-normal leading-snug text-gray-text-strong">
-            mary.mensah@amalitech.com
+            {user.email}
           </p>
         </div>
         <div className="flex items-center justify-between w-full ">

@@ -67,6 +67,17 @@ export const EditUserForm = () => {
             control={form.control}
             name=""
             render={({ field }) => (
+              <CustomInput
+                label="Date joined"
+                type="date"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name=""
+            render={({ field }) => (
               <CustomSelect
                 label="Assigned Mentor"
                 selectValues={["Mentor1", "Mentor2", "Mentor3", "Mentor4"]}
@@ -74,34 +85,13 @@ export const EditUserForm = () => {
               />
             )}
           />
+
           <FormField
             control={form.control}
             name=""
             render={({ field }) => (
               <CustomSelect
-                label="Assigned manager"
-                selectValues={["Manager1", "Manager2", "Manager3", "Manager4"]}
-                {...field}
-              />
-            )}
-          />
-          <FormField
-            control={form.control}
-            name=""
-            render={({ field }) => (
-              <CustomSelect
-                label="Assigned manager"
-                selectValues={["Manager1", "Manager2", "Manager3", "Manager4"]}
-                {...field}
-              />
-            )}
-          />
-          <FormField
-            control={form.control}
-            name=""
-            render={({ field }) => (
-              <CustomSelect
-                label="Assigned manager"
+                label="Manager"
                 selectValues={["Manager1", "Manager2", "Manager3", "Manager4"]}
                 {...field}
               />

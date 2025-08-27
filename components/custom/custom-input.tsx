@@ -25,12 +25,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   const { error } = useFormField();
   const [showPassword, setShowPassword] = React.useState(false);
   const isPasswordType = type === "password";
-  let inputType: string;
-  if (isPasswordType) {
-    inputType = showPassword ? "text" : "password";
-  } else {
-    inputType = type;
-  }
+  const inputType = isPasswordType && showPassword ? "text" : type;
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
