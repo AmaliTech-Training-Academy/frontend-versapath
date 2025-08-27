@@ -1,10 +1,15 @@
 "use client";
 import React from "react";
 import { Input } from "../ui/input";
-import { FormItem, FormLabel, FormControl, FormMessage } from "../ui/form";
+import {
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  useFormField,
+} from "../ui/form";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFormField } from "../ui/form";
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -20,18 +25,22 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   const { error } = useFormField();
   const [showPassword, setShowPassword] = React.useState(false);
   const isPasswordType = type === "password";
-  const inputType = isPasswordType
-    ? showPassword
-      ? "text"
-      : "password"
-    : type;
+  let inputType: string;
+  if (isPasswordType) {
+    inputType = showPassword ? "text" : "password";
+  } else {
+    inputType = type;
+  }
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
   const id = field.name || field.id || `input-${label.toLowerCase()}`;
   return (
     <FormItem className="space-y-1">
-      <FormLabel htmlFor={id} className="font-semibold text-sm text-gray-text-strong/90">
+      <FormLabel
+        htmlFor={id}
+        className="my-0 text-sm font-semibold text-gray-text-strong/90"
+      >
         {label}
       </FormLabel>
       <FormControl>
@@ -58,9 +67,9 @@ export const CustomInput: React.FC<CustomInputProps> = ({
               )}
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4" />
+                <EyeOff className="w-4 h-4" />
               ) : (
-                <Eye className="h-4 w-4" />
+                <Eye className="w-4 h-4" />
               )}
             </button>
           )}

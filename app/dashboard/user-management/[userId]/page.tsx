@@ -14,6 +14,7 @@ type SingleUserPageProps = {
 
 export default async function SingleUserPage({ params }: SingleUserPageProps) {
   const { userId } = await params;
+  console.log("User ID:", userId); // For debugging purposes - To be removed later
 
   return (
     <>
