@@ -114,7 +114,7 @@ export function AppSidebar() {
 const sidebarItems = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/dashboard",
     icon: Squares2X2Icon,
   },
   {
