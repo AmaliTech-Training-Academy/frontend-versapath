@@ -15,7 +15,6 @@ import { ResetPasswordForm } from "@/app/(auth)/reset-password/component/reset-p
 
 const renderResetPasswordForm = () => render(<ResetPasswordForm />);
 
-// Helper to get submit button reliably
 function getSubmitButton() {
   const submitBtn = screen
     .getAllByRole("button")

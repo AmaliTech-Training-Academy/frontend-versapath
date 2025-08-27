@@ -41,7 +41,6 @@ export function ResetPasswordForm() {
       const response = await authApi.resetPassword(data.email);
       setSuccessMessage(response.message);
 
-      // Redirect to email verification page after successful request
       setTimeout(() => {
         router.push("/email-verification");
       }, 2000);

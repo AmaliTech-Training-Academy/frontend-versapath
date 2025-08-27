@@ -10,15 +10,12 @@ export default function EmailVerificationCard() {
 
   const handleOpenEmail = async () => {
     setIsLoading(true);
-    // Simulate opening email client
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsLoading(false);
-    // Here you would typically open the user's default email client
     window.open("mailto:", "_blank");
   };
 
   const handleSkip = () => {
-    // Handle skip functionality - redirect to login or dashboard
     console.log("Skipping email confirmation");
   };
 
@@ -37,7 +34,6 @@ export default function EmailVerificationCard() {
           </div>
         </div>
 
-        {/* Heading */}
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold text-gray-text flex justify-center">
             Check your email
@@ -47,7 +43,6 @@ export default function EmailVerificationCard() {
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className="space-y-3">
           <Button
             onClick={handleOpenEmail}
@@ -73,7 +68,6 @@ export default function EmailVerificationCard() {
           </Button>
         </div>
 
-        {/* Help Text */}
         <p className="text-sm text-gray-text-weak leading-relaxed">
           Did not receive the email? <span className="text-brand-primary-stroke-strong">Check your spam or try another email
           address.</span>

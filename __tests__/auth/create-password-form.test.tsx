@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import CreatePasswordForm from "@/app/(auth)/reset-password/component/create-password-form";
 import { authApi, ApiError } from "@/lib/api/reset-password";
-// Mock next/navigation before any imports to provide App Router context
 import { vi } from "vitest";
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -19,7 +18,6 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-// Mock the API module
 vi.mock("@/lib/api/reset-password", async () => {
   const actual = (await vi.importActual("@/lib/api/reset-password")) as any;
   return {
@@ -123,21 +121,6 @@ describe("CreatePasswordForm", () => {
       expect(screen.getByText("Must contain number")).toBeInTheDocument();
     });
   });
-
-  //   it("shows error on API failure and does not show success message", async () => {
-  //     mockUpdatePassword.mockRejectedValueOnce(
-  //       new ApiError(400, "Password update failed")
-  //     );
-  //     renderCreatePasswordForm();
-  //     await fillAndSubmit("Password123", "Password123");
-  //     await waitFor(() => {
-  //       expect(screen.getByText(/Failed to send reset email"/i)).toBeInTheDocument();
-  //       expect(
-  //         screen.queryByText(/password reset completed/i)
-  //       ).not.toBeInTheDocument();
-  //     });
-  //   });
-
   it("calls updatePassword API and shows success confirmation", async () => {
     mockUpdatePassword.mockResolvedValueOnce({
       message:
@@ -190,15 +173,14 @@ describe("CreatePasswordForm", () => {
     expect(passwordInput).toHaveAttribute("type", "password");
     expect(confirmPasswordInput).toHaveAttribute("type", "password");
 
-    // Find and click visibility toggle buttons
     const eyeButtons = screen
       .getAllByRole("button")
       .filter((btn) => btn.getAttribute("type") !== "submit");
 
-    fireEvent.click(eyeButtons[0]); // First eye button for password
+    fireEvent.click(eyeButtons[0]); 
     expect(passwordInput).toHaveAttribute("type", "text");
 
-    fireEvent.click(eyeButtons[1]); // Second eye button for confirm password
+    fireEvent.click(eyeButtons[1]); 
     expect(confirmPasswordInput).toHaveAttribute("type", "text");
   });
 });
