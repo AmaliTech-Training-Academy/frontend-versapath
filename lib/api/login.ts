@@ -1,4 +1,5 @@
 import { signIn } from "next-auth/react";
+import { ApiResponse, User } from "../types/api";
 
 export const apiLogin = async (
     email: string,
@@ -7,18 +8,43 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-    //     method: 'post',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({ email, password })
-    // }).then(res => res.json());
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+    }).then(res => res.json());
 
-    // return response;
+    const result: ApiResponse<User> = await response.json();
 
-    console.log('Email: ', email);
-    console.log('Password: ', password);
+    if (result.errors) {
+        return { success: false, error: result.errors.message || 'Unable to log in. Please try again.' }
+    }
+
+    const nextAuthRes = await signIn("credentials", {
+        user: JSON.stringify(response.data.user),
+        redirect: false
+    });
+
+    if (nextAuthRes?.error) {
+        return { success: false, error: nextAuthRes.error || 'Unable to log in. Please try again.' };
+    }
+
+    return { success: true };
+}
+
+export const mockApiLogin = async (
+    email: string,
+    password: string
+): Promise<{
+    success: boolean,
+    error?: string
+}> => {
+    if(email !== 'admin@example.com' || password !== 'asdfgh') {
+        return { success: false, error: "Email and password don't match. Please try again." }
+    }
+
     const response = {
         status: true,
         message: "Login successful",
@@ -40,7 +66,7 @@ export const apiLogin = async (
     });
 
     if (nextAuthRes?.error) {
-        return { success: false, error: nextAuthRes.error };
+        return { success: false, error: nextAuthRes.error || 'Unable to log in. Please try again.' };
     }
 
     return { success: true };
