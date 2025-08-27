@@ -2,7 +2,7 @@ interface User {
   id: number;
   user: string;
   email: string;
-  role: string;
+  role: Roles;
   status: string;
   joinDate: string;
   stack: string;

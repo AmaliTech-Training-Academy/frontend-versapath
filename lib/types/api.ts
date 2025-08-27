@@ -1,9 +1,10 @@
+import { Roles } from "./";
 export interface User {
   id: string;
   username: string;
   fullName: string;
   email: string;
-  role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
+  role: Roles;
 }
 
 export interface ApiResponse<T> {
