@@ -49,7 +49,6 @@ export default function CreatePasswordForm() {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  // Password validation checks
   const hasMinLength = password?.length >= 8;
   const hasUppercase = /[A-Z]/.test(password || "");
   const hasLowercase = /[a-z]/.test(password || "");
