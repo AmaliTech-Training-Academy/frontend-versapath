@@ -1,33 +1,34 @@
-import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [
     tsconfigPaths(),
     react({
-      jsxRuntime: 'automatic',
+      jsxRuntime: "automatic",
     }),
   ],
   test: {
     globals: true,
-    environment: 'jsdom',
-    include: ['**/*.{test,spec}.{ts,tsx}'],
+    environment: "jsdom",
+    setupFiles: ["./setupTests.ts"],
+    include: ["**/*.{test,spec}.{ts,tsx}"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'lcov'],
-      reportsDirectory: 'coverage',
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      reportsDirectory: "coverage",
       include: [
-        'app/**/*.{ts,tsx}',
-        'components/**/*.{ts,tsx}',
-        'lib/**/*.{ts,tsx}',
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
       ],
       exclude: [
-        'lib/constants/**/*',
-        'lib/data/**/*',
-        'lib/mock/**/*',
-        'lib/types/**/*',
+        "lib/constants/**/*",
+        "lib/data/**/*",
+        "lib/mock/**/*",
+        "lib/types/**/*",
       ],
     },
   },
@@ -35,5 +36,5 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "."),
     },
-  }
+  },
 });
