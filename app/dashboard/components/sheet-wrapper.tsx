@@ -14,22 +14,20 @@ export function SheetWrapper({
   headerDescription,
   children,
 }: PropsWithChildren<{
-  trigger: React.ReactNode;
+  trigger: React.ReactNode | React.ReactElement;
   saveChangeButton?: React.ReactNode;
   headerTitle: string;
   headerDescription: string;
 }>) {
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        {trigger}
-      </SheetTrigger>
-      <SheetContent>
+      <SheetTrigger asChild>{trigger}</SheetTrigger>
+      <SheetContent className="h-full overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-2xl">{headerTitle}</SheetTitle>
           <SheetDescription>{headerDescription}</SheetDescription>
         </SheetHeader>
-        <div className="px-3">{children}</div>
+        <div className="h-full px-3">{children}</div>
       </SheetContent>
     </Sheet>
   );

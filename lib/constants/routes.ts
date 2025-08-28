@@ -1,14 +1,15 @@
+import { Roles } from "../types";
 export const protectedPaths = [
   {
     title: "Dashboard",
     url: "/dashboard",
-    role: ["LEARNER", "MENTOR", "MANAGER", "ADMIN"],
+    role: [Roles.LEARNER, Roles.MENTOR, Roles.MANAGER, Roles.ADMIN],
   },
   {
     title: "User Management",
     url: "/dashboard/user-management",
-    role: ["ADMIN"],
-  }
+    role: [Roles.ADMIN],
+  },
 ];
 
 export const publicPaths = ["/", "/login", "/register", "/unauthorized"];
