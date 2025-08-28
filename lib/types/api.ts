@@ -1,10 +1,12 @@
+import { Roles } from "./";
 export interface User {
   id: string;
   email: string;
   username: string;
+  fullName: string;
+  role: Roles;
   firstName: string;
   lastName: string;
-  role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
   status: 'ACTIVE' | 'INACTIVE';
 }
 

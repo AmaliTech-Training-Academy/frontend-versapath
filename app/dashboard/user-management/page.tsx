@@ -6,12 +6,13 @@ import { SheetAction } from "./components/sheet-action"
 import { UsersList } from "./components/users-list";
 import { Plus } from "lucide-react";
 import { InviteUserForm } from "./components/invite-user-form";
+import { usersMockData } from "@/lib/mocks/users";
 
 export default function UserManagementPage() {
   return (
     <>
       <DashboardHeader title="User Management" />
-      <section className="bg-sidebar p-3 rounded-lg  h-full">
+      <section className="p-3 mb-5 rounded-lg bg-sidebar h-fit">
         <TopActions
           searchPlaceholder="Search by name, role, email..."
           rightActions={
@@ -28,7 +29,7 @@ export default function UserManagementPage() {
             </SheetAction>
           }
         />
-        <UsersList />
+        <UsersList users={usersMockData} />
       </section>
     </>
   );
