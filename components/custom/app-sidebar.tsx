@@ -81,6 +81,11 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: TrendingUp,
   },
+  {
+    title: "Skills Tag",
+    url: "/dashboard/skill-atom",
+    icon: BookOpenIcon,
+  },
 ];
 
 const sidebarFooterItems: FooterItem[] = [

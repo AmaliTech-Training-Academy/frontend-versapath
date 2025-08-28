@@ -2,6 +2,7 @@ import { Select } from "@/components/custom/custom-selector";
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { AddUserSheet } from "../user-management/components/add-user-sheet";
+import { AddSkillAtom } from "../skill-atom/components/add-skill-atom";
 
 export const TopActions = () => {
   return (
@@ -15,6 +16,8 @@ export const TopActions = () => {
         </div>
       </article>
       <AddUserSheet />
+      <AddSkillAtom />
+      
     </section>
   );
 };
