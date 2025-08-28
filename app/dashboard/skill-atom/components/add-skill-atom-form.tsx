@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {lessonSchema} from "@/lib/schemas/lesson";
+import {SkillAtomSchema} from "@/lib/schemas/lesson";
 import type { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,11 +12,11 @@ import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
-type LessonFormValues = z.infer<typeof lessonSchema>;
+type SkillAtomFormValues = z.infer<typeof SkillAtomSchema>;
 
-export const AddLessonForm = () => {
-  const form = useForm<LessonFormValues>({
-    resolver: zodResolver(lessonSchema),
+export const AddSkillAtomForm = () => {
+  const form = useForm<SkillAtomFormValues>({
+    resolver: zodResolver(SkillAtomSchema),
     defaultValues: {
       lessonName: "",
       description: "",
@@ -28,7 +28,7 @@ export const AddLessonForm = () => {
     },
   })
 
-   const onSubmit = (data: LessonFormValues) => {
+   const onSubmit = (data: SkillAtomFormValues) => {
     console.log("Lesson submitted:", data);
 
   };

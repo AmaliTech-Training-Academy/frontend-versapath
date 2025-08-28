@@ -1,7 +1,7 @@
 import { SheetWrapper } from "../../components/sheet-wrapper";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {AddLessonForm} from "./add-skill-atom-form";
+import {AddSkillAtomForm} from "./add-skill-atom-form";
 
 export const AddSkillAtom = () => {
   return (
@@ -14,7 +14,7 @@ export const AddSkillAtom = () => {
         </Button>
       }
     >
-      <AddLessonForm/>
+      <AddSkillAtomForm/>
     </SheetWrapper>
   );
 };

@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const lessonSchema = z.object({
+export const SkillAtomSchema = z.object({
   lessonName: z.string().min(2, { message: "Lesson name is required." }),
   description: z.string().optional(),
   objectives: z.string().optional(),
@@ -12,4 +12,4 @@ export const lessonSchema = z.object({
   }),
 });
 
-export type LessonFormValues = z.infer<typeof lessonSchema>;
+export type SkillAtomFormValues = z.infer<typeof SkillAtomSchema>;

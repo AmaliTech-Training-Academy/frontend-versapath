@@ -72,7 +72,7 @@ const sidebarItems: SidebarItem[] = [
     items: [
       { title: "Skill Clusters", url: "/dashboard/skill-clusters" },
       { title: "Skill Capsule", url: "#" },
-      { title: "Skill Atom", url: "#" },
+      { title: "Skill Atom", url: "/dashboard/skill-atom" },
       { title: "Skill Tags", url: "#" },
     ],
   },
@@ -81,11 +81,7 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: TrendingUp,
   },
-  {
-    title: "Skills Tag",
-    url: "/dashboard/skill-atom",
-    icon: BookOpenIcon,
-  },
+  
 ];
 
 const sidebarFooterItems: FooterItem[] = [
