@@ -1,11 +1,11 @@
 "use client";
 import { DashboardHeader } from "../components/header";
 import { TopActions } from "../components/top-actions";
-import { SheetAction } from "../user-management/components/sheet-action";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { InviteUserForm } from "../user-management/components/invite-user-form";
 import { CategoryList } from "./components/category-list";
+import { SheetWrapper } from "../components/sheet-wrapper";
 
 export default function SkillClustersPage() {
     return (
@@ -15,7 +15,7 @@ export default function SkillClustersPage() {
                 <TopActions
                     searchPlaceholder="Search by skill clusters"
                     rightActions={
-                        <SheetAction
+                        <SheetWrapper
                             headerTitle="Add New Category"
                             headerDescription="Add a new skill category to organize your tags"
                             trigger={
@@ -25,7 +25,7 @@ export default function SkillClustersPage() {
                             }
                         >
                             <InviteUserForm />
-                        </SheetAction>
+                        </SheetWrapper>
                     }
                 />
                 <CategoryList />
