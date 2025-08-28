@@ -3,9 +3,9 @@ import { DashboardHeader } from "../components/header";
 import { TopActions } from "../components/top-actions";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { InviteUserForm } from "../user-management/components/invite-user-form";
 import { CategoryList } from "./components/category-list";
 import { SheetWrapper } from "../components/sheet-wrapper";
+import { AddCategoryForm } from "./components/add-category-form";
 
 export default function SkillClustersPage() {
     return (
@@ -24,7 +24,7 @@ export default function SkillClustersPage() {
                                 </Button>
                             }
                         >
-                            <InviteUserForm />
+                            <AddCategoryForm />
                         </SheetWrapper>
                     }
                 />
