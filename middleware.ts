@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { protectedPaths, publicPaths } from "./lib/constants/routes";
+import { Roles } from "./lib/types";
 
 // Authenticated middleware wrapper
 export default auth(async function middleware(req) {
   const { pathname } = req.nextUrl;
 
   const isAuthenticated = !!req.auth;
-  const authenticatedRole = req.auth?.user?.role 
+  const authenticatedRole = req.auth?.user?.role;
 
   // 1. Allow public routes
   if (publicPaths.includes(pathname)) {
@@ -24,7 +25,7 @@ export default auth(async function middleware(req) {
   if (isAuthenticated) {
     if (matchedRoute) {
       // Check if user has the correct role
-      if (matchedRoute.role.includes(authenticatedRole!)) {
+      if (authenticatedRole && matchedRoute.role.includes(authenticatedRole as Roles)) {
         return NextResponse.next();
       } else {
         // Authenticated but unauthorized

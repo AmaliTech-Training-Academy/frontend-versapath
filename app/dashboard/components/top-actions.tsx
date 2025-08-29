@@ -1,39 +1,81 @@
 import { Select } from "@/components/custom/custom-selector";
 import { Input } from "@/components/ui/input";
-import React from "react";
-// import { AddUserSheet } from "../user-management/components/add-user-sheet";
-import { AddSkillAtom } from "../skill-atom/components/add-skill-atom";
+import React, { useEffect, useRef } from "react";
 
-export const TopActions = () => {
-  return (
-    <section className="flex flex-col items-start justify-between w-full gap-3 sm:flex-row">
-      <article className="flex flex-col w-full gap-3 md:flex-row">
-        <SearchComponent />
-        <div className="flex items-center gap-2">
-          Filter:
-          <Select placeholder="All roles" options={rolesOptions} />
-          <Select placeholder="All statuses" options={statusOptions} />
-        </div>
-      </article>
-      {/* <AddUserSheet /> */}
-      <AddSkillAtom />
-      
-    </section>
-  );
-};
-const rolesOptions = [
+export interface TopActionsProps {
+  searchPlaceholder?: string;
+  onSearch?: (value: string) => void;
+  rightActions?: React.ReactNode;
+  debounceMs?: number;
+}
+
+const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
   { value: "manager", label: "Manager" },
   { value: "learner", label: "Learner" },
 ];
-const statusOptions = [
+
+const STATUS_OPTIONS = [
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
 ];
-const SearchComponent = () => {
+
+export const TopActions: React.FC<TopActionsProps> = ({
+  searchPlaceholder = "Search...",
+  onSearch,
+  rightActions,
+  debounceMs = 500
+}) => {
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      onSearch?.(value);
+    }, debounceMs);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchValue = formData.get("searchInput") as string;
+
+    // Clear any pending debounced search and execute immediately
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    onSearch?.(searchValue || "");
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <form className="flex items-center max-w-[340px] w-full">
-      <Input placeholder="Search..." name="searchInput" />
-    </form>
-  );
-};
+    <section className="flex flex-col items-start justify-between w-full gap-3 sm:flex-row">
+      <article className="flex flex-col w-full gap-3 md:flex-row">
+        <form
+          className="flex items-center max-w-[340px] w-full"
+          onSubmit={handleSubmit}
+        >
+          <Input onChange={handleChange} placeholder={searchPlaceholder} name="searchInput" />
+        </form>
+        <div className="flex items-center gap-2">
+          Filter:
+          <Select placeholder="All roles" options={ROLE_OPTIONS} />
+          <Select placeholder="All statuses" options={STATUS_OPTIONS} />
+        </div>
+      </article>
+      {rightActions}
+    </section>
+  )
+}

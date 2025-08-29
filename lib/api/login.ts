@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/react";
-import { ApiResponse, User } from "../types/api";
+import { ApiErrors, ApiResponse, ItemData, User } from "../types/api";
 
 export const apiLogin = async (
     email: string,
@@ -16,14 +16,20 @@ export const apiLogin = async (
         body: JSON.stringify({ email, password })
     }).then(res => res.json());
 
-    const result: ApiResponse<User> = await response.json();
+    const result: ApiResponse<ItemData<User>> = await response.json();
 
-    if (result.errors) {
-        return { success: false, error: result.errors.message || 'Unable to log in. Please try again.' }
+    if (!response.ok || result.status === false) {
+        const msg = extractErrorMessage(result.errors, result.message)
+        return { success: false, error: msg }
+    }
+
+    const user = result.data?.item;
+    if(!user) {
+        return { success: false, error: result.message || "Invalid response payload" };
     }
 
     const nextAuthRes = await signIn("credentials", {
-        user: JSON.stringify(response.data.user),
+        user: JSON.stringify(user),
         redirect: false
     });
 
@@ -32,6 +38,16 @@ export const apiLogin = async (
     }
 
     return { success: true };
+}
+
+const extractErrorMessage = (errors?: ApiErrors, fallback?: string): string => {
+  if (errors && errors.length > 0) {
+    const firstMap = errors[0];
+    const firstKey = Object.keys(firstMap)[0];
+    const firstMsg = firstKey ? firstMap[firstKey]?.[0] : undefined;
+    if (firstMsg) return firstMsg;
+  }
+  return fallback || "Unable to log in. Please try again.";
 }
 
 export const mockApiLogin = async (
