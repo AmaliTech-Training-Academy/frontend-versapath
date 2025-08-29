@@ -70,9 +70,9 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: BookOpenIcon,
     items: [
-      { title: "Skill Clusters", url: "/dashboard/skill-clusters" },
-      { title: "Skill Capsule", url: "#" },
-      { title: "Skill Atom", url: "/dashboard/skill-atom" },
+      { title: "Skill Categories", url: "/dashboard/skill-clusters" },
+      { title: "Skill", url: "#" },
+      { title: "Lessons", url: "/dashboard/skill-atom" },
       { title: "Skill Tags", url: "#" },
     ],
   },

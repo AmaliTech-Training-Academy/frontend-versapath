@@ -80,6 +80,7 @@ export const EditUserForm = () => {
             render={({ field }) => (
               <CustomSelect
                 label="Assigned Mentor"
+                placeholder="Select a verified email to display"
                 selectValues={["Mentor1", "Mentor2", "Mentor3", "Mentor4"]}
                 {...field}
               />
