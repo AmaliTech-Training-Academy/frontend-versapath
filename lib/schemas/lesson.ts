@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const SkillAtomSchema = z.object({
-  lessonName: z.string().min(20, { message: "Lesson name is required." }),
+  lessonName: z.string().min(8, { message: "Lesson name is required." }),
   description: z.string().optional(),
   objectives: z.string().optional(),
   moodleUrl: z.string().url({ message: "Must be a valid URL" }).optional(),

@@ -24,12 +24,6 @@ export const SkillAtomsList: React.FC<LessonsListProps> = ({ lessons, onView, on
     setSelectedLesson(lesson)
   }
 
-  // const confirmDelete = () => {
-  //   if (selectedLesson) {
-  //     onDelete?.(selectedLesson.id) 
-  //     setSelectedLesson(null)
-  //   }
-  // }
 
   if (lessons.length === 0) {
     return (
