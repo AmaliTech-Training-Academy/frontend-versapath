@@ -15,7 +15,6 @@ export function SheetWrapper({
   children,
 }: PropsWithChildren<{
   trigger: React.ReactNode | React.ReactElement;
-  saveChangeButton?: React.ReactNode;
   headerTitle: string;
   headerDescription: string;
 }>) {
