@@ -10,6 +10,7 @@ export default auth(async function middleware(req) {
   const isAuthenticated = req.auth && req.auth.user;
   const authenticatedRole = req.auth?.user?.role as Roles
 
+
   // 1. Allow public routes
   if (publicPaths.includes(pathname)) {
     // If user is logged in and tries to access login/register, redirect to dashboard
@@ -24,6 +25,7 @@ export default auth(async function middleware(req) {
     const matchedRoute = protectedPaths.find(({ url }) => pathname.startsWith(url));
     if (matchedRoute) {
       if (matchedRoute.role.includes(authenticatedRole)) {
+
         return NextResponse.next();
       } else {
         const errorMessage = encodeURIComponent("You don't have permission to access this page");
