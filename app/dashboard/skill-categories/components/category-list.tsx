@@ -1,6 +1,7 @@
 "use client";
 import { EmptyState } from "@/components/custom/empty-state";
 import { useClusters } from "@/lib/hooks/use-clusters";
+import { CategoryCard } from "./category-card";
 
 export const CategoryList = () => {
     const { items, loading, error } = useClusters();
@@ -13,12 +14,13 @@ export const CategoryList = () => {
                 ) : error ? (
                     <EmptyState message={error} />
                 ) : items && items.length > 0 ? (
-                    items.map((category) => (
-                        <div key={category.id} className="flex items-center space-x-2">
-                            <span className="text-sm font-medium">{category.name}</span>
-                            <span className="text-sm font-medium">{category.type}</span>
-                        </div>
-                    ))
+                    <div className="w-full grid grid-cols-4 gap-6">
+                        {
+                            items.map((category) => (
+                                <CategoryCard key={category.id} category={category} />
+                            ))
+                        }
+                    </div>
                 ) : (
                     <EmptyState message="No skill categories added yet." />
                 )

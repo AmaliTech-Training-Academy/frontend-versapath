@@ -14,9 +14,11 @@ export interface Cluster {
   id: string;
   name: string;
   type: string;
-  status: 'ACTIVE' | 'INACTIVE';
   description: string;
+  imageName: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
+  updatedAt: string | null;
 }
 
 export type FieldErrors = Record<string, string[]>[];

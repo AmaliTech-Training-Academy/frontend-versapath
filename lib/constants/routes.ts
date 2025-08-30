@@ -10,6 +10,11 @@ export const protectedPaths = [
     url: "/dashboard/user-management",
     role: [Roles.ADMIN],
   },
+  {
+    title: "Skill Categories",
+    url: "/dashboard/skill-categories",
+    role: [Roles.ADMIN],
+  },
 ];
 
 export const publicPaths = ["/", "/login", "/register", "/unauthorized"];

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { protectedPaths, publicPaths } from "./lib/constants/routes";
+import { Roles } from "./lib/types";
 
 // Authenticated middleware wrapper
 export default auth(async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  const isAuthenticated = !!req.auth;
-  const authenticatedRole = req.auth?.user?.role 
+  const isAuthenticated = req.auth && req.auth.user;
+  const authenticatedRole = req.auth?.user?.role as Roles
 
   // 1. Allow public routes
   if (publicPaths.includes(pathname)) {
@@ -19,26 +20,17 @@ export default auth(async function middleware(req) {
   }
 
   // 2. Protected routes
-  const matchedRoute = protectedPaths.find(({ url }) => url === pathname);
-
   if (isAuthenticated) {
+    const matchedRoute = protectedPaths.find(({ url }) => pathname.startsWith(url));
     if (matchedRoute) {
-      // Check if user has the correct role
-      if (matchedRoute.role.includes(authenticatedRole!)) {
+      if (matchedRoute.role.includes(authenticatedRole)) {
         return NextResponse.next();
       } else {
-        // Authenticated but unauthorized
-        const errorMessage = encodeURIComponent(
-          "You don't have permission to access this page"
-        );
-        return NextResponse.redirect(
-          new URL(`/unauthorized?error=${errorMessage}`, req.url)
-        );
+        const errorMessage = encodeURIComponent("You don't have permission to access this page");
+        return NextResponse.redirect(new URL(`/unauthorized?error=${errorMessage}`, req.url));
       }
-    } else {
-      // If no specific match, allow access (optional — can be restricted if you prefer)
-      return NextResponse.next();
     }
+    return NextResponse.next(); // Allow access for paths that are not matched in protectedPaths
   }
 
   // 3. User is not authenticated
