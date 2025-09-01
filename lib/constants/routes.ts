@@ -12,4 +12,12 @@ export const protectedPaths = [
   },
 ];
 
-export const publicPaths = ["/", "/login", "/register", "/unauthorized"];
+export const publicPaths = [
+  "/",
+  "/login",
+  "/register",
+  "/unauthorized",
+  "/reset-password",
+  "/reset-password/new",
+  "/reset-password/verify-email",
+];
