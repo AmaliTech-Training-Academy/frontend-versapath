@@ -2,6 +2,8 @@ import { Cluster } from "@/lib/types/api";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { UsersIcon } from "@heroicons/react/24/outline";
+import image from "@/public/images/category-placeholder.jpg"
+import Image from "next/image";
 
 export const CategoryCard = ({ category: {
     name,
@@ -10,7 +12,7 @@ export const CategoryCard = ({ category: {
     return (
         <Link href="#" aria-label={`View category ${name}`}>
             <div className="rounded-br-xl shadow-lg">
-                <img src={"/images/category-placeholder.jpg"} alt={name} width={1000} height={667} className="" />
+                <Image src={image} alt={name} width={1000} height={667} className="" />
                 <div className="py-3 px-2 space-y-4">
                     <div className="space-y-1">
                         <p className="font-semibold text-lg text-gray-text-strong">{name}</p>

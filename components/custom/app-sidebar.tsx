@@ -81,6 +81,7 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: TrendingUp,
   },
+  
 ];
 
 const sidebarFooterItems: FooterItem[] = [

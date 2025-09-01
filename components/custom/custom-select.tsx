@@ -12,12 +12,14 @@ interface CustomSelectProps {
   selectValues?: string[] | { id: string; name: string }[];
   value?: string;
   onChange?: (value: string) => void;
+  placeholder?: string;
 }
 export const CustomSelect: React.FC<CustomSelectProps> = ({
   selectValues,
   value,
   onChange,
   label,
+  placeholder = "Select a verified email to display",
 }) => {
   return (
     <FormItem>
@@ -25,7 +27,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       <Select onValueChange={onChange} defaultValue={value}>
         <FormControl>
           <SelectTrigger className="w-full h-auto py-2">
-            <SelectValue placeholder="Select a verified email to display" />
+            <SelectValue placeholder={placeholder} />
           </SelectTrigger>
         </FormControl>
         <SelectContent className="border-none bg-base-light-white">

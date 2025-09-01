@@ -30,7 +30,6 @@ export const AddCategoryForm = () => {
   const onSubmit = async (data: AddCategoryInputs) => {
     setError(null);
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log(data);
     toast.success("Category added successfully", {
       action: {
         label: "Undo",
