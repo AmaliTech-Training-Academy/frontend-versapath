@@ -70,9 +70,9 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: BookOpenIcon,
     items: [
-      { title: "Skill Categories", url: "/dashboard/skill-clusters" },
-      { title: "Skill", url: "#" },
-      { title: "Lessons", url: "/dashboard/skill-atom" },
+      { title: "Skill Categories", url: "/dashboard/skill-categories" },
+      { title: "Skills", url: "/dashboard/skills" },
+      { title: "Lessons", url: "/dashboard/lessons" },
       { title: "Skill Tags", url: "#" },
     ],
   },
@@ -136,7 +136,7 @@ export function AppSidebar() {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
                           tooltip={item.title}
-                          className="p-4 text-gray-text-weak/70"
+                          className="p-4 text-gray-text-weak font-semibold"
                         >
                           <item.icon />
                           <span>{item.title}</span>
@@ -150,7 +150,7 @@ export function AppSidebar() {
                             <SidebarMenuItem key={subItem.title}>
                               <SidebarMenuButton
                                 asChild
-                                className="text-gray-text-weak/70"
+                                className="text-gray-text-weak font-semibold"
                                 isActive={pathname === subItem.url}
                               >
                                 <Link
@@ -171,7 +171,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.url}
-                      className="p-4 text-gray-text-weak/70"
+                      className="p-4 text-gray-text-weak"
                     >
                       <Link
                         href={item.url}
@@ -198,7 +198,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.url}
-                    className=" text-gray-text-weak/70"
+                    className=" text-gray-text-weak"
                   >
                     <Link
                       href={item.url}

@@ -27,7 +27,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Toaster richColors position="top-right" />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <StoreProvider>{children}</StoreProvider>
         </ThemeProvider>
       </body>

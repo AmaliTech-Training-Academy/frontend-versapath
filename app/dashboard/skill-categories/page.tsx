@@ -10,10 +10,10 @@ import { AddCategoryForm } from "./components/add-category-form";
 export default function SkillClustersPage() {
     return (
         <>
-            <DashboardHeader title="Skill Clusters" />
+            <DashboardHeader title="Skill Categories" />
             <section className="bg-sidebar p-3 rounded-lg flex-grow">
                 <TopActions
-                    searchPlaceholder="Search by skill clusters"
+                    searchPlaceholder="Search by skill categories"
                     rightActions={
                         <SheetWrapper
                             headerTitle="Add New Category"
