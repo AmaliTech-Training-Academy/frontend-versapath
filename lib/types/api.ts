@@ -1,14 +1,55 @@
+import { Roles } from "./";
 export interface User {
   id: string;
+  email: string;
   username: string;
   fullName: string;
-  email: string;
-  role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
+  role: Roles;
+  firstName: string;
+  lastName: string;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
-export interface ApiResponse<T> {
-  status: boolean;
-  message: string;
-  data: Record<string, T>;
-  errors: Record<string, string> | null;
+export interface Cluster {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  imageName: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+  updatedAt: string | null;
 }
+
+export type FieldErrors = Record<string, string[]>[];
+export type ApiErrors = FieldErrors | null;
+
+export interface PageInfo {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface ListData<T> {
+  items: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface ItemData<T> {
+  item: T;
+}
+
+export type ApiResponse<TData, TError = ApiErrors> = {
+  status: boolean;
+  message?: string;
+  data?: TData | null;
+  errors?: TError | null;
+};

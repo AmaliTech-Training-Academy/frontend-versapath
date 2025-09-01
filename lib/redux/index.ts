@@ -1,1 +1,0 @@
-//Redux setup for the application

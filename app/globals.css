@@ -133,7 +133,7 @@
   --sidebar-accent-foreground: var(--brand-primary-text);
   --sidebar-border: var(--gray-stroke-weak);
   --sidebar-ring: var(--brand-primary-stroke-weak);
-  
+
   /* CUSTOM DECLARED BASE PALLETTE (BASED ON FIGMA) */
   --brand-primary-text: oklch(50.499% 0.09286 221.349);
   --brand-primary-stroke-strong: oklch(50.499% 0.09286 221.349 / 0.8);
@@ -197,8 +197,8 @@
   --muted: var(--gray-stroke-weaker);
   --muted-foreground: var(--base-light-raised);
 
-  --accent: var(--brand-secondary-fill);
-  --accent-foreground: var(--brand-secondary-text);
+  --accent: var(--brand-primary-fill);
+  --accent-foreground: var(--brand-primary-text);
 
   --destructive: var(--red-text);
 
@@ -218,7 +218,7 @@
   --sidebar-foreground: var(--base-light-white);
   --sidebar-primary: var(--brand-primary-text);
   --sidebar-primary-foreground: var(--base-light-white);
- --sidebar-accent: var(--brand-primary-stroke-weak);
+  --sidebar-accent: var(--brand-primary-stroke-weak);
   --sidebar-accent-foreground: var(--brand-primary-text);
   --sidebar-border: var(--gray-stroke-weaker);
   --sidebar-ring: var(--brand-primary-stroke-weak);

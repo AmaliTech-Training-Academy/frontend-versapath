@@ -1,14 +1,28 @@
+import { Roles } from "../types";
 export const protectedPaths = [
   {
     title: "Dashboard",
     url: "/dashboard",
-    role: ["LEARNER", "MENTOR", "MANAGER", "ADMIN"],
+    role: [Roles.LEARNER, Roles.MENTOR, Roles.MANAGER, Roles.ADMIN],
   },
   {
     title: "User Management",
     url: "/dashboard/user-management",
-    role: ["ADMIN"],
-  }
+    role: [Roles.ADMIN],
+  },
+  {
+    title: "Skill Categories",
+    url: "/dashboard/skill-categories",
+    role: [Roles.ADMIN],
+  },
 ];
 
-export const publicPaths = ["/", "/login", "/register", "/unauthorized"];
+export const publicPaths = [
+  "/",
+  "/login",
+  "/register",
+  "/unauthorized",
+  "/reset-password",
+  "/reset-password/new",
+  "/reset-password/verify-email",
+];

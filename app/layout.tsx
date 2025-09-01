@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import {  Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { StoreProvider } from "@/lib/providers/store-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -10,7 +11,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "VersaPath.ai",
-  description: "A modular, AI-augmented learning and career acceleration platform for software engineers",
+  description:
+    "A modular, AI-augmented learning and career acceleration platform for software engineers",
 };
 
 export default function RootLayout({
@@ -25,8 +27,8 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Toaster richColors position="top-right" />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <StoreProvider>{children}</StoreProvider>
         </ThemeProvider>
       </body>
     </html>
