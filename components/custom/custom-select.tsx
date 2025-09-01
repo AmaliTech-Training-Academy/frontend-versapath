@@ -27,7 +27,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       <Select onValueChange={onChange} defaultValue={value}>
         <FormControl>
           <SelectTrigger className="w-full h-auto py-2">
-            <SelectValue placeholder={placeholder} />
+            <SelectValue
+              placeholder={"Select a " + label.toLocaleLowerCase()}
+            />
           </SelectTrigger>
         </FormControl>
         <SelectContent className="border-none bg-base-light-white">
