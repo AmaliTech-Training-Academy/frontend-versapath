@@ -1,4 +1,5 @@
-import { z } from "zod";
+import {  z } from "zod";
+import { DifficultyLevels } from "../types";
 
 export const addSkillSchema = z.object({
   name: z
@@ -7,8 +8,10 @@ export const addSkillSchema = z.object({
   description: z
     .string({ error: "Description is required" })
     .min(10, "Description must be at least 10 characters long"),
-  category: z.string().min(1, { error: "Category is required" }),
-  difficulty: z.enum(["Beginner", "Intermediate", "Advanced"], {
+  category: z
+    .string({ error: "Category is required" })
+    .min(1, { error: "Category is required" }),
+  difficulty: z.enum(DifficultyLevels, {
     error: "Select a difficulty level",
   }),
   estimatedHours: z

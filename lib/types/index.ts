@@ -4,3 +4,8 @@ export enum Roles {
   MANAGER = "MANAGER",
   ADMIN = "ADMIN",
 }
+export enum DifficultyLevels {
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
+}
