@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { LoginForm } from "@/app/(auth)/login/components/login-form";
-import { vi, type Mock } from "vitest";
+import { vi } from "vitest";
 import { toast } from "sonner";
 import { apiLogin } from "@/lib/api/login";
 
@@ -27,7 +27,7 @@ const fillAndSubmit = async (email: string, password: string) => {
 };
 
 vi.mock("@/lib/api/login", () => ({
-  apiLogin: vi.fn() as Mock
+  apiLogin: vi.fn()
 }));
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -54,7 +54,7 @@ describe("LoginForm", () => {
     renderLoginForm();
     fireEvent.click(getSubmitButton());
     await waitFor(() => {
-      expect(screen.getByText('Email required')).toBeInTheDocument();
+      expect(screen.getByText('Invalid email address')).toBeInTheDocument();
       expect(screen.getByText('Password required')).toBeInTheDocument();
     });
   });
@@ -83,7 +83,7 @@ describe("LoginForm", () => {
     renderLoginForm();
     await fillAndSubmit("test@example.com", "wrongpass");
     await waitFor(() => {
-      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+      expect(screen.getByText(/Email and password don't match. Please try again./i)).toBeInTheDocument();
       expect(mockToast).not.toHaveBeenCalled();
     });
   });
