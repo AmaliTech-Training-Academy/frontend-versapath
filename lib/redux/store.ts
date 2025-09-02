@@ -3,8 +3,10 @@ import updateUser from "./slices/update-user-slice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
+import rolesReducer from "./slices/roles-slice";
 const rootReducer = combineReducers({
   updateUser,
+  rolesReducer,
 });
 const persistConfig = {
   key: "root",
