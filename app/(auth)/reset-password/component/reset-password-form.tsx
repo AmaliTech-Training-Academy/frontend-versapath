@@ -94,10 +94,10 @@ export function ResetPasswordForm() {
               {isSubmitting ? (
                 <div className="flex items-center justify-center text-md gap-2">
                   <Loader className="animate-spin h-6 w-6" />
-                  <span>Sending Instructions</span>
+                  <span>Sending Reset Link</span>
                 </div>
               ) : (
-                "Send Instructions"
+                "Sending Reset Link"
               )}
             </Button>
           </form>

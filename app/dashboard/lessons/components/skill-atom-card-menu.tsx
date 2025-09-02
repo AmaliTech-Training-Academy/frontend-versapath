@@ -11,6 +11,7 @@ import { MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SheetWrapper } from "../../components/sheet-wrapper";
+import { EditSkillAtomForm } from "./edit-skill-atom-form";
 
 interface LessonCardMenuProps {
   onView?: () => void;
@@ -28,11 +29,7 @@ export const LessonCardMenu = ({
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mt-14">
           <MoreVertical className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
@@ -42,16 +39,27 @@ export const LessonCardMenu = ({
           View
         </DropdownMenuItem>
         <SheetWrapper
-          headerDescription="Editing skill tags"
-          headerTitle="Edit"
+          headerDescription=""
+          headerTitle="Edit Lesson"
           trigger={
-            <DropdownMenuItem onClick={onEdit} className="cursor-pointer p-2">
+            <button
+              type="button"
+              className="w-full flex items-center gap-2 cursor-pointer p-2 bg-transparent border-0 text-left hover:bg-"
+              tabIndex={0}
+            >
               <Edit className="h-4 w-4 mr-2" />
               Edit
-            </DropdownMenuItem>
+            </button>
           }
         >
-          <div>Test contents</div>
+          <EditSkillAtomForm
+            lesson={{
+              lessonName: "",
+              type: "",
+              hours: 0,
+              status: "draft",
+            }}
+          />
         </SheetWrapper>
         <Separator
           orientation="horizontal"

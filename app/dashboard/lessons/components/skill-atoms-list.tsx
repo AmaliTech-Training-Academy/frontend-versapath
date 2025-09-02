@@ -68,7 +68,7 @@ export const SkillAtomsList: React.FC<LessonsListProps> = ({ lessons, onView, on
         }}
         onAlternative={() => {
 
-        }}
+        }} 
       />
     </>
   )
