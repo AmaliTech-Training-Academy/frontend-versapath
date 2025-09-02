@@ -15,7 +15,7 @@ export const handleLogOut = async () => {
     const result: ApiResponse<resWithoutData> = await response.json();
 
     if (!response.ok || !result.status) {
-        const msg = extractErrorMessage(result.errors, result.message)
+        const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }
 

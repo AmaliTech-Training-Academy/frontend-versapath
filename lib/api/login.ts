@@ -20,7 +20,7 @@ export const apiLogin = async (
     const result: ApiResponse<LoginData<User>> = await response.json();
 
     if (!response.ok || result.status === false) {
-        const msg = extractErrorMessage(result.errors, result.message)
+        const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }
 

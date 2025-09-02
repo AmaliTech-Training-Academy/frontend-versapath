@@ -19,7 +19,7 @@ export const AddCategoryForm = () => {
     defaultValues: {
       name: "",
       description: "",
-      cover: undefined,
+      image: undefined,
     },
     mode: "onChange",
   });
@@ -60,7 +60,7 @@ export const AddCategoryForm = () => {
         />
         <FormField
           control={form.control}
-          name="cover"
+          name="image"
           render={({ field }) => (
             <FileUpload label="Cover" value={field.value} onChangeAction={field.onChange} />
           )}

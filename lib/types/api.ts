@@ -60,5 +60,5 @@ export type ApiResponse<TData, TError = ApiErrors> = {
   message?: string;
   data?: TData | null;
   // errors?: TError | null;
-  errors?: string[];
+  errors?: TError | string[] | null;
 };

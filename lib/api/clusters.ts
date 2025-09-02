@@ -1,7 +1,15 @@
+import { getSession } from "next-auth/react";
 import { ApiResponse, Cluster, ListData } from "../types/api";
 
 export const apiGetAllClusters = async (): Promise<ApiResponse<ListData<Cluster>>> => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clusters`).then(res => res.json());
+    const session = await getSession();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clusters`, {
+        method: 'get',
+        headers: {
+            'Authorization': `Bearer ${session?.user.accessToken}`
+        },
+        credentials: 'include'
+    });
 
     const result: ApiResponse<ListData<Cluster>> = await response.json();
 

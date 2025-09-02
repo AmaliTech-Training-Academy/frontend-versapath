@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mockApiGetAllClusters } from "@/lib/api/clusters";
+import { apiGetAllClusters } from "@/lib/api/clusters";
 import type { Cluster } from "@/lib/types/api";
 
 type UseClustersResult = {
@@ -18,7 +18,7 @@ export function useClusters(): UseClustersResult {
 
     const fetchData = async () => {
         setLoading(true);
-        const res = await mockApiGetAllClusters();
+        const res = await apiGetAllClusters();
 
         setLoading(false);
         if (!res.status) {
