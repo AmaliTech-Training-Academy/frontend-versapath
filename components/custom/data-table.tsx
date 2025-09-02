@@ -27,6 +27,7 @@ import {
 import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import type { User } from "@/lib/types/api";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -65,7 +66,7 @@ const columns: ColumnDef<User>[] = [
             href={`/dashboard/user-management/${row.original.id}`}
             className="text-[14px] text-gray-text-strong font-semibold hover:underline  cursor-pointer"
           >
-            {row.original.user}
+            {row.original.firstName ?? "N/A"} {row.original.lastName ?? " "}
           </Link>
           <p className="text-[14px] font-normal text-gray-text-weak">
             {row.original.email}
@@ -80,11 +81,11 @@ const columns: ColumnDef<User>[] = [
     header: "Role",
     cell: ({ row }) => <span>{row.original.role}</span>,
   },
-  {
-    accessorKey: "stack",
-    header: "Stack",
-    cell: ({ row }) => <div className="font-medium">{row.original.stack}</div>,
-  },
+  // {
+  //   accessorKey: "stack",
+  //   header: "Stack",
+  //   cell: ({ row }) => <div className="font-medium">{row.original.}</div>,
+  // },
   {
     accessorKey: "status",
     header: "Status",
@@ -94,19 +95,30 @@ const columns: ColumnDef<User>[] = [
     accessorKey: "joinDate",
     header: "Join Date",
     cell: ({ row }) => (
-      <div className="w-full text-sm text-center">{row.original.joinDate}</div>
+      <div className="w-full text-sm text-center">
+        {new Date(row.original.createdAt).toLocaleString()}
+      </div>
     ),
   },
 ];
+interface DataTableProps {
+  data: User[];
+  readonly pagination: { pageIndex: number; pageSize: number };
+  setPagination: React.Dispatch<
+    React.SetStateAction<{ pageIndex: number; pageSize: number }>
+  >;
+}
 
-export function DataTable({ data: initialData }: { data: User[] }) {
-  const [data] = React.useState(() => initialData);
+export function DataTable({
+  data: initialData,
+  pagination,
+  setPagination,
+}: DataTableProps) {
+
+  // const [data] = React.useState(() => initialData);
+  const data = initialData;
   const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   const table = useReactTable({
     data,

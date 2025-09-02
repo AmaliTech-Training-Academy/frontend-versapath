@@ -32,7 +32,6 @@ export const Pagination: React.FC<{
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, [activePage, totalPages]);
 
-  //   const pageNumbers = getPageNumbers();
 
   return (
     <div className="flex items-center justify-center overflow-hidden border rounded-lg w-fit">

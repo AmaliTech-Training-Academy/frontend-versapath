@@ -4,6 +4,11 @@ export interface User {
   email: string;
   username: string;
   role: Roles;
+  firstName: string;
+  lastName: string;
+  status: "ACTIVE" | "INACTIVE";
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Cluster {
@@ -12,7 +17,7 @@ export interface Cluster {
   type: string;
   description: string;
   imageName: string | null;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string | null;
 }
@@ -56,3 +61,7 @@ export type ApiResponse<TData, TError = ApiErrors> = {
   data?: TData | null;
   errors?: TError;
 };
+export interface FetchedRolesProps {
+  role: string;
+  id: string;
+}
