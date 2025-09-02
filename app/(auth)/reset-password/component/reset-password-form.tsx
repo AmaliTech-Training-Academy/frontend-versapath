@@ -102,7 +102,7 @@ export function ResetPasswordForm() {
                   <span>Sending Reset Link</span>
                 </div>
               ) : (
-                "Send Reset Link"
+                "Sending Reset Link"
               )}
             </Button>
           </form>

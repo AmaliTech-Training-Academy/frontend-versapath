@@ -2,32 +2,22 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader, Check, Star } from "lucide-react";
+import { createPasswordSchema } from "@/lib/schemas/new-password";
+import type { CreatePasswordForm } from "@/lib/schemas/new-password";
+import {
+  hasMinLength,
+  hasUppercase,
+  hasLowercase,
+  hasNumber,
+} from "@/lib/utils/password";
 import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api/reset-password";
-
-const createPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .nonempty({ message: "Password is required" })
-      .min(8, "Must be at least 8 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
-    confirmPassword: z.string().nonempty({ message: "Please confirm your password" }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Both passwords must match",
-    path: ["confirmPassword"],
-  });
-
-type CreatePasswordForm = z.infer<typeof createPasswordSchema>;
+import { PasswordResetSuccess } from "./successs-message";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function CreatePasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,10 +39,10 @@ export default function CreatePasswordForm() {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
 
-  const hasMinLength = password?.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password || "");
-  const hasLowercase = /[a-z]/.test(password || "");
-  const hasNumber = /[0-9]/.test(password || "");
+  const minLength = hasMinLength(password || "");
+  const uppercase = hasUppercase(password || "");
+  const lowercase = hasLowercase(password || "");
+  const number = hasNumber(password || "");
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
 
@@ -74,50 +64,13 @@ export default function CreatePasswordForm() {
         router.push("/login");
       }, 2000);
     } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("An unexpected error occurred. Please try again.");
-      }
+      console.error("Error resetting password:", error);
     }
   };
   if (successMessage) {
-    return (
-      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border p-8">
-        <div className="text-center space-y-6">
-          <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto">
-            <Check className="w-8 h-8 text-white" />
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Password reset completed
-            </h2>
-            <p className="text-sm text-gray-600">
-              Your password has been successfully updated. You can now log in
-              with your new password.
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <Button
-              onClick={() => router.push("/login")}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-md font-medium transition-colors"
-            >
-              Login
-            </Button>
-            <Button
-              onClick={() => router.push("/")}
-              variant="outline"
-              className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-md font-medium transition-colors"
-            >
-              Exit
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return <PasswordResetSuccess />;
   }
+
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
@@ -216,23 +169,17 @@ export default function CreatePasswordForm() {
               </div>
             </div>
           )}
-          {errors.confirmPassword && (
-            <p className="text-xs text-red-text">
-              {errors.confirmPassword.message}
-            </p>
-          )}
         </div>
-
         {showPasswordValidation && (
           <div className="space-y-1 text-xs">
             <div
               className={`flex items-center gap-2 ${
-                hasMinLength
+                minLength
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {hasMinLength ? (
+              {minLength ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -241,12 +188,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                hasUppercase
+                uppercase
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {hasUppercase ? (
+              {uppercase ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -255,12 +202,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                hasLowercase
+                lowercase
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {hasLowercase ? (
+              {lowercase ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -269,12 +216,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                hasNumber
+                number
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {hasNumber ? (
+              {number ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
