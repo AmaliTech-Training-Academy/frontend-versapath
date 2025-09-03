@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { mockApiLogin } from "@/lib/api/login";
+import { apiLogin } from "@/lib/api/login";
 import { CustomInput } from "@/components/custom/custom-input";
 
 export const LoginForm = () => {
@@ -31,10 +31,10 @@ export const LoginForm = () => {
   const onSubmit = async (data: loginInputs) => {
     setError(null);
     const { email, password } = await loginSchema.parseAsync(data);
-    const result = await mockApiLogin(email, password);
+    const result = await apiLogin(email, password);
 
-    if (result?.error) {
-      setError(result.error);
+    if (!result.success) {
+      setError(result.error || "Unable to log in. Please try again.");
     } else {
       toast.success("Login successful! Redirecting...");
       router.push('/dashboard');

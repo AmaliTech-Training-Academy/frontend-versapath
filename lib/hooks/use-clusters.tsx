@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mockApiGetAllClusters } from "@/lib/api/clusters";
-import type { Cluster } from "@/lib/types/api";
+import { apiRequest } from "@/lib/api/api-request";
+import type { Cluster, ListData } from "@/lib/types/api";
 
 type UseClustersResult = {
     items: Cluster[] | null;
@@ -18,10 +18,10 @@ export function useClusters(): UseClustersResult {
 
     const fetchData = async () => {
         setLoading(true);
-        const res = await mockApiGetAllClusters();
+        const res = await apiRequest<ListData<Cluster>>('/clusters', 'GET');
 
         setLoading(false);
-        if (!res.status) {
+        if (!res.success) {
             setError(res.message || "Error fetching skill categories.");
             return;
         }
@@ -31,6 +31,7 @@ export function useClusters(): UseClustersResult {
         }
 
         setItems(res.data.items);
+        setLoading(false);
     };
 
     useEffect(() => {

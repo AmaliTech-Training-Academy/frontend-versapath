@@ -11,15 +11,20 @@ import { Loader } from "lucide-react";
 import { type AddCategoryInputs, addCategorySchema } from "@/lib/schemas/add-category";
 import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
+import { apiRequest } from "@/lib/api/api-request";
+import { Cluster, ItemData } from "@/lib/types/api";
+import { useClusters } from "@/lib/hooks/use-clusters";
+import { extractErrorMessage } from "@/lib/utils";
 
 export const AddCategoryForm = () => {
   const [error, setError] = useState<string | null>(null);
+  const { refetch } = useClusters();
   const form = useForm<AddCategoryInputs>({
     resolver: zodResolver(addCategorySchema),
     defaultValues: {
       name: "",
       description: "",
-      cover: undefined,
+      image: undefined,
     },
     mode: "onChange",
   });
@@ -29,16 +34,15 @@ export const AddCategoryForm = () => {
 
   const onSubmit = async (data: AddCategoryInputs) => {
     setError(null);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    toast.success("Category added successfully", {
-      action: {
-        label: "Undo",
-        onClick: () => {
-          // Handle undo action
-        }
-      }
-    });
+    const res = await apiRequest<ItemData<Cluster>>('/clusters', 'POST', data);
+
+    if (!res.success) {
+      setError(extractErrorMessage(res.errors as string[], res.message));
+      return;
+    }
+    toast.success("Skill category added successfully!");
     form.reset();
+    refetch();
     closeRef.current?.click();
   };
   return (
@@ -60,7 +64,7 @@ export const AddCategoryForm = () => {
         />
         <FormField
           control={form.control}
-          name="cover"
+          name="image"
           render={({ field }) => (
             <FileUpload label="Cover" value={field.value} onChangeAction={field.onChange} />
           )}

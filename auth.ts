@@ -1,5 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { Roles } from "./lib/types";
 
 declare module "next-auth" {
     interface Session {
@@ -8,7 +9,8 @@ declare module "next-auth" {
             username: string;
             fullName: string;
             email: string;
-            role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
+            role: Roles;
+            accessToken: string;
         } & DefaultSession["user"]
     }
 
@@ -17,7 +19,8 @@ declare module "next-auth" {
         username: string;
         fullName: string;
         email: string;
-        role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
+        role: Roles;
+        accessToken: string;
     }
 
     interface JWT {
@@ -25,7 +28,8 @@ declare module "next-auth" {
         username: string;
         fullName: string;
         email: string;
-        role: 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN';
+        role: Roles;
+        accessToken: string;
     }
 }
 
@@ -66,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.username = user.username;
                 token.fullName = user.fullName;
                 token.role = user.role;
+                token.accessToken = user.accessToken;
             }
             return token
         },
@@ -77,7 +82,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email: token.email as string,
                     fullName: token.fullName as string,
                     username: token.username as string,
-                    role: token.role as 'LEARNER' | 'MENTOR' | 'MANAGER' | 'ADMIN'
+                    role: token.role as Roles,
+                    accessToken: token.accessToken as string
                 }
             }
             return session;

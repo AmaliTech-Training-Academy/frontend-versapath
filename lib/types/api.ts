@@ -21,8 +21,8 @@ export interface Cluster {
   updatedAt: string | null;
 }
 
-export type FieldErrors = Record<string, string[]>[];
-export type ApiErrors = FieldErrors | null;
+export type ApiErrors = string[] | null;
+export type resWithoutData = Record<string, string>;
 
 export interface PageInfo {
   page: number;
@@ -47,9 +47,16 @@ export interface ItemData<T> {
   item: T;
 }
 
+export interface LoginData<T> {
+  item: T;
+  tokenType: string;
+  accessToken: string;
+  expiresIn: number;
+}
+
 export type ApiResponse<TData, TError = ApiErrors> = {
-  status: boolean;
+  success: boolean;
   message?: string;
   data?: TData | null;
-  errors?: TError | null;
+  errors?: TError;
 };
