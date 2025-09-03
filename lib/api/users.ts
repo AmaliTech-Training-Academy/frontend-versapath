@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { ApiErrors, ApiResponse, PageInfo } from "../types/api";
+import { ApiErrors, ApiResponse, } from "../types/api";
 import type { ListData, User } from "../types/api";
 
 export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
@@ -80,3 +80,4 @@ export const completeUserRegister = async (
     };
   }
 };
+

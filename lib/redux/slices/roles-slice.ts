@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { ApiResponse, FetchedRolesProps } from "@/lib/types/api";
 import { Authorization } from "@/lib/api/users"; // This will be fixed later. We are doing so, becuase the login is not yet intergrated and the token is still being passed in the header directly.
-import { stat } from "fs";
 
 const initialState: {
   roles: FetchedRolesProps[];

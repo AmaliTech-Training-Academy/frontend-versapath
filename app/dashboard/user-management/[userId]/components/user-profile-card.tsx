@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { User } from "@/lib/types/api";
 export const UserProfileCard: React.FC<{ user: User }> = ({ user }) => {
   return (
     <>
@@ -12,27 +13,29 @@ export const UserProfileCard: React.FC<{ user: User }> = ({ user }) => {
           alt="Avatar"
         />
         <div className="w-full space-y-1 ">
-          <p className="text-lg font-semibold leading-relaxed ">{user.user}</p>
+          <p className="text-lg font-semibold leading-relaxed ">
+            {user.firstName ?? "N/A"} {user.lastName ?? ""}
+          </p>
           <p className="text-xs font-normal leading-tight text-gray-text-weak">
-            {user.role}
+            {user.role ?? "N/A"}
           </p>
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between w-full ">
           <p className="text-sm font-semibold leading-snug text-gray-text-strong">
-            Email:
+            Username:
           </p>
           <p className="text-sm font-normal leading-snug text-gray-text-strong">
-            {user.email}
+            {user.username ?? "N/A"}
           </p>
         </div>
         <div className="flex items-center justify-between w-full ">
           <p className="text-sm font-semibold leading-snug text-gray-text-strong">
-            Phone:
+            Email:
           </p>
           <p className="text-sm font-normal leading-snug text-gray-text-strong">
-            024 844 8839
+            {user?.email}
           </p>
         </div>
         <div className="flex items-center justify-between w-full ">
@@ -40,7 +43,7 @@ export const UserProfileCard: React.FC<{ user: User }> = ({ user }) => {
             Date Joined:
           </p>
           <p className="text-sm font-normal leading-snug text-gray-text-strong justify-self-end">
-            03 Aug, 2025
+            {new Date(user?.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>

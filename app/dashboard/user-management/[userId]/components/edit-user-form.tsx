@@ -7,7 +7,8 @@ import { CustomSelect } from "@/components/custom/custom-select";
 import { SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
-export const EditUserForm = () => {
+import { User } from "@/lib/types/api";
+export const EditUserForm: React.FC<{ initialData: User }> = ({ initialData }) => {
   const form = useForm();
   const onSubmit = async () => {
     // Handle login logic here}
@@ -67,11 +68,7 @@ export const EditUserForm = () => {
             control={form.control}
             name=""
             render={({ field }) => (
-              <CustomInput
-                label="Date joined"
-                type="date"
-                {...field}
-              />
+              <CustomInput label="Date joined" type="date" {...field} />
             )}
           />
           <FormField
