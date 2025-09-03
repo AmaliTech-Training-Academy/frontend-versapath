@@ -23,10 +23,7 @@ export function getUserById(userId: string) {
 export function extractErrorMessage (errors?: string[], fallback?: string): string {
   if (errors && errors.length > 0) {
     return errors[0];
-    // const firstMap = errors[0];
-    // const firstKey = Object.keys(firstMap)[0];
-    // const firstMsg = firstKey ? firstMap[firstKey]?.[0] : undefined;
-    // if (firstMsg) return firstMsg;
   }
+  
   return fallback || "Unable to log in. Please try again.";
 }
