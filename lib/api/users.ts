@@ -2,8 +2,7 @@ import useSWR from "swr";
 import { ApiErrors, ApiResponse, PageInfo } from "../types/api";
 import type { User } from "../types/api";
 
-export const Authorization =
-  "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjMTMwMTkwZC03NmFmLTQzYjQtYWQ5My0zMzQxMzU2ZjY0NjUiLCJqdGkiOiJlNGY1ZjQwZi1lYjI2LTQ1MTItYmE1ZS1iMGM2Y2NhOWYxZjgiLCJlbWFpbCI6ImFkbWluQHZlcnNhcGF0aC5jb20iLCJyb2xlIjoiQURNSU4iLCJ0eXBlIjoiQUNDRVNTIiwiaWF0IjoxNzU2ODM2MzA3LCJleHAiOjE3NTY4MzcyMDd9.r6FmUBG15qhPegnDupl2yGWZgKp8QQjwYyWNGvGhBwH8e6GC2IKTU8ek-nbSVASJhcPch-4auer-ydD3N7Fe-Q";
+export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 interface UsersResponse {

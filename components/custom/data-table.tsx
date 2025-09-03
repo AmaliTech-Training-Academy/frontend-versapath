@@ -107,15 +107,20 @@ interface DataTableProps {
   setPagination: React.Dispatch<
     React.SetStateAction<{ pageIndex: number; pageSize: number }>
   >;
+  pageMeta: {
+    page: number; // zero-based page index from API
+    size: number; // page size from API
+    totalPages: number; // total pages from API
+    totalItems?: number; // optional total items from API
+  };
 }
 
 export function DataTable({
   data: initialData,
   pagination,
   setPagination,
+  pageMeta,
 }: DataTableProps) {
-
-  // const [data] = React.useState(() => initialData);
   const data = initialData;
   const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -139,7 +144,18 @@ export function DataTable({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+
+    // Server-side pagination
+    manualPagination: true,
+    pageCount: Math.max(pageMeta.totalPages ?? 1, 1),
   });
+
+  const currentPageZeroBased = pageMeta.page ?? 0;
+  const pageSize = pageMeta.size ?? pagination.pageSize;
+  const totalPages = Math.max(pageMeta.totalPages ?? 1, 1);
+  const totalItems = pageMeta.totalItems;
+  const start = data.length ? currentPageZeroBased * pageSize + 1 : 0;
+  const end = currentPageZeroBased * pageSize + data.length;
 
   return (
     <div className="w-full mt-4 space-y-4">
@@ -202,27 +218,33 @@ export function DataTable({
       {/* Pagination */}
       <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing{" "}
-          {table.getState().pagination.pageIndex *
-            table.getState().pagination.pageSize +
-            1}{" "}
-          to{" "}
-          {Math.min(
-            table.getFilteredRowModel().rows.length,
-            (table.getState().pagination.pageIndex + 1) *
-              table.getState().pagination.pageSize
-          )}{" "}
-          of {table.getFilteredRowModel().rows.length} resources.
+          Showing {start} to {end}
+          {typeof totalItems === "number" ? <> of {totalItems}</> : null}{" "}
+          resources.
         </div>
         <Pagination
-          nextDisabled={!table.getCanNextPage()}
-          prevDisabled={!table.getCanPreviousPage()}
-          handleNext={() => table.nextPage()}
-          handlePrev={() => table.previousPage()}
-          activePage={table.getState().pagination.pageIndex + 1}
-          totalPages={table.getPageCount()}
+          nextDisabled={currentPageZeroBased + 1 >= totalPages}
+          prevDisabled={currentPageZeroBased <= 0}
+          handleNext={() =>
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: prev.pageIndex + 1,
+            }))
+          }
+          handlePrev={() =>
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: Math.max(prev.pageIndex - 1, 0),
+            }))
+          }
+          activePage={currentPageZeroBased + 1}
+          totalPages={totalPages}
           handlePaginationBtnClick={(val) =>
-            setPagination((prev) => ({ ...prev, pageIndex: val }))
+            // val is 1-based from the pager; convert to 0-based
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: Math.max(val - 1, 0),
+            }))
           }
         />
       </div>

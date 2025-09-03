@@ -1,15 +1,14 @@
 "use client";
 import { DataTable } from "@/components/custom/data-table";
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { useFetchUsers } from "@/lib/api/users";
 import { Loader } from "lucide-react";
-import { User } from "@/lib/types/api";
+import type { User } from "@/lib/types/api";
 
 export const UsersList = () => {
-  const [users, setUsers] = React.useState<User[]>([]);
   const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
+    pageIndex: 0, // zero-based page index sent to API
     pageSize: 10,
   });
 
@@ -19,12 +18,24 @@ export const UsersList = () => {
     isFetchingUsers,
   } = useFetchUsers(pagination.pageIndex);
 
-  useEffect(() => {
-    if (fetchedUsers?.data?.items) {
-      setUsers(fetchedUsers.data.items);
-    }
-    console.log(fetchedUsers);
-  }, [fetchedUsers?.data?.items]);
+  const items: User[] = fetchedUsers?.data?.items ?? [];
+  const pageInfo = fetchedUsers?.data?.pagination;
+
+  const pageMeta = {
+    page: pageInfo?.page ?? pagination.pageIndex,
+    size: pageInfo?.size ?? pagination.pageSize,
+    totalPages:
+      pageInfo?.totalPages ??
+      Math.max(
+        Math.ceil(
+          // fallback if totalElements exists
+          (pageInfo?.totalElements ?? items.length) /
+            (pageInfo?.size ?? pagination.pageSize)
+        ),
+        1
+      ),
+    totalItems: pageInfo?.totalElements,
+  };
 
   let content;
 
@@ -34,7 +45,7 @@ export const UsersList = () => {
         <Loader className="animate-spin" size={30} />
       </section>
     );
-  } else if (!users?.length || fetchUsersError) {
+  } else if (!items.length || fetchUsersError) {
     content = (
       <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
         <Image
@@ -48,14 +59,12 @@ export const UsersList = () => {
     );
   } else {
     content = (
-      <>
-        <DataTable
-          data={users}
-          pagination={pagination}
-          setPagination={setPagination}
-        />
-        {/* <div className="flex flex-col items-center justify-between gap-2 md:flex-row"></div> */}
-      </>
+      <DataTable
+        data={items}
+        pagination={pagination}
+        setPagination={setPagination}
+        pageMeta={pageMeta}
+      />
     );
   }
 
