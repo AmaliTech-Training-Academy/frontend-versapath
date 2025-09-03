@@ -1,5 +1,7 @@
 import { getSession } from "next-auth/react";
-import { ApiResponse, Cluster, ListData } from "../types/api";
+import { ApiResponse, Cluster, ItemData, ListData } from "../types/api";
+
+export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export const apiGetAllClusters = async (): Promise<ApiResponse<ListData<Cluster>>> => {
     const session = await getSession();
@@ -9,11 +11,50 @@ export const apiGetAllClusters = async (): Promise<ApiResponse<ListData<Cluster>
             'Authorization': `Bearer ${session?.user.accessToken}`
         },
         credentials: 'include'
-    });
+    }).then(res => res.json());
 
-    const result: ApiResponse<ListData<Cluster>> = await response.json();
+    return response;
+}
 
-    return result;
+export const apiCreateCluster = async (
+    name: string,
+    description: string,
+    image: File | undefined,
+): Promise<ApiResponse<ItemData<Cluster>>> => {
+    const session = await getSession();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clusters`, {
+        method: 'get',
+        headers: {
+            'Authorization': `Bearer ${session?.user.accessToken}`
+        },
+        credentials: 'include'
+    }).then(res => res.json());
+
+    return response;
+};
+
+export const apiRequest = async <T>(
+    endpoint: string,
+    method: ApiMethod,
+    data?: unknown
+): Promise<ApiResponse<T>> => {
+    const session = await getSession();
+    const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
+    const options: RequestInit = {
+        method,
+        headers: {
+            'Authorization': `Bearer ${session?.user.accessToken}`
+        },
+        credentials: "include"
+    };
+    
+    if(data !== undefined) {
+        options.headers = { ...options.headers, 'Content-Type': 'application/json' };
+        options.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(url, options).then(res => res.json());
+    return response;
 }
 
 export const mockApiGetAllClusters = async (): Promise<ApiResponse<ListData<Cluster>>> => {

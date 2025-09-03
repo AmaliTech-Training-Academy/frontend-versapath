@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiGetAllClusters } from "@/lib/api/clusters";
-import type { Cluster } from "@/lib/types/api";
+import { apiRequest } from "@/lib/api/clusters";
+import type { Cluster, ListData } from "@/lib/types/api";
 
 type UseClustersResult = {
     items: Cluster[] | null;
@@ -18,7 +18,7 @@ export function useClusters(): UseClustersResult {
 
     const fetchData = async () => {
         setLoading(true);
-        const res = await apiGetAllClusters();
+        const res = await apiRequest<ListData<Cluster>>('/clusters', 'GET');
 
         setLoading(false);
         if (!res.status) {
