@@ -21,7 +21,7 @@ export function useClusters(): UseClustersResult {
         const res = await apiRequest<ListData<Cluster>>('/clusters', 'GET');
 
         setLoading(false);
-        if (!res.status) {
+        if (!res.success) {
             setError(res.message || "Error fetching skill categories.");
             return;
         }

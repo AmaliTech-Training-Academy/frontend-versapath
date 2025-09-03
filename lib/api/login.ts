@@ -12,8 +12,7 @@ export const apiLogin = async (
 }> => {
     const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password }, false);
 
-    if (result.status === false) {
-        console.log(result.status)
+    if (!result.success) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }

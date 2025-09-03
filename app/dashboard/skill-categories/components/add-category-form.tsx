@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { apiRequest } from "@/lib/api/api-request";
 import { Cluster, ItemData } from "@/lib/types/api";
 import { useClusters } from "@/lib/hooks/use-clusters";
+import { extractErrorMessage } from "@/lib/utils";
 
 export const AddCategoryForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +36,8 @@ export const AddCategoryForm = () => {
     setError(null);
     const res = await apiRequest<ItemData<Cluster>>('/clusters', 'POST', data);
 
-    if (!res.status) {
-      setError(res.message || "Error adding skill category.");
+    if (!res.success) {
+      setError(extractErrorMessage(res.errors as string[], res.message));
       return;
     }
     toast.success("Skill category added successfully!");

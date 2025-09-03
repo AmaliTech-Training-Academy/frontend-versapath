@@ -6,7 +6,7 @@ import { apiRequest } from "./api-request";
 export const handleLogOut = async () => {
     const result = await apiRequest<resWithoutData>('/auth/logout', 'POST');
 
-    if (result.status === false) {
+    if (!result.success) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }
