@@ -1,20 +1,12 @@
-import { getSession, signOut } from "next-auth/react";
-import { ApiResponse, resWithoutData } from "../types/api";
+import { signOut } from "next-auth/react";
+import { resWithoutData } from "../types/api";
 import { extractErrorMessage } from "../utils";
+import { apiRequest } from "./api-request";
 
 export const handleLogOut = async () => {
-    const session = await getSession();
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-        method: 'post',
-        headers: {
-            'Authorization': `Bearer ${session?.user.accessToken}`
-        },
-        credentials: 'include'
-    });
+    const result = await apiRequest<resWithoutData>('/auth/logout', 'POST');
 
-    const result: ApiResponse<resWithoutData> = await response.json();
-
-    if (!response.ok || !result.status) {
+    if (result.status === false) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiRequest } from "@/lib/api/clusters";
+import { apiRequest } from "@/lib/api/api-request";
 import type { Cluster, ListData } from "@/lib/types/api";
 
 type UseClustersResult = {
@@ -31,6 +31,7 @@ export function useClusters(): UseClustersResult {
         }
 
         setItems(res.data.items);
+        setLoading(false);
     };
 
     useEffect(() => {

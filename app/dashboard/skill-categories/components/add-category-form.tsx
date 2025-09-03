@@ -11,7 +11,7 @@ import { Loader } from "lucide-react";
 import { type AddCategoryInputs, addCategorySchema } from "@/lib/schemas/add-category";
 import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
-import { apiRequest } from "@/lib/api/clusters";
+import { apiRequest } from "@/lib/api/api-request";
 import { Cluster, ItemData } from "@/lib/types/api";
 import { useClusters } from "@/lib/hooks/use-clusters";
 
