@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import CreatePasswordForm from "@/app/(auth)/reset-password/component/create-password-form";
-import { authApi, ApiError } from "@/lib/api/reset-password";
+import { authApi } from "@/lib/api/reset-password";
 import { vi } from "vitest";
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -19,11 +19,13 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/lib/api/reset-password", async () => {
-  const actual = (await vi.importActual("@/lib/api/reset-password")) as any;
+  const actual = await vi.importActual("@/lib/api/reset-password");
   return {
     ...actual,
     authApi: {
-      ...actual.authApi,
+      ...(typeof actual.authApi === "object" && actual.authApi !== null
+        ? actual.authApi
+        : {}),
       updatePassword: vi.fn(),
     },
   };
@@ -177,10 +179,10 @@ describe("CreatePasswordForm", () => {
       .getAllByRole("button")
       .filter((btn) => btn.getAttribute("type") !== "submit");
 
-    fireEvent.click(eyeButtons[0]); 
+    fireEvent.click(eyeButtons[0]);
     expect(passwordInput).toHaveAttribute("type", "text");
 
-    fireEvent.click(eyeButtons[1]); 
+    fireEvent.click(eyeButtons[1]);
     expect(confirmPasswordInput).toHaveAttribute("type", "text");
   });
 });

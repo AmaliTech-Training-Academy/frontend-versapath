@@ -1,5 +1,3 @@
-
-
 export function hasMinLength(password: string, min: number = 8): boolean {
   return password.length >= min;
 }
@@ -14,4 +12,8 @@ export function hasLowercase(password: string): boolean {
 
 export function hasNumber(password: string): boolean {
   return /[0-9]/.test(password);
+}
+
+export function hasSpecialChar(password: string): boolean {
+  return /[^A-Za-z0-9]/.test(password);
 }

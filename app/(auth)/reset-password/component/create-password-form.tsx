@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,17 +13,19 @@ import {
   hasUppercase,
   hasLowercase,
   hasNumber,
+  hasSpecialChar,
 } from "@/lib/utils/password";
-import { useRouter } from "next/navigation";
-import { authApi, ApiError } from "@/lib/api/reset-password";
+import { useRouter, useSearchParams } from "next/navigation";
+import { authApi } from "@/lib/api/reset-password";
 import { PasswordResetSuccess } from "./successs-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function CreatePasswordForm() {
+  const searchParams = useSearchParams();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-  const [apiError, setApiError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
 
   const {
@@ -43,21 +45,28 @@ export default function CreatePasswordForm() {
   const uppercase = hasUppercase(password || "");
   const lowercase = hasLowercase(password || "");
   const number = hasNumber(password || "");
+  const specialChar = hasSpecialChar(password || "");
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
 
   const showPasswordValidation = password && password.length > 0;
   const showConfirmValidation = confirmPassword && confirmPassword.length > 0;
 
+  useEffect(() => {
+    const resetToken = searchParams.get("reset");
+    // if (!resetToken) router.push("/login");
+  }, [searchParams]);
+
   const onSubmit = async (data: CreatePasswordForm) => {
+    const resetToken = searchParams.get("reset") ?? "";
+    const { confirmPassword, password } = data;
     try {
-      setApiError("");
       setSuccessMessage("");
 
-      const response = await authApi.updatePassword(
-        data.password,
-        data.confirmPassword
-      );
+      const response = await authApi.updatePassword(resetToken, {
+        confirmPassword,
+        password,
+      });
       setSuccessMessage(response.message);
 
       setTimeout(() => {
@@ -213,6 +222,20 @@ export default function CreatePasswordForm() {
                 <Star className="h-3 w-3" />
               )}
               <span>Must contain lowercase letter</span>
+            </div>
+            <div
+              className={`flex items-center gap-2 ${
+                specialChar
+                  ? "text-brand-primary-stroke-strong"
+                  : "text-gray-stroke-strong"
+              }`}
+            >
+              {specialChar ? (
+                <Check className="h-3 w-3" />
+              ) : (
+                <Star className="h-3 w-3" />
+              )}
+              <span>Must contain special character</span>
             </div>
             <div
               className={`flex items-center gap-2 ${

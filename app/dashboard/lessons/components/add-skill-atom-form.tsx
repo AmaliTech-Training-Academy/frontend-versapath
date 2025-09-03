@@ -18,11 +18,18 @@ import {  Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
-import { CustomSelect } from "@/components/custom/custom-select";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { createAtom } from "@/lib/api/skill-atom-api";
+import { toast } from "sonner";
 type SkillAtomFormValues = z.infer<typeof SkillAtomSchema>;
 
-export const AddSkillAtomForm = () => {
+interface AddSkillAtomFormProps {
+  onSuccess?: () => void;
+}
+
+export const AddSkillAtomForm: React.FC<AddSkillAtomFormProps> = ({
+  onSuccess,
+}) => {
   const form = useForm<SkillAtomFormValues>({
     resolver: zodResolver(SkillAtomSchema),
     defaultValues: {
@@ -30,14 +37,29 @@ export const AddSkillAtomForm = () => {
       description: "",
       objectives: "",
       moodleUrl: "",
-      type: "",
-      hours: 7,
+      hours: "2",
       status: "draft",
     },
   });
 
-  const onSubmit = (data: SkillAtomFormValues) => {
-  
+  const onSubmit = async (data: SkillAtomFormValues) => {
+    const payload = {
+      name: data.lessonName,
+      description: data.description ?? "",
+      objectives: data.objectives ?? "",
+      estimatedHours:
+        typeof data.hours === "string" ? Number(data.hours) : data.hours,
+      status: data.status === "publish" ? "ACTIVE" : "INACTIVE",
+    };
+
+    const newAtom = await createAtom(payload);
+    if (newAtom) {
+      toast.success("New Lesson Added successfully");
+      form.reset();
+      if (onSuccess) onSuccess();
+    } else {
+      toast.error("Failed to add lesson, Please try again later.");
+    }
   };
 
   return (
@@ -86,12 +108,13 @@ export const AddSkillAtomForm = () => {
         />
         <FormField
           control={form.control}
-          name="type"
+          name="hours"
           render={({ field }) => (
-            <CustomSelect
-              label="Type *"
-              placeholder="Select a lesson type"
-              selectValues={["Video", "Article", "Quiz"]}
+            <CustomInput
+              label="Hours *"
+              type="number"
+              min={1}
+              placeholder="Enter estimated hours"
               {...field}
             />
           )}
@@ -105,22 +128,20 @@ export const AddSkillAtomForm = () => {
                 Skill Status *
                 <QuestionMarkCircleIcon className="size-5 font-bold text-brand-primary-stroke-strong" />
               </FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="draft" id="draft" />
-                    <FormLabel htmlFor="draft">Save to draft</FormLabel>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="publish" id="publish" />
-                    <FormLabel htmlFor="publish">Publish</FormLabel>
-                  </div>
-                </RadioGroup>
-              </FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                value={field.value}
+                className="flex gap-6"
+              >
+                <FormControl>
+                  <RadioGroupItem value="draft" id="draft" />
+                </FormControl>
+                <FormLabel htmlFor="draft">Draft</FormLabel>
+                <FormControl>
+                  <RadioGroupItem value="publish" id="publish" />
+                </FormControl>
+                <FormLabel htmlFor="publish">Publish</FormLabel>
+              </RadioGroup>
               <FormMessage />
             </FormItem>
           )}

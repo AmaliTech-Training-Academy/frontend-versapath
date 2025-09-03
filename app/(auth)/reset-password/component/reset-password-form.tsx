@@ -32,16 +32,14 @@ export function ResetPasswordForm() {
     setSuccessMessage("");
     setErrorMessage("");
     try {
+      setSuccessMessage("");
       const response = await authApi.resetPassword(data.email);
-      setSuccessMessage(response?.message || "Password reset email sent.");
-      setTimeout(() => {
-        router.push("reset-password/verify-email");
-      }, 1500);
+      setSuccessMessage(response.message);
+      router.push("reset-password/verify-email");
     } catch (error) {
       if (error instanceof ApiError) {
-        setErrorMessage(error.message);
+        setSuccessMessage(error.message);
       } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
         console.error("Unexpected error:", error);
       }
     }
@@ -62,9 +60,6 @@ export function ResetPasswordForm() {
 
           {successMessage && (
             <div className="mb-4 text-green-600 text-sm">{successMessage}</div>
-          )}
-          {errorMessage && (
-            <div className="mb-4 text-red-600 text-sm">{errorMessage}</div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -111,3 +106,4 @@ export function ResetPasswordForm() {
     </Card>
   );
 }
+

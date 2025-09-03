@@ -12,24 +12,26 @@ import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SheetWrapper } from "../../components/sheet-wrapper";
 import { EditSkillAtomForm } from "./edit-skill-atom-form";
+import { SkillAtom } from "@/lib/types/skill-atom";
 
 interface LessonCardMenuProps {
   onView?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  atomData: SkillAtom;
 }
 
-export const LessonCardMenu = ({
+export const LessonCardMenu: React.FC<LessonCardMenuProps> = ({
   onView,
   onEdit,
   onDelete,
-}: LessonCardMenuProps) => {
+  atomData,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mt-14">
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mt-10">
           <MoreVertical className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
@@ -44,7 +46,7 @@ export const LessonCardMenu = ({
           trigger={
             <button
               type="button"
-              className="w-full flex items-center gap-2 cursor-pointer p-2 bg-transparent border-0 text-left hover:bg-"
+              className="w-full flex items-center gap-2 cursor-pointer p-2 bg-transparent border-0 text-left hover:bg-gray-stroke-weak/40"
               tabIndex={0}
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -53,12 +55,10 @@ export const LessonCardMenu = ({
           }
         >
           <EditSkillAtomForm
-            lesson={{
-              lessonName: "",
-              type: "",
-              hours: 0,
-              status: "draft",
+            skillAtom={{
+              ...atomData,
             }}
+            onSuccess={onEdit}
           />
         </SheetWrapper>
         <Separator

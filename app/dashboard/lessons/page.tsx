@@ -1,14 +1,22 @@
 "use client";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { DashboardHeader } from "../components/header";
 import { SheetWrapper } from "../components/sheet-wrapper";
 import { TopActions } from "../components/top-actions";
 import { AddSkillAtomForm } from "./components/add-skill-atom-form";
 import { SkillAtomsList } from "./components/skill-atoms-list";
-import { dummyLessons } from "@/lib/api/skill-atom-dummydata";
 import { Plus } from "lucide-react";
+import { useSkillAtoms } from "@/lib/hooks/use-skill-atoms";
 
-export default function LessonListPage() {
+export default function SkillAtomListPage() {
+  const { skillAtoms, loading, error, refreshLessons, setSkillAtoms } =
+    useSkillAtoms();
+
+  const handleDelete = (id: string) => {
+    setSkillAtoms((prev) => prev.filter((atom) => atom.id !== id));
+  };
+
   return (
     <>
       <DashboardHeader title="Lessons" />
@@ -25,16 +33,25 @@ export default function LessonListPage() {
                 </Button>
               }
             >
-              <AddSkillAtomForm/>
+              <AddSkillAtomForm onSuccess={refreshLessons} />
             </SheetWrapper>
           }
         />
-        <SkillAtomsList
-          lessons={dummyLessons}
-          onView={(id) => console.log("View lesson:", id)}
-          onEdit={(id) => console.log("Edit lesson:", id)}
-          onDelete={(id) => console.log("Delete lesson:", id)}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            Loading lessons...
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center min-h-[200px]">{error}</div>
+        ) : (
+          <SkillAtomsList
+            skillAtoms={skillAtoms}
+            onView={(id) => console.log("View lesson:", id)}
+            onEdit={refreshLessons}
+            onDelete={handleDelete}
+            onRefresh={refreshLessons}
+          />
+        )}
       </section>
     </>
   );

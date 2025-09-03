@@ -3,26 +3,24 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { LessonCardMenu } from "./skill-atom-card-menu";
+import { SkillAtom } from "@/lib/types/skill-atom";
 
 interface LessonCardProps {
-  lesson: {
-    id: number;
-    title: string;
-    subtitle: string;
-  };
-  onView?: (id: number) => void;
-  onEdit?: (id: number) => void;
-  onDelete?: (id: number) => void;
+  skillatom: SkillAtom;
+  onView?: (id: string) => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onRefresh?: () => void;
 }
 
-export const SkillAtomCard = ({
-  lesson,
+export const SkillAtomCard: React.FC<LessonCardProps> = ({
+  skillatom,
   onView,
-  onEdit,
   onDelete,
-}: LessonCardProps) => {
+  onRefresh,
+}) => {
   return (
-    <Card className=" cursor-pointer px-3 py-1 bg-gray-stroke-weak/20 hover:bg-brand-primary-text/7 hover:border-brand-primary-text/20">
+    <Card className=" cursor-pointer px-3 py-1 bg-gray-stroke-weak/20 hover:bg-brand-primary-text/7 hover:border-brand-primary-text/20 border-gray-stroke-strong/80">
       <CardContent className="p-1">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3 flex-1 my-2">
@@ -33,18 +31,19 @@ export const SkillAtomCard = ({
               <h3 className="text-Text-Text-Strong/90 font-semibold text-lg">{lesson.title}</h3>
               <p className="text-sm text-gray-text-strong/70">{lesson.subtitle}</p>
               <h3 className="text-Text-Text-Strong/90 font-semibold text-lg">
-                {lesson.title}
+                {skillatom.name}
               </h3>
-              <p className="text-sm text-gray-text-strong/70">
-                {lesson.subtitle}
+              <p className="text-sm text-gray-text-strong/70 pt-2">
+                {skillatom.description}
               </p>
             </div>
           </div>
 
           <LessonCardMenu
-            onView={() => onView?.(lesson.id)}
-            onEdit={() => onEdit?.(lesson.id)}
-            onDelete={() => onDelete?.(lesson.id)}
+            onView={() => onView?.(skillatom.id)}
+            onEdit={onRefresh}
+            onDelete={() => onDelete?.(skillatom.id)}
+            atomData={skillatom}
           />
         </div>
       </CardContent>
