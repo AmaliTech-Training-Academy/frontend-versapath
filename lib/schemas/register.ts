@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const registerSchema = z
   .object({
+    email: z.email(),
     fullName: z
       .string()
       .nonempty("Full Name is required")
@@ -14,6 +15,7 @@ export const registerSchema = z
           "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number",
       }),
     confirmPassword: z.string(),
+    username: z.string().min(3, "Username is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     error: "Passwords must match",

@@ -19,7 +19,6 @@ const fetcher = (url: string) =>
 export function useFetchUsers(pageIndex: number = 0) {
   const url = baseUrl ? `${baseUrl}/users?page=${pageIndex}` : null;
 
-  // Always call the hook; SWR will skip when key is null
   const { data, error, isLoading } = useSWR<
     ApiResponse<UsersResponse, ApiErrors>,
     ApiErrors
@@ -57,6 +56,30 @@ export const inviteUser = async (data: {
     return {
       success: false,
       message: "Network error occurred while inviting user.",
+      errors: ["Network error occurred. Please try again later."],
+    };
+  }
+};
+
+export const completeUserRegister = async (
+  token: string,
+  data: Partial<User> & { password: string; confirmPassword: string }
+): Promise<ApiResponse<User, ApiErrors>> => {
+  const url = `${baseUrl}/register/complete-registration?invite=${token}`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return {
+      success: false,
+      message: "Network error occurred while registering user.",
       errors: ["Network error occurred. Please try again later."],
     };
   }
