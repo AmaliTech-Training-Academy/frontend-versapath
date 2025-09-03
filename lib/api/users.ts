@@ -1,14 +1,10 @@
 import useSWR from "swr";
 import { ApiErrors, ApiResponse, PageInfo } from "../types/api";
-import type { User } from "../types/api";
+import type { ListData, User } from "../types/api";
 
 export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-interface UsersResponse {
-  items: User[];
-  pagination: PageInfo;
-}
 const fetcher = (url: string) =>
   fetch(url, {
     headers: {
@@ -20,7 +16,7 @@ export function useFetchUsers(pageIndex: number = 0) {
   const url = baseUrl ? `${baseUrl}/users?page=${pageIndex}` : null;
 
   const { data, error, isLoading } = useSWR<
-    ApiResponse<UsersResponse, ApiErrors>,
+    ApiResponse<ListData<User>, ApiErrors>,
     ApiErrors
   >(url, fetcher);
 

@@ -1,4 +1,9 @@
 import { Roles } from "./";
+export enum Status {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  PENDING = "PENDING",
+}
 export interface User {
   userId: string;
   email: string;
@@ -6,7 +11,7 @@ export interface User {
   role: Roles;
   firstName: string;
   lastName: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: Status;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,12 +41,14 @@ export interface PageInfo {
 
 export interface ListData<T> {
   items: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
+  pagination: {
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
 }
 
 export interface ItemData<T> {

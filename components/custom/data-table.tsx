@@ -27,7 +27,7 @@ import {
 import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import type { User } from "@/lib/types/api";
+import { Status, type User } from "@/lib/types/api";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -79,24 +79,35 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     header: "Role",
-    cell: ({ row }) => <span>{row.original.role}</span>,
+    cell: ({ row }) => (
+      <span className="capitalize">{row.original.role.toLowerCase()}</span>
+    ),
   },
-  // {
-  //   accessorKey: "stack",
-  //   header: "Stack",
-  //   cell: ({ row }) => <div className="font-medium">{row.original.}</div>,
-  // },
+
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div className="text-sm">{row.original.status}</div>,
+    cell: ({ row }) => (
+      <div
+        className={cn(
+          "text-xs border rounded-lg py-1 px-3 w-fit capitalize",
+          row.original.status === Status.ACTIVE
+            ? "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text"
+            : row.original.status === Status.PENDING
+            ? "bg-gray-fill border-gray-text-strong text-gray-text-strong"
+            : "bg-red-fill border-red-text text-red-text"
+        )}
+      >
+        {row.original.status.toLowerCase()}
+      </div>
+    ),
   },
   {
     accessorKey: "joinDate",
     header: "Join Date",
     cell: ({ row }) => (
       <div className="w-full text-sm text-center">
-        {new Date(row.original.createdAt).toLocaleString()}
+        {new Date(row.original.createdAt).toLocaleDateString()}
       </div>
     ),
   },
