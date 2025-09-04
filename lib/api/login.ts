@@ -10,14 +10,14 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password }, false);
+    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password });
 
     if (!result.success) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }
 
-    const userData = result.data?.item;
+    const userData = result.data;
     if(!userData) {
         return { success: false, error: result.message || "Invalid response payload" };
     }
