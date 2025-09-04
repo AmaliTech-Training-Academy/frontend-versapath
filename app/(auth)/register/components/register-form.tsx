@@ -23,6 +23,7 @@ export const RegisterForm = () => {
     if (inviteToken && email) {
       form.setValue("email", decodeURIComponent(email));
     } else router.push("/login");
+    //eslint-disable-next-line
   }, [searchParams]);
 
   const form = useForm<RegisterInputs>({
@@ -30,15 +31,20 @@ export const RegisterForm = () => {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: RegisterInputs) => {
+  const onSubmit = async ({
+    password,
+    confirmPassword,
+    username,
+    fullName,
+  }: RegisterInputs) => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const inviteToken = searchParams.get("invite") ?? "";
     const registerResponse = await completeUserRegister(inviteToken, {
-      firstName: data.fullName.split(" ")[0],
-      lastName: data.fullName.split(" ").slice(1).join(" "),
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-      username: data.username,
+      firstName: fullName.split(" ")[0],
+      lastName: fullName.split(" ").slice(1).join(" "),
+      password,
+      confirmPassword,
+      username,
     });
     if (!registerResponse.success) {
       form.setError("root", {
@@ -77,7 +83,7 @@ export const RegisterForm = () => {
               <CustomInput
                 label="Email"
                 disabled
-                className=" bg-gray-stroke-weak cursor-not-allowed"
+                className="cursor-not-allowed bg-gray-stroke-weak"
                 {...field}
               />
             )}

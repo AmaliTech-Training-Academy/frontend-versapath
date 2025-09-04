@@ -47,7 +47,7 @@ export const InviteUserForm = () => {
         action: {
           label: "Undo",
           onClick: () => {
-            // Handle undo action
+            // Handle undo action logic when the endpoint is available from the backend
           },
         },
       });
@@ -97,7 +97,7 @@ export const InviteUserForm = () => {
             <RadioGroupComponent field={field} roles={roles} />
           )}
         />
-        {error && <p className="text-red-text text-sm mt-2">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-text">{error}</p>}
         <div className="flex justify-end space-x-3">
           <SheetClose asChild>
             <Button variant={"outline"} ref={closeRef}>

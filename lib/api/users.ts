@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { ApiErrors, ApiResponse, } from "../types/api";
+import { ApiErrors, ApiResponse } from "../types/api";
 import type { ListData, User } from "../types/api";
 
 export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
@@ -20,9 +20,7 @@ export function useFetchUsers(pageIndex: number = 0) {
     ApiErrors
   >(url, fetcher);
 
-  const configError = !url
-    ? ({ message: "API URL not defined" } as unknown as ApiErrors)
-    : null;
+  const configError = !url ? ["API URL not defined"] : null;
 
   return {
     users: data,
@@ -48,11 +46,13 @@ export const inviteUser = async (data: {
 
     return await response.json();
   } catch (error) {
-    console.error("Error inviting user:", error);
     return {
       success: false,
       message: "Network error occurred while inviting user.",
-      errors: ["Network error occurred. Please try again later."],
+      errors: [
+        "Network error occurred. Please try again later.",
+        JSON.stringify(error),
+      ],
     };
   }
 };
@@ -72,12 +72,13 @@ export const completeUserRegister = async (
     });
     return await response.json();
   } catch (error) {
-    console.error("Error registering user:", error);
     return {
       success: false,
       message: "Network error occurred while registering user.",
-      errors: ["Network error occurred. Please try again later."],
+      errors: [
+        "Network error occurred. Please try again later.",
+        JSON.stringify(error),
+      ],
     };
   }
 };
-

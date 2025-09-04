@@ -39,22 +39,26 @@ export const UsersList = () => {
 
   let content;
 
-  if (isFetchingUsers) {
+  if (isFetchingUsers || !items.length || fetchUsersError) {
     content = (
       <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
-        <Loader className="animate-spin" size={30} />
-      </section>
-    );
-  } else if (!items.length || fetchUsersError) {
-    content = (
-      <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
-        <Image
-          src={"/not-found.png"}
-          alt="No users found"
-          height={100}
-          width={100}
-        />
-        No users found
+        {isFetchingUsers ? (
+          <Loader className="animate-spin" size={30} />
+        ) : (
+          (!items.length || fetchUsersError) && (
+            <>
+              <Image
+                src={"/not-found.png"}
+                alt="No users found"
+                height={100}
+                width={100}
+              />
+              {fetchedUsers?.errors ??
+                fetchUsersError?.[0] ??
+                "Users not found. Please consider reloading the page"}
+            </>
+          )
+        )}
       </section>
     );
   } else {
