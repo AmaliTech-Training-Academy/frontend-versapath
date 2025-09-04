@@ -7,6 +7,7 @@ import { SheetWrapper } from "../../components/sheet-wrapper";
 import { SkillMoreInfo } from "./components/skill-more-info";
 import { SingleLessonListCard } from "./components/single-lesson-list-card";
 import { lessonsMocks } from "@/lib/mocks/lessons";
+import { LessonsList } from "./components/lessons-list";
 
 async function SingleSkillPage({
   params,
@@ -17,7 +18,7 @@ async function SingleSkillPage({
   console.log("Skill ID:", skillId); // For debugging purposes - To be removed later once dynamic data are integrated
   return (
     <section>
-      <h1 className="font-semibold text-3xl leading-10">Skills</h1>
+      <h1 className="text-3xl font-semibold leading-10">Skills</h1>
       <article className="flex items-start gap-2 mt-2 mb-4">
         <Link
           href="/dashboard/skills"
@@ -30,9 +31,9 @@ async function SingleSkillPage({
           Javascript Essentials
         </p>
       </article>
-      <section className=" w-full p-5 bg-base-light-white rounded-lg text-center">
+      <section className="w-full p-5 text-center rounded-lg  bg-base-light-white">
         <article className="w-full text-start  p-5 bg-base-light-white rounded-lg relative top-0 left-0 min-h-[290px] overflow-hidden">
-          <div className="w-full absolute top-0 left-0  max-w-full aspect-video block h-full  ">
+          <div className="absolute top-0 left-0 block w-full h-full max-w-full aspect-video ">
             <Image
               src={"/images/javascript.png"}
               fill
@@ -40,9 +41,9 @@ async function SingleSkillPage({
               className="object-cover "
             />
           </div>
-          <div className="inline-flex flex-col text-base-light-white relative mt-16 z-10">
-            <h3 className=" text-xs  leading-tight">Skill Capsule</h3>
-            <h2 className="justify-start  text-2xl font-semibold leading-loose">
+          <div className="relative z-10 inline-flex flex-col mt-16 text-base-light-white">
+            <h3 className="text-xs leading-tight ">Skill Capsule</h3>
+            <h2 className="justify-start text-2xl font-semibold leading-loose">
               JavaScript Essentials
             </h2>
             <SheetWrapper
@@ -63,10 +64,10 @@ async function SingleSkillPage({
           </div>
         </article>
         <SkillMoreInfo />
-        <div className=" text-lg font-semibold mt-10 leading-relaxed text-start">
+        <div className="mt-10 text-lg font-semibold leading-relaxed  text-start">
           About this skill
         </div>
-        <div className="text-start text-base text-gray-text-strong/70">
+        <div className="text-base text-start text-gray-text-strong/70">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
           minim veniam, quis nostrud exercitation ullamco laboris nisi ut
@@ -75,28 +76,37 @@ async function SingleSkillPage({
           pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
           culpa qui officia deserunt mollit anim id est laborum.
         </div>
-        <article className="w-full mt-10 text-start  rounded-xl border border-gray-stroke-weak">
-          <div className="self-stretch px-4 py-2 overflow-hidden bg-gray-text-weak/10 inline-flex justify-between items-center w-full">
-            <div className="inline-flex flex-col justify-start items-start">
-              <h3 className="justify-start text-gray-text-strong/90 text-lg font-semibold  leading-relaxed">
+        <article className="w-full mt-10 border text-start rounded-xl border-gray-stroke-weak">
+          <div className="inline-flex items-center self-stretch justify-between w-full px-4 py-2 overflow-hidden bg-gray-text-weak/10">
+            <div className="inline-flex flex-col items-start justify-start">
+              <h3 className="justify-start text-lg font-semibold leading-relaxed text-gray-text-strong/90">
                 Lessons
               </h3>
-              <div className="inline-flex justify-start items-start gap-4">
-                <p className="justify-start text-gray-text-weak/70 text-xs leading-tight">
+              <div className="inline-flex items-start justify-start gap-4">
+                <p className="justify-start text-xs leading-tight text-gray-text-weak/70">
                   15 Lessons
                 </p>
-                <p className="justify-start text-gray-text-weak/70 text-xs leading-tight">
+                <p className="justify-start text-xs leading-tight text-gray-text-weak/70">
                   5 Quiz Assessments
                 </p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              className=" bg-base-light-white hover:bg-base-light-white/80"
+            <SheetWrapper
+              headerDescription="Add at least one lesson to this skill capsule"
+              headerTitle="Add Lesson"
+              trigger={
+                <Button
+                  variant="ghost"
+                  className=" bg-base-light-white hover:bg-base-light-white/80"
+                >
+                  <Plus />
+                  Add Lesson
+                </Button>
+              }
             >
-              <Plus />
-              Add Lesson
-            </Button>
+              <LessonsList />
+              
+            </SheetWrapper>
           </div>
           <div className="w-full p-5 text-center text-gray-text-strong/70 ">
             {lessonsMocks.map((data, i) => (

@@ -232,3 +232,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.lesson_card_selector:has(.lesson_checkbox[aria-checked="true"]) {
+  @apply bg-brand-primary-text-weak/50;
+}
