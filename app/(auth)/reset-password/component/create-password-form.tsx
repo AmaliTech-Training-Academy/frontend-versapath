@@ -8,12 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader, Check, Star } from "lucide-react";
 import { createPasswordSchema } from "@/lib/schemas/new-password";
 import type { CreatePasswordForm } from "@/lib/schemas/new-password";
-import {
-  hasMinLength,
-  hasUppercase,
-  hasLowercase,
-  hasNumber,
-} from "@/lib/utils/password";
 import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api/reset-password";
 import { PasswordResetSuccess } from "./successs-message";
@@ -38,11 +32,6 @@ export default function CreatePasswordForm() {
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
-
-  const minLength = hasMinLength(password || "");
-  const uppercase = hasUppercase(password || "");
-  const lowercase = hasLowercase(password || "");
-  const number = hasNumber(password || "");
   const passwordsMatch =
     password && confirmPassword && password === confirmPassword;
 
@@ -170,16 +159,16 @@ export default function CreatePasswordForm() {
             </div>
           )}
         </div>
-        {showPasswordValidation && (
+        {watch("password") && watch("password").length > 0 && (
           <div className="space-y-1 text-xs">
             <div
               className={`flex items-center gap-2 ${
-                minLength
+                watch("password").length >= 8
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {minLength ? (
+              {watch("password").length >= 8 ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -188,12 +177,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                uppercase
+                /[A-Z]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {uppercase ? (
+              {/[A-Z]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -202,12 +191,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                lowercase
+                /[a-z]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {lowercase ? (
+              {/[a-z]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -216,12 +205,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                number
+                /[0-9]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {number ? (
+              {/[0-9]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
