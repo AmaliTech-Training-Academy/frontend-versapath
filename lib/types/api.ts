@@ -1,13 +1,9 @@
 import { Roles } from "./";
 export interface User {
-  id: string;
+  userId: string;
   email: string;
   username: string;
-  fullName: string;
   role: Roles;
-  firstName: string;
-  lastName: string;
-  status: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface Cluster {

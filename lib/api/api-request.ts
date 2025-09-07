@@ -10,11 +10,14 @@ export const apiRequest = async <T>(
     const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
     const options: RequestInit = {
         method,
+        headers: {
+            'Accept': '*/*'
+        },
         credentials: 'include'
     };
     
     if(data !== undefined) {
-        options.headers = { 'Content-Type': 'application/json' };
+        options.headers = { ...options.headers, 'Content-Type': 'application/json' };
         options.body = JSON.stringify(data);
     }
 

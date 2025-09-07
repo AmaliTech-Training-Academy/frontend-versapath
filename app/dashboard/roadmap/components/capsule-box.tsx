@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
 export const CapsuleBox = ({ capsule }: { capsule: { name: string, description: string, progress?: number } }) => {
     return (
         <div className="bg-sidebar w-[344px] rounded-md space-y-4 border border-brand-primary-text-weak">
             <p className="font-semibold text-sm text-gray-text-strong py-1 px-2">{capsule.name}</p>
-            <p className="text-xs text-gray-text-weak px-2">{capsule.description}</p>
+            <Separator className="bg-gray-fill" />
+            <p className="text-xs text-gray-text-weak px-2 line-clamp-2">{capsule.description}</p>
             <div className="flex items-center justify-between p-2">
                 {
                     capsule.progress === undefined && (

@@ -3,6 +3,16 @@ import { LoginData, User } from "../types/api";
 import { extractErrorMessage } from "../utils";
 import { apiRequest } from "./api-request";
 
+const dummyUser = {
+  id: 'asdfnjkdsafhjkdsfnasdfad',
+  email: 'super@versapath.com',
+  username: 'super_admin',
+  fullName: 'Super Admin',
+  role: 'ADMIN',
+  firstName: 'Super',
+  lastName: 'Admin'
+}
+
 export const apiLogin = async (
     email: string,
     password: string
@@ -17,12 +27,10 @@ export const apiLogin = async (
         return { success: false, error: msg }
     }
 
-    const userData = result.data;
-    if(!userData) {
+    const user = result.data;
+    if(!user) {
         return { success: false, error: result.message || "Invalid response payload" };
     }
-    
-    const user = { ...userData, accessToken: result.data?.accessToken };
 
     const nextAuthRes = await signIn("credentials", {
         user: JSON.stringify(user),
