@@ -1,5 +1,3 @@
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { MainSkillContents } from "./components/main-skill-contents";
 import { TabsWrapper } from "./components/tabs-wrapper";
 import { SkillHeader } from "./components/skill-header";

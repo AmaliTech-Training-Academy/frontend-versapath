@@ -13,6 +13,7 @@ export const TabsWrapper = () => {
   useEffect(() => {
     const open = searchParams.get("subsection");
     if (open) setOpenTab(open);
+    //eslint-disable-next-line
   }, []);
   const router = useRouter();
   const handleTabsVauleChange = (value: string) => {

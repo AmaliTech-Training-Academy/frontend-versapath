@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import React, { useEffect } from "react";
 import { AISectionDropdown } from "./ai-section-dropdown";
 
