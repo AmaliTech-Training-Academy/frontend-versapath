@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SidebarMenuItem, SidebarTrigger } from "@/components/ui/sidebar";
 export const DashboardHeader = ({ title }: { title: string }) => {
   return (
-    <section className="w-full pb-4 text-3xl font-semibold">
+    <section className="w-full text-3xl font-semibold">
       <SidebarMenuItem className="flex items-center justify-between py-2 rounded-lg md:hidden bg-base-light-white ps-4 pe-2">
         <SidebarTrigger />
         <Link
