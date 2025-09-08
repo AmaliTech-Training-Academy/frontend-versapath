@@ -10,19 +10,17 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password }, false);
+    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password });
 
     if (!result.success) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
         return { success: false, error: msg }
     }
 
-    const userData = result.data?.item;
-    if(!userData) {
+    const user = result.data;
+    if(!user) {
         return { success: false, error: result.message || "Invalid response payload" };
     }
-    
-    const user = { ...userData, accessToken: result.data?.accessToken };
 
     const nextAuthRes = await signIn("credentials", {
         user: JSON.stringify(user),

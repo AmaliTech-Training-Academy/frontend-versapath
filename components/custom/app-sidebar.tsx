@@ -74,6 +74,7 @@ const sidebarItems: SidebarItem[] = [
       { title: "Skills", url: "/dashboard/skills" },
       { title: "Lessons", url: "/dashboard/lessons" },
       { title: "Skill Tags", url: "#" },
+      { title: "Roadmap", url: "/dashboard/roadmap" },
     ],
   },
   {
