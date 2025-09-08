@@ -10,7 +10,7 @@ export const GrowthTrackOverview = ({ data } : { data: { name: string, descripti
             </div>
             <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-text-weak text-center">{progress}%</p>
-                <Progress value={progress} className="w-[200px] h-3 rounded-full bg-green-text/20 [&>div]:bg-green-text" />
+                <Progress value={progress} className="w-[200px] h-3 rounded-full" />
             </div>
         </section>
     );

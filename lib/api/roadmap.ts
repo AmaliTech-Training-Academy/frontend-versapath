@@ -6,12 +6,11 @@ export const roadmap = {
         {
             name: 'HTML Basics',
             description: 'Duis ullamco veniam sint cupidatat ea elit dolore eiusmod nisi non sint officia in aliquip.',
-            progress: 65
+            progress: 100
         },
         {
             name: 'CSS Basics',
-            description: 'Duis ullamco veniam sint cupidatat ea elit dolore eiusmod nisi non sint officia in aliquip.',
-            progress: 0
+            description: 'Duis ullamco veniam sint cupidatat ea elit dolore eiusmod nisi non sint officia in aliquip.'
         },
         {
             name: 'CSS Intermediate',

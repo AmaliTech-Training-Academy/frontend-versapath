@@ -3,16 +3,6 @@ import { LoginData, User } from "../types/api";
 import { extractErrorMessage } from "../utils";
 import { apiRequest } from "./api-request";
 
-const dummyUser = {
-  id: 'asdfnjkdsafhjkdsfnasdfad',
-  email: 'super@versapath.com',
-  username: 'super_admin',
-  fullName: 'Super Admin',
-  role: 'ADMIN',
-  firstName: 'Super',
-  lastName: 'Admin'
-}
-
 export const apiLogin = async (
     email: string,
     password: string
