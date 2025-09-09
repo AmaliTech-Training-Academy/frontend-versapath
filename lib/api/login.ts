@@ -2,14 +2,6 @@ import { signIn } from "next-auth/react";
 import { LoginData, User } from "../types/api";
 import { extractErrorMessage } from "../utils";
 import { apiRequest } from "./api-request";
-import { Roles } from "../types";
-
-const dummyUser = {
-    userId: 'alkdjfoiw5829429349',
-    email: 'admin@versapath.com',
-    username: 'Admin',
-    role: Roles.ADMIN
-}
 
 export const apiLogin = async (
     email: string,
@@ -18,20 +10,20 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    // const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password });
+    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password });
 
-    // if (!result.success) {
-    //     const msg = extractErrorMessage(result.errors as string[], result.message)
-    //     return { success: false, error: msg }
-    // }
+    if (!result.success) {
+        const msg = extractErrorMessage(result.errors as string[], result.message)
+        return { success: false, error: msg }
+    }
 
-    // const user = result.data;
-    // if(!user) {
-    //     return { success: false, error: result.message || "Invalid response payload" };
-    // }
+    const user = result.data;
+    if(!user) {
+        return { success: false, error: result.message || "Invalid response payload" };
+    }
 
     const nextAuthRes = await signIn("credentials", {
-        user: JSON.stringify(dummyUser),
+        user: JSON.stringify(user),
         redirect: false
     });
 
