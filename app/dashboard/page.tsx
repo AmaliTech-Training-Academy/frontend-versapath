@@ -2,6 +2,7 @@ import { BadgeList } from "./components/badge-list";
 import { DashboardHeader } from "./components/header";
 import { Metrics } from "./components/metrics";
 import { QuickActions } from "./components/quick-actions";
+import { RecentActivityList } from "./components/recent-activity-list";
 import { RoadmapList } from "./components/roadmap-list";
 
 export default function DashboardPage() {
@@ -14,6 +15,7 @@ export default function DashboardPage() {
                 <RoadmapList />
                 <BadgeList />
             </section>
+            <RecentActivityList />
         </>
     );
 }

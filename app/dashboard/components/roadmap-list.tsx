@@ -4,7 +4,7 @@ import { RoadmapCard } from "./roadmap-card";
 
 export const RoadmapList = () => {
     return (
-        <article className="rounded-md p-5 space-y-4 bg-sidebar col-span-2">
+        <article className="rounded-xl p-5 space-y-4 bg-sidebar col-span-2">
             <CardHeader title="My Learning Roadmaps" url="#" />
             <div className="space-y-2">
                 {

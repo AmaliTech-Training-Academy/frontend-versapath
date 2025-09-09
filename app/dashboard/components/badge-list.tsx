@@ -4,7 +4,7 @@ import { BadgeCard } from "./badge-card";
 
 export const BadgeList = () => {
     return (
-        <article className="bg-sidebar rounded-md p-5 space-y-4">
+        <article className="bg-sidebar rounded-xl p-5 space-y-4">
             <CardHeader title="My Badges" url="#" />
             <div className="space-y-7">
                 {
