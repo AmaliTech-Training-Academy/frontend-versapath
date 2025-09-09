@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ForwardRefExoticComponent, RefAttributes, SVGProps } from "react";
 
 type IconsProp = ForwardRefExoticComponent<
@@ -25,7 +26,11 @@ export const SingleLessonListCard = ({
   const isLast = index === total - 1;
 
   return (
-    <section className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50">
+    <Link
+      href={`/dashboard/skills/${data.id}/contents?activeLesson=${index + 1}`}
+      className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50 group"
+    >
+      {/* Number line gutter */}
       <div className="ps-4 pe-5 py-4 bg-base-light-white relative">
         {!isFirst && (
           <div className="w-0.5 absolute left-[25.5px] top-0 bottom-10 bg-gray-text-weak/30" />
@@ -46,8 +51,10 @@ export const SingleLessonListCard = ({
         <p className="font-semibold leading-none capitalize min-w-20 text-gray-text-strong/90">
           {data.type}
         </p>
-        <h3 className="w-full line-clamp-1">{data.title}</h3>
+        <h3 className="w-full line-clamp-1 group-hover:underline group-hover:underline-offset-1 transition-all duration-300">
+          {data.title}
+        </h3>
       </div>
-    </section>
+    </Link>
   );
 };

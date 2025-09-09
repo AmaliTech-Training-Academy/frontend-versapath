@@ -4,7 +4,7 @@ import { lessonsMocks } from "@/lib/mocks/lessons";
 import { cn } from "@/lib/utils";
 import { PlayCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 
 export const TabSkillContents = () => {
   const router = useRouter();
@@ -14,9 +14,7 @@ export const TabSkillContents = () => {
     params.set("activeLesson", key);
     router.push(`?${params.toString()}`);
   };
-  useEffect(() => {
-    console.log(searchParams.get("activeLesson"));
-  });
+
   return (
     <section className="w-full max-w-full px-1 space-y-1 ">
       {lessonsMocks.map(({ id: key, title }, index) => (
