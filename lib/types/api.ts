@@ -5,7 +5,7 @@ export enum Status {
   PENDING = "PENDING",
 }
 export interface User {
-  userId: string;
+  id: string;
   email: string;
   username: string;
   role: Roles;
@@ -41,14 +41,7 @@ export interface PageInfo {
 
 export interface ListData<T> {
   items: T[];
-  pagination: {
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-  };
+  pagination: PageInfo;
 }
 
 export interface ItemData<T> {

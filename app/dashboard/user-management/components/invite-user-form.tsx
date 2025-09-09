@@ -14,10 +14,11 @@ import { SheetClose } from "@/components/ui/sheet";
 import { RadioGroupComponent } from "./radio-group";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { inviteUser } from "@/lib/api/users";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchRoles } from "@/lib/redux/slices/roles-slice";
 import { useSWRConfig } from "swr";
+import { apiRequest } from "@/lib/api/api-request";
+import { User } from "@/lib/types/api";
 export const InviteUserForm = () => {
   const { mutate } = useSWRConfig();
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export const InviteUserForm = () => {
   const closeRef = useRef<HTMLButtonElement>(null);
   const onSubmit = async (data: InviteUserInputs) => {
     setError(null);
-    const response = await inviteUser({
+    const response = await apiRequest<User>("/register/invite-user", "POST", {
       email: data.email,
       roleId: data.role,
     });
@@ -52,11 +53,7 @@ export const InviteUserForm = () => {
         },
       });
       form.reset();
-      mutate(
-        (key) =>
-          typeof key === "string" &&
-          key.startsWith(`${process.env.NEXT_PUBLIC_API_URL}/users`)
-      );
+      mutate((key) => typeof key === "string" && key.startsWith(`/users`));
       closeRef.current?.click();
     }
   };

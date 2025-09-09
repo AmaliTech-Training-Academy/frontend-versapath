@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { ApiResponse, FetchedRolesProps } from "@/lib/types/api";
 import { Authorization } from "@/lib/api/users"; // This will be fixed later. We are doing so, becuase the login is not yet intergrated and the token is still being passed in the header directly.
+import { apiRequest } from "@/lib/api/api-request";
 
 const initialState: {
   roles: FetchedRolesProps[];
@@ -22,16 +23,15 @@ const fetchRoles = createAsyncThunk<
   if (existingRoles.length > 0) {
     return existingRoles; // Return cached roles if they exist
   }
-  const url = process.env.NEXT_PUBLIC_API_URL!;
-  const response = await fetch(`${url}/roles`, {
-    headers: { Authorization },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to fetch roles");
-  }
-  const result: ApiResponse<FetchedRolesProps[]> = await response.json();
+  const response = await apiRequest<FetchedRolesProps>("/roles", "GET");
 
-  return result?.data ?? [];
+  if (Array.isArray(response?.data)) {
+    return response.data;
+  } else if (response?.data) {
+    return [response.data];
+  } else {
+    return [];
+  }
 });
 const rolesSlice = createSlice({
   name: "roles",

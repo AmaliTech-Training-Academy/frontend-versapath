@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 
 export const SidebarUserCard = () => {
   const { data: user } = useSession();
-  console.log(user);
+
   return (
     <div className="flex gap-2 py-6 justify-between items-center">
       <User size={50} className="rounded-full h-10 w-10 flex-shrink-0" />
