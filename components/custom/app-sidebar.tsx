@@ -20,13 +20,22 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search } from "lucide-react";
-import { CustomPopover } from "./custom-popover";
-import { Button } from "../ui/button";
-import { handleLogOut } from "@/lib/api/logout";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "../ui/collapsible";
-import { Input } from "../ui/input";
+import {
+  ChevronDown,
+  TrendingUp,
+  Bell,
+  LifeBuoy,
+  Settings,
+  Search,
+} from "lucide-react";
 
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "../ui/collapsible";
+import { Input } from "../ui/input";
+import { SidebarUserCard } from "./sidebar-user-card";
 
 // Types
 type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -82,7 +91,6 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: TrendingUp,
   },
-  
 ];
 
 const sidebarFooterItems: FooterItem[] = [
@@ -99,7 +107,11 @@ export function AppSidebar() {
       <SidebarHeader className="pt-10">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1" aria-label="Home">
+            <Link
+              href="/"
+              className="flex items-center gap-1"
+              aria-label="Home"
+            >
               <Image
                 src="/Logo.svg"
                 height={50}
@@ -125,9 +137,7 @@ export function AppSidebar() {
                   aria-label="Search sidebar"
                   className="border p-4 pl-10 w-full"
                 />
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer"
-                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
               {sidebarItems.map((item) =>
@@ -174,10 +184,7 @@ export function AppSidebar() {
                       isActive={pathname === item.url}
                       className="p-4 text-gray-text-weak"
                     >
-                      <Link
-                        href={item.url}
-                        aria-label={`${item.title} page`}
-                      >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
                         {item.icon ? <item.icon strokeWidth={2} /> : null}
                         <span className="font-semibold">{item.title}</span>
                       </Link>
@@ -201,10 +208,7 @@ export function AppSidebar() {
                     isActive={pathname === item.url}
                     className=" text-gray-text-weak"
                   >
-                    <Link
-                      href={item.url}
-                      aria-label={`${item.title} page`}
-                    >
+                    <Link href={item.url} aria-label={`${item.title} page`}>
                       <item.icon strokeWidth={2} />
                       <span className="font-semibold">{item.title}</span>
                       {item.count !== undefined && (
@@ -219,37 +223,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
-
-        <div className="flex gap-2 py-6 justify-between items-center">
-          <User size={50} className="rounded-full h-10 w-10 flex-shrink-0" />
-          <div className="space-y-2">
-            <span className="font-semibold text-gray-text-strong/90">
-              Brooklyn Simons{" "}
-            </span>
-            <span className="text-xs text-gray-text-weak/70">
-              brooklyn@simmons.com
-            </span>
-          </div>
-
-          <CustomPopover
-            trigger={
-              <Button size="icon" variant="ghost" aria-label="User options">
-                <MoreVertical className="text-gray-text-weak" />
-              </Button>
-            }
-          >
-            <div>
-              <Button
-                variant="ghost"
-                className="w-full text-left cursor-pointer"
-                onClick={handleLogOut}
-                aria-label="Sign out"
-              >
-                Sign out
-              </Button>
-            </div>
-          </CustomPopover>
-        </div>
+        <SidebarUserCard />
       </SidebarFooter>
 
       <SidebarRail />
