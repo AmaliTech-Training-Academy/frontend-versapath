@@ -5,31 +5,25 @@ import { Roles } from "./lib/types";
 declare module "next-auth" {
     interface Session {
         user: {
-            id: string;
+            userId: string;
             username: string;
-            fullName: string;
             email: string;
             role: Roles;
-            accessToken: string;
         } & DefaultSession["user"]
     }
 
     interface User {
-        id: string;
+        userId: string;
         username: string;
-        fullName: string;
         email: string;
         role: Roles;
-        accessToken: string;
     }
 
     interface JWT {
-        id: string;
+        userId: string;
         username: string;
-        fullName: string;
         email: string;
         role: Roles;
-        accessToken: string;
     }
 }
 
@@ -65,25 +59,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.id = user.id;
+                token.userId = user.userId;
                 token.email = user.email;
                 token.username = user.username;
-                token.fullName = user.fullName;
                 token.role = user.role;
-                token.accessToken = user.accessToken;
             }
             return token
         },
         async session({ session, token }) {
-            if (token && token?.id) {
+            if (token && token?.userId) {
                 session.user = {
                     ...session.user,
-                    id: token.id as string,
+                    id: token.userId as string,
                     email: token.email as string,
-                    fullName: token.fullName as string,
                     username: token.username as string,
-                    role: token.role as Roles,
-                    accessToken: token.accessToken as string
+                    role: token.role as Roles
                 }
             }
             return session;
