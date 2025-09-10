@@ -46,7 +46,9 @@ jobs:
         REPOSITORY: ${{ env.AWS_ECR_REPOSITORY_NAME }}
       run: |
         echo "Building Docker image..."
-        docker build -t $REGISTRY/$REPOSITORY:${{ env.IMAGE_TAG }} .
+        docker build \
+          --build-arg NEXT_PUBLIC_API_URL="${{ secrets.NEXT_PUBLIC_API_URL }}" \
+          -t $REGISTRY/$REPOSITORY:${{ env.IMAGE_TAG }} .
         docker tag $REGISTRY/$REPOSITORY:${{ env.IMAGE_TAG }} $REGISTRY/$REPOSITORY:latest
         echo "Pushing to ECR..."
         docker push $REGISTRY/$REPOSITORY:${{ env.IMAGE_TAG }}
