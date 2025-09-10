@@ -9,7 +9,7 @@ export const PasswordResetSuccess = () =>{
     <>
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border p-8">
             <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-brand-primary-stroke-strong rounded-full flex items-center justify-center mx-auto">
                 <Check className="w-8 h-8 text-white" />
               </div>
     
@@ -26,14 +26,14 @@ export const PasswordResetSuccess = () =>{
               <div className="space-y-3 pt-2">
                 <Button
                   onClick={() => router.push("/login")}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-md font-medium transition-colors"
+                  className="w-full bg-brand-primary-stroke-strong hover:bg-brand-primary-stroke-strong/70 text-white py-2.5 rounded-md font-medium transition-colors"
                 >
                   Login
                 </Button>
                 <Button
                   onClick={() => router.push("/")}
                   variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-md font-medium transition-colors"
+                  className="w-full border-gray-stroke-strong text-gray-stroke-strong/70  py-2.5 rounded-md font-medium transition-colors"
                 >
                   Exit
                 </Button>

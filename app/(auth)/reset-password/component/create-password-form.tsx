@@ -5,20 +5,13 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader, Check, Star } from "lucide-react";
 import { createPasswordSchema } from "@/lib/schemas/new-password";
 import type { CreatePasswordForm } from "@/lib/schemas/new-password";
-import {
-  hasMinLength,
-  hasUppercase,
-  hasLowercase,
-  hasNumber,
-  hasSpecialChar,
-} from "@/lib/utils/password";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "@/lib/api/reset-password";
 import { PasswordResetSuccess } from "./successs-message";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function CreatePasswordForm() {
   const searchParams = useSearchParams();
@@ -27,6 +20,7 @@ export default function CreatePasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const {
     register,
@@ -38,41 +32,31 @@ export default function CreatePasswordForm() {
     mode: "onChange",
   });
 
-  const password = watch("password");
-  const confirmPassword = watch("confirmPassword");
-
-  const minLength = hasMinLength(password || "");
-  const uppercase = hasUppercase(password || "");
-  const lowercase = hasLowercase(password || "");
-  const number = hasNumber(password || "");
-  const specialChar = hasSpecialChar(password || "");
-  const passwordsMatch =
-    password && confirmPassword && password === confirmPassword;
-
-  const showPasswordValidation = password && password.length > 0;
-  const showConfirmValidation = confirmPassword && confirmPassword.length > 0;
-
   useEffect(() => {
     const resetToken = searchParams.get("reset");
-    // if (!resetToken) router.push("/login");
-  }, [searchParams]);
+    if (!resetToken) router.push("/login");
+  }, [searchParams, router]);
 
   const onSubmit = async (data: CreatePasswordForm) => {
     const resetToken = searchParams.get("reset") ?? "";
     const { confirmPassword, password } = data;
+    setSuccessMessage("");
+    setErrorMessage("");
     try {
-      setSuccessMessage("");
-
       const response = await authApi.updatePassword(resetToken, {
         confirmPassword,
         password,
       });
-      setSuccessMessage(response.message);
-
+      setSuccessMessage(response?.message || "Password reset successful.");
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (error) {
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to reset password. Please try again."
+      );
       console.error("Error resetting password:", error);
     }
   };
@@ -90,6 +74,12 @@ export default function CreatePasswordForm() {
           Your new password must be different from previous used passwords.
         </p>
       </div>
+
+      {errorMessage && (
+        <div className="mb-4 text-red-600 text-sm text-center">
+          {errorMessage}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-2">
@@ -160,16 +150,20 @@ export default function CreatePasswordForm() {
             </button>
           </div>
           {/* Password match validation */}
-          {showConfirmValidation && (
+          {watch("confirmPassword") && watch("confirmPassword").length > 0 && (
             <div className="text-xs">
               <div
                 className={`flex items-center gap-2 ${
-                  passwordsMatch
+                  watch("password") &&
+                  watch("confirmPassword") &&
+                  watch("password") === watch("confirmPassword")
                     ? "text-brand-primary-stroke-strong"
                     : "text-gray-stroke-strong"
                 }`}
               >
-                {passwordsMatch ? (
+                {watch("password") &&
+                watch("confirmPassword") &&
+                watch("password") === watch("confirmPassword") ? (
                   <Check className="h-3 w-3" />
                 ) : (
                   <Star className="h-3 w-3" />
@@ -178,17 +172,23 @@ export default function CreatePasswordForm() {
               </div>
             </div>
           )}
+          {errors.confirmPassword && (
+            <p className="text-xs text-red-text">
+              {errors.confirmPassword.message}
+            </p>
+          )}
         </div>
-        {showPasswordValidation && (
+
+        {watch("password") && watch("password").length > 0 && (
           <div className="space-y-1 text-xs">
             <div
               className={`flex items-center gap-2 ${
-                minLength
+                watch("password").length >= 8
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {minLength ? (
+              {watch("password").length >= 8 ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -197,12 +197,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                uppercase
+                /[A-Z]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {uppercase ? (
+              {/[A-Z]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -211,12 +211,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                lowercase
+                /[a-z]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {lowercase ? (
+              {/[a-z]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />
@@ -225,26 +225,12 @@ export default function CreatePasswordForm() {
             </div>
             <div
               className={`flex items-center gap-2 ${
-                specialChar
+                /[0-9]/.test(watch("password"))
                   ? "text-brand-primary-stroke-strong"
                   : "text-gray-stroke-strong"
               }`}
             >
-              {specialChar ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <Star className="h-3 w-3" />
-              )}
-              <span>Must contain special character</span>
-            </div>
-            <div
-              className={`flex items-center gap-2 ${
-                number
-                  ? "text-brand-primary-stroke-strong"
-                  : "text-gray-stroke-strong"
-              }`}
-            >
-              {number ? (
+              {/[0-9]/.test(watch("password")) ? (
                 <Check className="h-3 w-3" />
               ) : (
                 <Star className="h-3 w-3" />

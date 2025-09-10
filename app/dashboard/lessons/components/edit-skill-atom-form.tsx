@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import { updateAtom } from "@/lib/api/skill-atom-api";
+import { atomApi } from "@/lib/api/skill-atom-api";
 import { toast } from "sonner";
 import { SkillAtom } from "@/lib/types/skill-atom";
 
@@ -67,12 +67,14 @@ export const EditSkillAtomForm: React.FC<EditSkillAtomFormProps> = ({
         objectives: data.objectives ?? "",
         estimatedHours:
           typeof data.hours === "string" ? Number(data.hours) : data.hours,
-        status: data.status === "publish" ? "ACTIVE" : "INACTIVE",
+        status: data.status === "publish" ? "ACTIVE" as const : "INACTIVE" as const,
       };
-      const updated = await updateAtom(skillAtom.id, payload);
+      const updated = await atomApi.updateAtom(skillAtom.id, payload);
       toast.success("Lesson updated successfully");
-      onSuccess?.(updated);
-    } catch (err) {
+      if (updated) {
+        onSuccess?.(updated);
+      }
+    } catch {
       toast.error("Failed to update lesson");
     }
   };
@@ -86,7 +88,7 @@ export const EditSkillAtomForm: React.FC<EditSkillAtomFormProps> = ({
           control={form.control}
           name="lessonName"
           render={({ field }) => (
-            <CustomInput label="Lesson Name" type="text" {...field} />
+            <CustomInput label="Lesson Name"  {...field} />
           )}
         />
 

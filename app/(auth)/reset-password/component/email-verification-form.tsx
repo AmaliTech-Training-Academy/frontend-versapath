@@ -12,7 +12,6 @@ export default function EmailVerificationCard() {
   const router = useRouter()
   const handleOpenEmail = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsLoading(false);
     window.open("mailto:", "_blank");
   };

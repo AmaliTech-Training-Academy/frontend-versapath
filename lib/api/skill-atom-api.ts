@@ -1,77 +1,65 @@
-import { SkillAtom } from "../types/skill-atom";
+import { SkillAtom } from "@/lib/types/skill-atom";
+import { apiRequest } from "./api-request";
+import { ApiError } from "./reset-password";
+import { ApiResponse, ItemData, ListData } from "../types/api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-export async function fetchAtoms() {
-  const res = await fetch(`${API_BASE}/atoms`, {
-    headers: {
-      // Authorization: `Bearer ${token}`,
-    },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch atoms");
-  }
-  const data = await res.json();
-  return data.data.items;
-}
 
-export async function createAtom(
-  atom: { name: string; description: string; objectives: string; estimatedHours: number; status: string; }
-) {
-  try {
-    const res = await fetch(`${API_BASE}/atoms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(atom),
-    });
+export const atomApi = {
+  fetchAtoms: async () => {
+    const result = await apiRequest<ListData<SkillAtom>>("/atoms", "GET");
 
-    if (!res.ok) throw new Error("Failed to create lesson");
+    if (result.success === true && result.data && "items" in result.data) {
+      return result.data?.items;
+    }
+    throw new ApiError(
+      404,
+      result.message || "Failed to fetch atoms: Unexpected response structure"
+    );
+  },
 
-    const data = await res.json();
-    return data.data.item as SkillAtom;
-  } catch (err) {
-    console.error("Error creating atom:", err);
-    return null;
-  }
-}
-
-export async function deleteAtom(id: string) {
-  const res = await fetch(`${API_BASE}/atoms/${id}`, {
-    method: "DELETE",
-    headers: {
-      // Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete atom");
-  }
-
-  return await res.json();
-}
-
-export async function updateAtom(id: string, payload: unknown) {
-  try {
-    const res = await fetch(`${API_BASE}/atoms/${id}`, {
-      method: "PATCH",
-      headers: {
-        // Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const errorBody = await res.json();
-      throw new Error(errorBody?.message || "Failed to update atom");
+  createAtom: async (atom: {
+    name: string;
+    description: string;
+    objectives: string;
+    estimatedHours: number;
+    status: string;
+  }) => {
+    const result = await apiRequest<ItemData<SkillAtom>>(
+      "/atoms",
+      "POST",
+      atom
+    );
+    if (!result.success) {
+      throw new ApiError(404, result.message || "Failed to create atom");
     }
 
-    const data = await res.json();
-    return data?.data?.item;
-  } catch (err) {
-    console.error("Failed to update atom:", err as unknown);
-    throw err;
-  }
-}
+    return result.data?.item;
+  },
+
+  deleteAtom: async (id: string): Promise<{ success: boolean }> => {
+    const result = await apiRequest<{ message: string }>(
+      `/atoms/${id}`,
+      "DELETE"
+    );
+
+    if (!result.success) {
+      throw new ApiError(404, result.message || "Failed to delete atom");
+    }
+
+    return { success: true };
+  },
+
+  updateAtom: async (id: string, payload: Partial<SkillAtom>) => {
+    const result = await apiRequest<ItemData<SkillAtom>>(
+      `/atoms/${id}`,
+      "PATCH",
+      payload
+    );
+
+    if (!result.success) {
+      throw new ApiError(404, result.message || "Failed to update atom");
+    }
+    if (result.data?.item) return result.data.item;
+    return null;
+  },
+};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAtoms } from "@/lib/api/skill-atom-api";
+import { atomApi } from "@/lib/api/skill-atom-api";
 import { SkillAtom } from "@/lib/types/skill-atom";
 
 export function useSkillAtoms() {
@@ -10,9 +10,9 @@ export function useSkillAtoms() {
   const refreshLessons = async () => {
     setLoading(true);
     try {
-      const data = await fetchAtoms();
+      const data = await atomApi.fetchAtoms();
       setSkillAtoms(data);
-    } catch (err) {
+    } catch {
       setError("Failed to load lessons");
     } finally {
       setLoading(false);

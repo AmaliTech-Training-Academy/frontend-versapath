@@ -6,7 +6,7 @@ import { SheetWrapper } from "../components/sheet-wrapper";
 import { TopActions } from "../components/top-actions";
 import { AddSkillAtomForm } from "./components/add-skill-atom-form";
 import { SkillAtomsList } from "./components/skill-atoms-list";
-import { Plus } from "lucide-react";
+import { Loader, Plus } from "lucide-react";
 import { useSkillAtoms } from "@/lib/hooks/use-skill-atoms";
 
 export default function SkillAtomListPage() {
@@ -39,7 +39,7 @@ export default function SkillAtomListPage() {
         />
         {loading ? (
           <div className="flex justify-center items-center min-h-[200px]">
-            Loading lessons...
+            <Loader className="animate-spin" size={28}/> <span className="text-gray-text-strong text-lg px-2 font-semibold">Lesson Loading</span>
           </div>
         ) : error ? (
           <div className="text-red-500 text-center min-h-[200px]">{error}</div>

@@ -28,14 +28,8 @@ export const SkillAtomCard: React.FC<LessonCardProps> = ({
               <FileText className="h-5 w-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-Text-Text-Strong/90 font-semibold text-lg">{lesson.title}</h3>
-              <p className="text-sm text-gray-text-strong/70">{lesson.subtitle}</p>
-              <h3 className="text-Text-Text-Strong/90 font-semibold text-lg">
-                {skillatom.name}
-              </h3>
-              <p className="text-sm text-gray-text-strong/70 pt-2">
-                {skillatom.description}
-              </p>
+              <h3 className="text-Text-Text-Strong/90 font-semibold text-lg">{skillatom.name}</h3>
+              <p className="text-sm text-gray-text-strong/70">{skillatom.description}</p>              
             </div>
           </div>
 

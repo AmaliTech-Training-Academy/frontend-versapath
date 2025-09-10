@@ -4,7 +4,7 @@ import Image from "next/image";
 import { SkillAtomCard } from "./skill-atom-card";
 import { ConfirmDialog } from "@/components/custom/confirm-dialog";
 import { SkillAtom } from "@/lib/types/skill-atom";
-import { deleteAtom } from "@/lib/api/skill-atom-api";
+import { atomApi} from "@/lib/api/skill-atom-api";
 import { toast } from "sonner";
 
 interface SkillAtomListProps {
@@ -29,7 +29,7 @@ export const SkillAtomsList: React.FC<SkillAtomListProps> = ({
     if (!selectedLesson) return;
 
     setLoading(true);
-    const success = await deleteAtom(selectedLesson.id);
+    const success = await atomApi.deleteAtom(selectedLesson.id);
 
     if (success) {
       onDelete?.(selectedLesson.id);

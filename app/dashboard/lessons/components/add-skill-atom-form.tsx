@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import { createAtom } from "@/lib/api/skill-atom-api";
+import { atomApi } from "@/lib/api/skill-atom-api";
 import { toast } from "sonner";
 type SkillAtomFormValues = z.infer<typeof SkillAtomSchema>;
 
@@ -52,7 +52,7 @@ export const AddSkillAtomForm: React.FC<AddSkillAtomFormProps> = ({
       status: data.status === "publish" ? "ACTIVE" : "INACTIVE",
     };
 
-    const newAtom = await createAtom(payload);
+    const newAtom = await atomApi.createAtom(payload);
     if (newAtom) {
       toast.success("New Lesson Added successfully");
       form.reset();
