@@ -1,18 +1,21 @@
+import { BadgeList } from "./components/badge-list";
 import { DashboardHeader } from "./components/header";
-import { MetricsCard } from "./components/metrics-card";
-import { metrics } from "@/lib/api/metrics";
+import { Metrics } from "./components/metrics";
+import { QuickActions } from "./components/quick-actions";
+import { RecentActivityList } from "./components/recent-activity-list";
+import { RoadmapList } from "./components/roadmap-list";
 
 export default function DashboardPage() {
     return (
         <>
             <DashboardHeader title="Dashboard" />
-            <section className="bg-sidebar w-full grid grid-cols-4 gap-6">
-                {
-                    metrics.map(metric => (
-                        <MetricsCard key={metric.title} title={metric.title} value={metric.value} icon={metric.icon} />
-                    ))
-                }
+            <Metrics />
+            <QuickActions />
+            <section className="grid grid-cols-3 gap-6">
+                <RoadmapList />
+                <BadgeList />
             </section>
+            <RecentActivityList />
         </>
     );
 }

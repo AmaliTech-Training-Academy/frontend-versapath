@@ -28,11 +28,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Toaster richColors position="top-right" />
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <SessionProvider>
+        <SessionProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <StoreProvider>{children}</StoreProvider>
-          </SessionProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

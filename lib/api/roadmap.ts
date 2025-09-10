@@ -30,3 +30,22 @@ export const roadmap = {
         }
     ]
 };
+
+export const dashboardRoadmaps = [
+    {
+        id: 'aisdjfhiudsfhnaksjdf',
+        title: 'Frontend Developer - React',
+        description: 'Modern frontend development with React, TypeScript, and testing best practices for building scalable web applications',
+        progress: 65,
+        lessons_completed: '130/200',
+        clusters: ['Beginner', 'Frontend', 'Web Development']
+    },
+    {
+        id: 'akjsdhfuiwey678392743',
+        title: 'Frontend Developer - React',
+        description: 'Modern frontend development with React, TypeScript, and testing best practices for building scalable web applications',
+        progress: 65,
+        lessons_completed: '130/200',
+        clusters: ['Beginner', 'Frontend', 'Web Development']
+    }
+]

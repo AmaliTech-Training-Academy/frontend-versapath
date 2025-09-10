@@ -20,22 +20,16 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import {
-  ChevronDown,
-  TrendingUp,
-  Bell,
-  LifeBuoy,
-  Settings,
-  Search,
-} from "lucide-react";
-
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "../ui/collapsible";
+import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search, LogOut } from "lucide-react";
+import { CustomPopover } from "./custom-popover";
+import { Button } from "../ui/button";
+import { handleLogOut } from "@/lib/api/logout";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "../ui/collapsible";
 import { Input } from "../ui/input";
-import { SidebarUserCard } from "./sidebar-user-card";
+import { useSession } from "next-auth/react";
+import { ConfirmDialog } from "./confirm-dialog";
+import { useState } from "react";
+
 
 // Types
 type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -61,6 +55,12 @@ type FooterItem = {
   icon: SvgIcon;
   count?: number;
 };
+
+type PopoverItem = {
+  label: string;
+  icon: SvgIcon;
+  handleClick?: () => void;
+}
 
 // Static
 const sidebarItems: SidebarItem[] = [
@@ -91,6 +91,7 @@ const sidebarItems: SidebarItem[] = [
     url: "#",
     icon: TrendingUp,
   },
+
 ];
 
 const sidebarFooterItems: FooterItem[] = [
@@ -101,6 +102,20 @@ const sidebarFooterItems: FooterItem[] = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const popoverItems: PopoverItem[] = [
+    {
+      label: 'Profile',
+      icon: User,
+    },
+    {
+      label: 'Logout',
+      icon: LogOut,
+      handleClick: () => setIsOpen(true)
+    }
+  ]
 
   return (
     <Sidebar className="border-none ">
@@ -223,10 +238,62 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
-        <SidebarUserCard />
+
+        <div className="flex gap-2 py-6 justify-between items-center">
+          <User size={50} className="rounded-full h-10 w-10 flex-shrink-0" />
+          <div className="space-y-2">
+            <p className="font-semibold text-gray-text-strong">
+              {session?.user.username}
+            </p>
+            <p className="text-xs text-gray-text-weak">
+              {session?.user.email}
+            </p>
+          </div>
+
+          <CustomPopover
+            trigger={
+              <Button size="icon" variant="ghost" aria-label="User options">
+                <MoreVertical className="text-gray-text-weak" />
+              </Button>
+            }
+            classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
+          >
+            <div className="text-gray-text-weak">
+              {
+                popoverItems.map(popover => {
+                  const { label, icon: Icon, handleClick } = popover;
+                  return (
+                    <Button
+                      key={label}
+                      variant="ghost"
+                      className="cursor-pointer w-full flex items-center justify-start"
+                      aria-label="Profile"
+                      onClick={handleClick ?? undefined}
+                    >
+                      <Icon />
+                      <span>{label}</span>
+                    </Button>
+                  )
+                })
+              }
+            </div>
+          </CustomPopover>
+        </div>
       </SidebarFooter>
 
       <SidebarRail />
+
+      <ConfirmDialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Logout"
+        description="Are you sure you want to logout?"
+        confirmLabel="Logout"
+        alternativeLabel="Cancel"
+        destructive
+        onConfirm={handleLogOut}
+        onAlternative={() => setIsOpen(false)}
+      />
     </Sidebar>
   );
 }

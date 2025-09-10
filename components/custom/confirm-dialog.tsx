@@ -50,24 +50,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {description}
         </DialogDescription>
         <DialogFooter className="flex justify-end gap-3 mt-6">
-          <Button
-            variant="outline"
-            className={
-              destructive
-                ? "h-8 p-6 text-md bg-brand-primary-text/10 border-none"
-                : ""
-            }
-            onClick={() => {
-              onConfirm?.();
-              onClose();
-            }}
-          >
-            {confirmLabel}
-          </Button>
-
           {onAlternative && (
             <Button
-              className="bg-brand-primary-text p-6 text-md"
+              variant="outline"
+              className={
+                destructive
+                  ? "h-8 p-6 text-md bg-brand-primary-text/10 border-none"
+                  : ""
+              }
               onClick={() => {
                 onAlternative?.();
                 onClose();
@@ -76,6 +66,16 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               {alternativeLabel}
             </Button>
           )}
+
+          <Button
+            className="bg-brand-primary-text p-6 text-md"
+            onClick={() => {
+              onConfirm?.();
+              onClose();
+            }}
+          >
+            {confirmLabel}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
