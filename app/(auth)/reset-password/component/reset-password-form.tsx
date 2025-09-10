@@ -10,12 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authApi, ApiError } from "@/lib/api/reset-password";
-import { resetPasswordSchema } from "@/lib/schemas/reset-passord";
-
-
-type ResetPasswordFormData = {
-  email: string;
-};
 
 export function ResetPasswordForm() {
   const router = useRouter();
