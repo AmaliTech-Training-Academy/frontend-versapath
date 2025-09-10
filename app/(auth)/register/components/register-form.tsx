@@ -8,42 +8,69 @@ import Link from "next/link";
 import { Loader } from "lucide-react";
 import { CustomInput } from "@/components/custom/custom-input";
 import { RegisterInputs, registerSchema } from "@/lib/schemas/register";
+import { useRouter, useSearchParams } from "next/navigation";
+import React from "react";
+import { completeUserRegister } from "@/lib/api/users";
+import { toast } from "sonner";
 
 export const RegisterForm = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const inviteToken = searchParams.get("invite");
+    const email = searchParams.get("email");
+    if (inviteToken && email) {
+      form.setValue("email", decodeURIComponent(email));
+    } else router.push("/login");
+    //eslint-disable-next-line
+  }, [searchParams]);
+
   const form = useForm<RegisterInputs>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-      fullName: "",
-    },
     mode: "onChange",
   });
 
-  const onSubmit = async (data: RegisterInputs) => {
-    // Handle login logic here
-    // form.reset();
+  const onSubmit = async ({
+    password,
+    confirmPassword,
+    username,
+    fullName,
+  }: RegisterInputs) => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log("Login successful");
-    console.log(data);
-    form.setError("root", {
-      type: "manual",
-      message: "Unable to register, please try again. ",
+    const inviteToken = searchParams.get("invite") ?? "";
+    const registerResponse = await completeUserRegister(inviteToken, {
+      firstName: fullName.split(" ")[0],
+      lastName: fullName.split(" ").slice(1).join(" "),
+      password,
+      confirmPassword,
+      username,
     });
+    if (!registerResponse.success) {
+      form.setError("root", {
+        type: "manual",
+        message: registerResponse.errors?.[0] || registerResponse.message,
+      });
+      return;
+    }
+    toast.success(registerResponse.message || "Registration successful!");
+    setTimeout(() => {
+      router.push("/login");
+    }, 1000);
   };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-[484px] w-full mx-auto rounded-lg p-6 sm:shadow-lg shadow-black/10 space-y-10"
+        className="max-w-[484px] w-full mx-auto rounded-lg p-6 sm:shadow-lg shadow-black/10 space-y-10 "
       >
         <div className="space-y-2 text-center">
           <h5 className="text-[32px] font-semibold text-gray-text-strong/90">
-            Sign up
+            Complete Registration
           </h5>
           <p className="text-gray-text-weak/70">
-            Sign up to access your dashboard
+            Complete your registration to access your dashboard
           </p>
         </div>
 
@@ -51,9 +78,36 @@ export const RegisterForm = () => {
           {/* email */}
           <FormField
             control={form.control}
+            name="email"
+            render={({ field }) => (
+              <CustomInput
+                label="Email"
+                disabled
+                className="cursor-not-allowed bg-gray-stroke-weak"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <CustomInput
+                label="Username"
+                placeholder="Enter unique username"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
             name="fullName"
             render={({ field }) => (
-              <CustomInput label="Email" placeholder="Full Name" {...field} />
+              <CustomInput
+                label="Full name"
+                placeholder="Enter both names"
+                {...field}
+              />
             )}
           />
 

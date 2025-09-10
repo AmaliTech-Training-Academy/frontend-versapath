@@ -5,7 +5,6 @@ import { TopActions } from "../components/top-actions";
 import { UsersList } from "./components/users-list";
 import { Plus } from "lucide-react";
 import { InviteUserForm } from "./components/invite-user-form";
-import { usersMockData } from "@/lib/mocks/users";
 import { SheetWrapper } from "../components/sheet-wrapper";
 
 export default function UserManagementPage() {
@@ -29,7 +28,7 @@ export default function UserManagementPage() {
             </SheetWrapper>
           }
         />
-        <UsersList users={usersMockData} />
+        <UsersList />
       </section>
     </>
   );
