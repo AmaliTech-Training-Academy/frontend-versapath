@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search, LogOut } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -104,11 +104,13 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const popoverItems: PopoverItem[] = [
     {
       label: 'Profile',
       icon: User,
+      handleClick: () => router.push('/dashboard/profile')
     },
     {
       label: 'Logout',

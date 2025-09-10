@@ -83,6 +83,7 @@
   --color-base-dark-raised: var(--base-dark-raised);
   --color-base-dark-overlay: var(--base-dark-overlay);
   --color-base-dark-black: var(--base-dark-black);
+  --color-base-white: var(--base-white);
 }
 
 :root {
@@ -171,6 +172,7 @@
   --base-light-raised: oklch(93.403% 0.00011 271.152);
   --base-light-overlay: oklch(89.449% 0.0001 271.152);
   --base-light-white: oklch(100% 0.00011 271.152);
+  --base-white: #ffffff;
 
   --base-dark-background: oklch(21.342% 0.00002 271.152);
   --base-dark-raised: oklch(26.862% 0.00003 271.152);
