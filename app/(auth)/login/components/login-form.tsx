@@ -108,17 +108,6 @@ export const LoginForm = () => {
               "Log In"
             )}
           </Button>
-          <div className="flex justify-center space-x-1">
-            <span className="text-sm font-medium tracking-normal text-gray-text-weak/70">
-              Don't have an account?
-            </span>
-            <Link
-              href="/register"
-              className="text-sm font-medium tracking-normal text-brand-primary-text"
-            >
-              Sign Up
-            </Link>
-          </div>
         </div>
       </form>
     </Form>

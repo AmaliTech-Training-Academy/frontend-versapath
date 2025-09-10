@@ -122,7 +122,11 @@ export function AppSidebar() {
       <SidebarHeader className="pt-10">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1" aria-label="Home">
+            <Link
+              href="/"
+              className="flex items-center gap-1"
+              aria-label="Home"
+            >
               <Image
                 src="/Logo.svg"
                 height={50}
@@ -148,9 +152,7 @@ export function AppSidebar() {
                   aria-label="Search sidebar"
                   className="border p-4 pl-10 w-full"
                 />
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer"
-                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
               {sidebarItems.map((item) =>
@@ -197,10 +199,7 @@ export function AppSidebar() {
                       isActive={pathname === item.url}
                       className="p-4 text-gray-text-weak"
                     >
-                      <Link
-                        href={item.url}
-                        aria-label={`${item.title} page`}
-                      >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
                         {item.icon ? <item.icon strokeWidth={2} /> : null}
                         <span className="font-semibold">{item.title}</span>
                       </Link>
@@ -224,10 +223,7 @@ export function AppSidebar() {
                     isActive={pathname === item.url}
                     className=" text-gray-text-weak"
                   >
-                    <Link
-                      href={item.url}
-                      aria-label={`${item.title} page`}
-                    >
+                    <Link href={item.url} aria-label={`${item.title} page`}>
                       <item.icon strokeWidth={2} />
                       <span className="font-semibold">{item.title}</span>
                       {item.count !== undefined && (

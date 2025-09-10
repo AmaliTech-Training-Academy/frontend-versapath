@@ -1,9 +1,19 @@
 import { Roles } from "./";
+export enum Status {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  PENDING = "PENDING",
+}
 export interface User {
-  userId: string;
+  id: string;
   email: string;
   username: string;
   role: Roles;
+  firstName: string;
+  lastName: string;
+  status: Status;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Cluster {
@@ -12,7 +22,7 @@ export interface Cluster {
   type: string;
   description: string;
   imageName: string | null;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string | null;
 }
@@ -31,12 +41,7 @@ export interface PageInfo {
 
 export interface ListData<T> {
   items: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
+  pagination: PageInfo;
 }
 
 export interface ItemData<T> {
@@ -56,3 +61,7 @@ export type ApiResponse<TData, TError = ApiErrors> = {
   data?: TData | null;
   errors?: TError;
 };
+export interface FetchedRolesProps {
+  role: string;
+  id: string;
+}

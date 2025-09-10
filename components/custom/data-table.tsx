@@ -27,6 +27,7 @@ import {
 import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Status, type User } from "@/lib/types/api";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -65,7 +66,7 @@ const columns: ColumnDef<User>[] = [
             href={`/dashboard/user-management/${row.original.id}`}
             className="text-[14px] text-gray-text-strong font-semibold hover:underline  cursor-pointer"
           >
-            {row.original.user}
+            {row.original.firstName ?? "N/A"} {row.original.lastName ?? " "}
           </Link>
           <p className="text-[14px] font-normal text-gray-text-weak">
             {row.original.email}
@@ -78,35 +79,62 @@ const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     header: "Role",
-    cell: ({ row }) => <span>{row.original.role}</span>,
+    cell: ({ row }) => (
+      <span className="capitalize">{row.original.role.toLowerCase()}</span>
+    ),
   },
-  {
-    accessorKey: "stack",
-    header: "Stack",
-    cell: ({ row }) => <div className="font-medium">{row.original.stack}</div>,
-  },
+
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div className="text-sm">{row.original.status}</div>,
+    cell: ({ row }) => (
+      <div
+        className={cn(
+          "text-xs border rounded-lg py-1 px-3 w-fit capitalize",
+          row.original.status === Status.ACTIVE
+            ? "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text"
+            : row.original.status === Status.PENDING
+            ? "bg-gray-fill border-gray-text-strong text-gray-text-strong"
+            : "bg-red-fill border-red-text text-red-text"
+        )}
+      >
+        {row.original.status.toLowerCase()}
+      </div>
+    ),
   },
   {
     accessorKey: "joinDate",
     header: "Join Date",
     cell: ({ row }) => (
-      <div className="w-full text-sm text-center">{row.original.joinDate}</div>
+      <div className="w-full text-sm text-center">
+        {new Date(row.original.createdAt).toLocaleDateString()}
+      </div>
     ),
   },
 ];
+interface DataTableProps {
+  data: User[];
+  readonly pagination: { pageIndex: number; pageSize: number };
+  setPagination: React.Dispatch<
+    React.SetStateAction<{ pageIndex: number; pageSize: number }>
+  >;
+  pageMeta: {
+    page: number; // zero-based page index from API
+    size: number; // page size from API
+    totalPages: number; // total pages from API
+    totalItems?: number; // optional total items from API
+  };
+}
 
-export function DataTable({ data: initialData }: { data: User[] }) {
-  const [data] = React.useState(() => initialData);
+export function DataTable({
+  data: initialData,
+  pagination,
+  setPagination,
+  pageMeta,
+}: DataTableProps) {
+  const data = initialData;
   const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   const table = useReactTable({
     data,
@@ -127,7 +155,18 @@ export function DataTable({ data: initialData }: { data: User[] }) {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+
+    // Server-side pagination
+    manualPagination: true,
+    pageCount: Math.max(pageMeta.totalPages ?? 1, 1),
   });
+
+  const currentPageZeroBased = pageMeta.page ?? 0;
+  const pageSize = pageMeta.size ?? pagination.pageSize;
+  const totalPages = Math.max(pageMeta.totalPages ?? 1, 1);
+  const totalItems = pageMeta.totalItems;
+  const start = data.length ? currentPageZeroBased * pageSize + 1 : 0;
+  const end = currentPageZeroBased * pageSize + data.length;
 
   return (
     <div className="w-full mt-4 space-y-4">
@@ -190,27 +229,33 @@ export function DataTable({ data: initialData }: { data: User[] }) {
       {/* Pagination */}
       <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing{" "}
-          {table.getState().pagination.pageIndex *
-            table.getState().pagination.pageSize +
-            1}{" "}
-          to{" "}
-          {Math.min(
-            table.getFilteredRowModel().rows.length,
-            (table.getState().pagination.pageIndex + 1) *
-              table.getState().pagination.pageSize
-          )}{" "}
-          of {table.getFilteredRowModel().rows.length} resources.
+          Showing {start} to {end}
+          {typeof totalItems === "number" ? <> of {totalItems}</> : null}{" "}
+          resources.
         </div>
         <Pagination
-          nextDisabled={!table.getCanNextPage()}
-          prevDisabled={!table.getCanPreviousPage()}
-          handleNext={() => table.nextPage()}
-          handlePrev={() => table.previousPage()}
-          activePage={table.getState().pagination.pageIndex + 1}
-          totalPages={table.getPageCount()}
+          nextDisabled={currentPageZeroBased + 1 >= totalPages}
+          prevDisabled={currentPageZeroBased <= 0}
+          handleNext={() =>
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: prev.pageIndex + 1,
+            }))
+          }
+          handlePrev={() =>
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: Math.max(prev.pageIndex - 1, 0),
+            }))
+          }
+          activePage={currentPageZeroBased + 1}
+          totalPages={totalPages}
           handlePaginationBtnClick={(val) =>
-            setPagination((prev) => ({ ...prev, pageIndex: val }))
+            // val is 1-based from the pager; convert to 0-based
+            setPagination((prev) => ({
+              ...prev,
+              pageIndex: Math.max(val - 1, 0),
+            }))
           }
         />
       </div>
