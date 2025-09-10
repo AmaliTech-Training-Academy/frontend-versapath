@@ -7,17 +7,18 @@ import {
 export function CustomPopover({
   children,
   trigger,
+  classes
 }: {
-  children: React.ReactNode;
-  trigger: React.ReactNode;
+  readonly children: React.ReactNode;
+  readonly trigger: React.ReactNode;
+  readonly classes: string;
 }) {
   return (
-    <Popover>
+    <Popover >
       <PopoverTrigger asChild>
-        {/* <Button variant="outline">Open popover</Button> */}
         {trigger}
       </PopoverTrigger>
-      <PopoverContent className="w-64">{children}</PopoverContent>
+      <PopoverContent className={classes} side="top" sideOffset={15} >{children}</PopoverContent>
     </Popover>
   );
 }
