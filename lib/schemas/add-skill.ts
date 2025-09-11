@@ -1,4 +1,4 @@
-import {  z } from "zod";
+import { z } from "zod";
 import { DifficultyLevels } from "../types";
 
 export const addSkillSchema = z.object({
@@ -17,7 +17,7 @@ export const addSkillSchema = z.object({
   estimatedHours: z
     .string({ error: "Estimated hours is required" })
     .regex(/^\d+$/, "Estimated hours must be a number"),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).min(1, "At least one tag is required"),
   cover: z
     .file()
     .max(1_000_000)

@@ -236,3 +236,13 @@
 .lesson_card_selector:has(.lesson_checkbox[aria-checked="true"]) {
   @apply bg-brand-primary-text-weak/50;
 }
+.tabs_list_header[data-state="active"] {
+  @apply p-2 border-b-2 rounded-none shadow-none bg-inherit text-brand-primary-text border-b-brand-primary-text;
+}
+
+.tabs_scrollbar::-webkit-scrollbar {
+  @apply w-2 h-2 bg-brand-primary-fill;
+}
+.tabs_scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-brand-primary-text-weak;
+}

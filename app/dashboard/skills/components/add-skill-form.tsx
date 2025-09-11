@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { useRef, useState } from "react";
@@ -13,6 +13,19 @@ import { toast } from "sonner";
 import { addSkillSchema, AddSkillSchemaProps } from "@/lib/schemas/add-skill";
 import { CustomSelect } from "@/components/custom/custom-select";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
+import MultipleSelectChip from "@/components/custom/multiple-selection-input";
+
+const defaultTags = [
+  "Web development",
+  "Data Science",
+  "Machine Learning",
+  "Mobile Development",
+  "Cloud Computing",
+  "Cybersecurity",
+  "DevOps",
+  "UI/UX Design",
+  "Blockchain",
+];
 
 export const AddSkillForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +34,12 @@ export const AddSkillForm = () => {
     defaultValues: {
       name: "",
       description: "",
+      tags: [], // Initialize as empty array
       cover: undefined,
     },
     mode: "onChange",
   });
 
-  // Ref to programmatically close the sheet
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const onSubmit = async (data: AddSkillSchemaProps) => {
@@ -44,6 +57,7 @@ export const AddSkillForm = () => {
     form.reset();
     closeRef.current?.click();
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-5">
@@ -51,7 +65,7 @@ export const AddSkillForm = () => {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <CustomInput label="SKill Name *" type="text" {...field} />
+            <CustomInput label="Skill Name *" type="text" {...field} />
           )}
         />
         <FormField
@@ -61,6 +75,7 @@ export const AddSkillForm = () => {
             <CustomTextarea label="Description" {...field} />
           )}
         />
+
         <FormField
           control={form.control}
           name="category"
@@ -93,7 +108,18 @@ export const AddSkillForm = () => {
         <FormField
           control={form.control}
           name="tags"
-          render={({ field }) => <CustomInput label="Tags" {...field} />}
+          render={({ field }) => (
+            <FormItem>
+              <MultipleSelectChip
+                defaultTags={defaultTags}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Select tags"
+                label="Tags *"
+              />
+              <FormMessage />
+            </FormItem>
+          )}
         />
         <FormField
           control={form.control}
@@ -118,14 +144,11 @@ export const AddSkillForm = () => {
             disabled={form.formState.isSubmitting}
             className="cursor-pointer"
           >
-            {form.formState.isSubmitting && (
-              <Loader className=" animate-spin" />
-            )}
-            Add SKill
+            {form.formState.isSubmitting && <Loader className="animate-spin" />}
+            Add Skill
           </Button>
         </div>
 
-        {/* To trigger programmatically on success */}
         <SheetClose ref={closeRef} className="hidden" />
       </form>
     </Form>
