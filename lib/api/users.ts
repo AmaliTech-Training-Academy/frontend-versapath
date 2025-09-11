@@ -3,8 +3,6 @@ import { ApiErrors, ApiResponse } from "../types/api";
 import type { ListData, User } from "../types/api";
 import { apiRequest } from "./api-request";
 
-export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const fetcher = (url: string) => apiRequest<ListData<User>>(url, "GET");
 const singleUserFetcher = (url: string) => apiRequest<User>(url, "GET");

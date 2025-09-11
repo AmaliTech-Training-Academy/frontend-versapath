@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const updateUserSchema = z.object({
   fullName: z.string(),
-  username: z.string(),
   role: z.string({ error: "Roles is required" }),
   status: z.string({ error: "Status is required" }),
   phoneNumber: z.string().optional(),

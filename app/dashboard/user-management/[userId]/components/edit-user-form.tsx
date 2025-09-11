@@ -23,7 +23,6 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
       fullName: `${initialData.firstName || ""} ${
         initialData.lastName || ""
       }`.trim(),
-      username: initialData.username || "",
       role: initialData.role || "",
       email: initialData.email || "",
       status: initialData.status || "",
@@ -47,18 +46,6 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
               <CustomInput
                 label="Full Name"
                 placeholder="e.g: Mary Mensah"
-                {...field}
-                value={field.value || ""}
-              />
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <CustomInput
-                label="Username"
-                placeholder="e.g: marymensah01"
                 {...field}
                 value={field.value || ""}
               />

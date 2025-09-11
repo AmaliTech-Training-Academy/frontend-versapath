@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { Loader, PenBox } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SheetWrapper } from "../../components/sheet-wrapper";
-import { EditUserForm } from "./components/edit-user-form";
 import { UserProfileCard } from "./components/user-profile-card";
 import { UserBadges } from "./components/user-badges-card";
 import { GrowthTrack } from "./components/growth-track-card";
@@ -68,19 +66,6 @@ export default function UserPage() {
             <UserProfileCard user={user as User} />
 
             <EditUserPopoverTrigger user={user as User} />
-            {/* 
-            <SheetWrapper
-              headerTitle="Edit user Profile"
-              headerDescription="Update user information"
-              trigger={
-                <Button variant={"ghost"} className="bg-base-light-overlay/50">
-                  <PenBox />
-                  Edit user
-                </Button>
-              }
-            >
-              <EditUserForm initialData={user as User} />
-            </SheetWrapper> */}
           </article>
           <UserBadges />
         </section>
