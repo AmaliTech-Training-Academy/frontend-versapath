@@ -31,7 +31,7 @@ export const CategoryList = () => {
 
     const containerClass = clsx(
         "w-full h-full mt-4 flex flex-col rounded-xl p-4 gap-6",
-        { "items-center justify-center": loading }
+        { "items-center justify-center": loading || error }
     );
 
     if (loading) {

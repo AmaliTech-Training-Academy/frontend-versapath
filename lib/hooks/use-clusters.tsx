@@ -20,7 +20,7 @@ export function useClusters(): UseClustersResult {
 
     const fetchData = async () => {
         setLoading(true);
-        const res = await apiRequest<ListData<Cluster>>('/clusters', 'GET');
+        const res = await apiRequest<ListData<Cluster>>(`/clusters?page=${pageInfo?.page ? pageInfo.page + 1 : 0}`, 'GET');
 
         setLoading(false);
         if (!res.success) {
