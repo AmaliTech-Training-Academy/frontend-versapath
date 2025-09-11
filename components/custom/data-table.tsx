@@ -28,6 +28,7 @@ import { Pagination } from "./pagination";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Status, type User } from "@/lib/types/api";
+import clsx from "clsx";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -89,13 +90,13 @@ const columns: ColumnDef<User>[] = [
     header: "Status",
     cell: ({ row }) => (
       <div
-        className={cn(
+        className={clsx(
           "text-xs border rounded-lg py-1 px-3 w-fit capitalize",
-          row.original.status === Status.ACTIVE
-            ? "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text"
-            : row.original.status === Status.PENDING
-            ? "bg-gray-fill border-gray-text-strong text-gray-text-strong"
-            : "bg-red-fill border-red-text text-red-text"
+          {
+            "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text": row.original.status === Status.ACTIVE,
+            "bg-gray-fill border-gray-text-strong text-gray-text-strong": row.original.status === Status.PENDING,
+            "bg-red-fill border-red-text text-red-text": row.original.status === Status.INACTIVE
+          }
         )}
       >
         {row.original.status.toLowerCase()}
@@ -113,12 +114,12 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 interface DataTableProps {
-  data: User[];
+  readonly data: User[];
   readonly pagination: { pageIndex: number; pageSize: number };
-  setPagination: React.Dispatch<
+  readonly setPaginationAction: React.Dispatch<
     React.SetStateAction<{ pageIndex: number; pageSize: number }>
   >;
-  pageMeta: {
+  readonly pageMeta: {
     page: number; // zero-based page index from API
     size: number; // page size from API
     totalPages: number; // total pages from API
@@ -129,7 +130,7 @@ interface DataTableProps {
 export function DataTable({
   data: initialData,
   pagination,
-  setPagination,
+  setPaginationAction: setPagination,
   pageMeta,
 }: DataTableProps) {
   const data = initialData;

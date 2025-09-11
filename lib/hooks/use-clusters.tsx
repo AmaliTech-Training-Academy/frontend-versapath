@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api/api-request";
-import type { Cluster, ListData } from "@/lib/types/api";
+import type { Cluster, ListData, PageInfo } from "@/lib/types/api";
 
 type UseClustersResult = {
     items: Cluster[] | null;
+    pageInfo: PageInfo | null;
     loading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
@@ -13,6 +14,7 @@ type UseClustersResult = {
 
 export function useClusters(): UseClustersResult {
     const [items, setItems] = useState<Cluster[] | null>(null);
+    const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -31,6 +33,7 @@ export function useClusters(): UseClustersResult {
         }
 
         setItems(res.data.items);
+        setPageInfo(res.data.pagination);
         setLoading(false);
     };
 
@@ -38,5 +41,5 @@ export function useClusters(): UseClustersResult {
         fetchData();
     }, []);
 
-    return { items, loading, error, refetch: fetchData };
+    return { items, pageInfo, loading, error, refetch: fetchData };
 }
