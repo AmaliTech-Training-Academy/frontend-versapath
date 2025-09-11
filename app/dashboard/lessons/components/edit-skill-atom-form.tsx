@@ -37,27 +37,15 @@ export const EditSkillAtomForm: React.FC<EditSkillAtomFormProps> = ({
   const form = useForm<SkillAtomFormValues>({
     resolver: zodResolver(SkillAtomSchema),
     defaultValues: {
-      lessonName: "",
-      description: "",
-      objectives: "",
+      lessonName: skillAtom.name,
+      description: skillAtom.description,
+      objectives: skillAtom.objectives,
       moodleUrl: "",
-      hours: "1",
-      status: "draft",
+      hours: String(skillAtom.estimatedHours),
+     status: skillAtom.status === "ACTIVE" ? "publish" : "draft",
     },
   });
 
-  useEffect(() => {
-    if (skillAtom) {
-      form.reset({
-        lessonName: skillAtom.name,
-        description: skillAtom.description,
-        objectives: skillAtom.objectives,
-        moodleUrl: "",
-        hours: String(skillAtom.estimatedHours),
-        status: skillAtom.status === "ACTIVE" ? "publish" : "draft",
-      });
-    }
-  }, [skillAtom, form]);
 
   const onSubmit = async (data: SkillAtomFormValues) => {
     try {
