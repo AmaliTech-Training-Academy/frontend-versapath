@@ -47,7 +47,7 @@ export const completeUserRegister = async (
   try {
     const response = await apiRequest<User>(
       `/register/complete-registration?invite=${token}`,
-      "POST",
+      "PATCH",
       data
     );
 
@@ -73,4 +73,55 @@ export const useFetchSingleUser = (id: string) => {
     isFetchingSingleUser: isLoading,
     fetchUserError: error,
   };
+};
+
+export const updateUserRole = async ({
+  role,
+  userId,
+}: {
+  role: string;
+  userId: string;
+}) => {
+  try {
+    const reponse = await apiRequest<User>(`/users/${userId}/role`, "PATCH", {
+      role,
+    });
+    return reponse;
+  } catch (error) {
+    return {
+      success: false,
+      message: "Updating role failed. Please try again.",
+      errors: [
+        "Network error occurred. Please try again later.",
+        JSON.stringify(error),
+      ],
+    };
+  }
+};
+export const updateUserStatus = async ({
+  userId,
+  status,
+}: {
+  userId: string;
+  status: string;
+}) => {
+  try {
+    const response = await apiRequest<User>(
+      `/users/${userId}/status`,
+      "PATCH",
+      {
+        status,
+      }
+    );
+    return response;
+  } catch (error) {
+    return {
+      success: false,
+      message: "Updating status failed. Please try again.",
+      errors: [
+        "Network error occurred. Please try again later.",
+        JSON.stringify(error),
+      ],
+    };
+  }
 };

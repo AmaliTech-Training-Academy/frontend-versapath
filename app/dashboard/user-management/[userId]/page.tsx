@@ -14,6 +14,7 @@ import Image from "next/image";
 import { PageHeader } from "./components/page-header";
 import { useParams } from "next/navigation";
 import { useFetchSingleUser } from "@/lib/api/users";
+import { EditUserPopoverTrigger } from "./components/edit-user-popover-trigger";
 
 export default function UserPage() {
   const { userId } = useParams();
@@ -66,6 +67,8 @@ export default function UserPage() {
           <article className="w-full p-4 space-y-4 border bg-base-light-white rounded-xl border-gray-stroke-weak">
             <UserProfileCard user={user as User} />
 
+            <EditUserPopoverTrigger user={user as User} />
+            {/* 
             <SheetWrapper
               headerTitle="Edit user Profile"
               headerDescription="Update user information"
@@ -77,7 +80,7 @@ export default function UserPage() {
               }
             >
               <EditUserForm initialData={user as User} />
-            </SheetWrapper>
+            </SheetWrapper> */}
           </article>
           <UserBadges />
         </section>
