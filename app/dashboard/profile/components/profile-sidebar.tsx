@@ -23,11 +23,11 @@ const sidebarItems = [
         url: "#"
     },
     {
-        title: "Account Settings",
+        title: "Archive",
         url: "#"
     },
     {
-        title: "Account Settings",
+        title: "Badges",
         url: "#"
     },
 
