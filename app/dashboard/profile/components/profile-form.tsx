@@ -142,7 +142,7 @@ export const ProfileForm = () => {
                     <Button
                         type="submit"
                         size="lg"
-                        disabled
+                        disabled={!form.formState.isDirty || form.formState.isSubmitting}
                         className="px-6 rounded-lg cursor-pointer"
                     >
                         {
