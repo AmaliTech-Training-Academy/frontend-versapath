@@ -3,10 +3,6 @@ import { ApiErrors, ApiResponse } from "../types/api";
 import type { ListData, User } from "../types/api";
 import { apiRequest } from "./api-request";
 
-<<<<<<< HEAD
-=======
-export const Authorization = process.env.NEXT_PUBLIC_AUTHORIZATION!;
->>>>>>> 38ef530 (integrate lesson  API with apiRequest and unified error handling)
 
 const fetcher = (url: string) => apiRequest<ListData<User>>(url, "GET");
 const singleUserFetcher = (url: string) => apiRequest<User>(url, "GET");

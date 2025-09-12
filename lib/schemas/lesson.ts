@@ -5,7 +5,6 @@ export const SkillAtomSchema = z.object({
   description: z.string().optional(),
   objectives: z.string().optional(),
   moodleUrl: z.string().optional(),
-  // type: z.string().min(1, { error: "Too small" }).optional(),
   hours: z.string().min(1, { message: "Hours are required" }),
   status: z
     .enum(["draft", "publish"], {
