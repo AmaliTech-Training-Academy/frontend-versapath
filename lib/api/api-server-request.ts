@@ -8,7 +8,7 @@ export const apiServerRequest = async <T>(
   data?: unknown
 ): Promise<ApiResponse<T>> => {
   const cookieStore = await cookies();
-  const url = `${process.env.FRONTEND_URL}/api/v1/${endpoint}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${endpoint}`;
 
   const cookieHeader = cookieStore
     .getAll()
@@ -50,7 +50,7 @@ export const apiServerRequest = async <T>(
 
       // Call our internal refresh API
       const refreshResponse = await fetch(
-        `http://localhost:3000/api/refresh-token`,
+        `${process.env.NEXT_PUBLIC_API_URL}/refresh-token`,
         {
           method: "POST",
           headers: {

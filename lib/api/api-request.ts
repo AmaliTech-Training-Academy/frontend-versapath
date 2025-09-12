@@ -7,7 +7,7 @@ export const apiRequest = async <T>(
   method: ApiMethod,
   data?: unknown
 ): Promise<ApiResponse<T>> => {
-  const url = `/api/v1${endpoint}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
   const options: RequestInit = {
     method,
     headers: {
@@ -26,10 +26,13 @@ export const apiRequest = async <T>(
 
   const response = await fetch(url, options).then((res) => res.json());
   if (response.message === "Authentication required") {
-    const refresh = await fetch(`/api/v1/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    }).then((res) => res.json());
+    const refresh = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    ).then((res) => res.json());
     if (refresh.success)
       return await fetch(url, options).then((res) => res.json());
   }

@@ -17,7 +17,9 @@ export const ChangeStatusDialog: React.FC<{
       options={["ACTIVE", "INACTIVE"]}
       currentValue={userStatus}
       userId={userId}
-      updateFunction={() => updateUserStatus({ userId, status: userStatus })}
+      updateFunction={({ userId, status }) =>
+        updateUserStatus({ userId, status })
+      }
       updateKey="status"
       mutateKeys={`/users/${userId}`}
       successMessage="Status updated successfully"
