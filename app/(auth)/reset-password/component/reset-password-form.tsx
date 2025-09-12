@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,13 +8,18 @@ import { Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { authApi, ApiError } from "@/lib/api/reset-password";
+import { resetPasswordSchema } from "@/lib/schemas/reset-passord";
+import { useState } from "react";
+
+type ResetPasswordFormData = {
+  email: string;
+};
 
 export function ResetPasswordForm() {
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
-  const [successMessage, setSuccessMessage] = useState<string>("");
-  const [apiError, setApiError] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -24,21 +29,20 @@ export function ResetPasswordForm() {
   });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
+    setSuccessMessage("");
+    setErrorMessage("");
     try {
-      setApiError("");
-      setSuccessMessage("");
-
       const response = await authApi.resetPassword(data.email);
-      setSuccessMessage(response.message);
-
+      setSuccessMessage(response?.message || "Password reset email sent.");
       setTimeout(() => {
-        router.push("/email-verification");
-      }, 2000);
+        router.push("reset-password/verify-email");
+      }, 1500);
     } catch (error) {
       if (error instanceof ApiError) {
-        setApiError(error.message);
+        setErrorMessage(error.message);
       } else {
-        setApiError("An unexpected error occurred. Please try again.");
+        setErrorMessage("An unexpected error occurred. Please try again.");
+        console.error("Unexpected error:", error);
       }
     }
   };
@@ -55,6 +59,13 @@ export function ResetPasswordForm() {
               Enter the email address associated with your account
             </p>
           </div>
+
+          {successMessage && (
+            <div className="mb-4 text-green-600 text-sm">{successMessage}</div>
+          )}
+          {errorMessage && (
+            <div className="mb-4 text-red-600 text-sm">{errorMessage}</div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2 text-left">
@@ -88,10 +99,10 @@ export function ResetPasswordForm() {
               {isSubmitting ? (
                 <div className="flex items-center justify-center text-md gap-2">
                   <Loader className="animate-spin h-6 w-6" />
-                  <span>Sending Instructions</span>
+                  <span>Sending Reset Link</span>
                 </div>
               ) : (
-                "Send Instructions"
+                "Send Reset Link"
               )}
             </Button>
           </form>
