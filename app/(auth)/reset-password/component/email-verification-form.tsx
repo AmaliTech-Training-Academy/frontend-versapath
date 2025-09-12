@@ -3,20 +3,22 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {  Loader } from "lucide-react";
+import {  Loader} from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 export default function EmailVerificationCard() {
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter()
   const handleOpenEmail = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsLoading(false);
     window.open("mailto:", "_blank");
   };
 
   const handleSkip = () => {
-    console.log("Skipping email confirmation");
+    router.push("/login");
+
   };
 
   return (

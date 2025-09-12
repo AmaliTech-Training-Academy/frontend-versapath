@@ -7,4 +7,4 @@ export const resetPasswordSchema = z.object({
     .email("Please enter a valid email address"),
 });
 
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
