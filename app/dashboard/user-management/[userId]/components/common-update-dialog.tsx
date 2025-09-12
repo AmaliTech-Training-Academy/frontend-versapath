@@ -34,7 +34,7 @@ export const CommonUpdateDialog: React.FC<CommonUpdateDialogProps> = ({
   triggerButton,
   updateFunction,
   updateKey,
-  mutateKeys = [`/users/${userId}`],
+  mutateKeys = `/users/${userId}`,
   successMessage,
   errorMessage,
 }) => {
