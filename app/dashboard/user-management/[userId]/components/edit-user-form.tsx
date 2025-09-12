@@ -8,10 +8,31 @@ import { SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { User } from "@/lib/types/api";
-export const EditUserForm: React.FC<{ initialData: User }> = ({ initialData }) => {
-  const form = useForm();
+import { UpdateUserProps, updateUserSchema } from "@/lib/schemas/update-user";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Roles } from "@/lib/types";
+import { toast } from "sonner";
+
+export const EditUserForm: React.FC<{ initialData: User }> = ({
+  initialData,
+}) => {
+  const form = useForm<UpdateUserProps>({
+    resolver: zodResolver(updateUserSchema),
+    mode: "onChange",
+    defaultValues: {
+      fullName: `${initialData.firstName || ""} ${
+        initialData.lastName || ""
+      }`.trim(),
+      role: initialData.role || "",
+      email: initialData.email || "",
+      status: initialData.status || "",
+      phoneNumber: "",
+      mentor: "",
+      manager: "",
+    },
+  });
   const onSubmit = async () => {
-    // Handle login logic here}
+    toast.warning("Implementation not done yet. Please be patient");
   };
   return (
     <section className="w-full px-2 pb-5 space-y-4">
@@ -20,78 +41,94 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({ initialData }) =
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name=""
+            name="fullName"
             render={({ field }) => (
               <CustomInput
                 label="Full Name"
-                placeholder="Mary Mensah"
+                placeholder="e.g: Mary Mensah"
                 {...field}
+                value={field.value || ""}
               />
             )}
           />
           <FormField
             control={form.control}
-            name=""
+            name="role"
             render={({ field }) => (
               <CustomSelect
                 label="Role"
-                selectValues={["Learner", "Mentor", "Manager", "Admin"]}
+                placeholder="Select role"
+                selectValues={Object.values(Roles)}
                 {...field}
+                value={field.value || ""}
+                disabled
               />
             )}
           />
           <FormField
             control={form.control}
-            name=""
+            name="status"
+            render={({ field }) => (
+              <CustomSelect
+                label="Status"
+                placeholder="Select status"
+                selectValues={["ACTIVE", "INACTIVE"]}
+                {...field}
+                value={field.value || ""}
+                disabled
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
             render={({ field }) => (
               <CustomInput
                 label="Email"
-                placeholder="mary.mensah@gmail.com"
+                placeholder="email@mail.com"
                 type="text"
                 {...field}
+                value={field.value || ""}
+                disabled
               />
             )}
           />
           <FormField
             control={form.control}
-            name=""
+            name="phoneNumber"
             render={({ field }) => (
               <CustomInput
                 label="Phone number"
                 placeholder="0786 123 456"
                 type="text"
                 {...field}
+                value={field.value || ""}
               />
             )}
           />
           <FormField
             control={form.control}
-            name=""
-            render={({ field }) => (
-              <CustomInput label="Date joined" type="date" {...field} />
-            )}
-          />
-          <FormField
-            control={form.control}
-            name=""
+            name="mentor"
             render={({ field }) => (
               <CustomSelect
                 label="Assigned Mentor"
-                placeholder="Select a verified email to display"
+                placeholder="Assign a mentor"
                 selectValues={["Mentor1", "Mentor2", "Mentor3", "Mentor4"]}
                 {...field}
+                value={field.value || ""}
               />
             )}
           />
-
           <FormField
             control={form.control}
-            name=""
+            name="manager"
             render={({ field }) => (
               <CustomSelect
                 label="Manager"
+                placeholder="Assign a manager"
                 selectValues={["Manager1", "Manager2", "Manager3", "Manager4"]}
                 {...field}
+                value={field.value || ""}
               />
             )}
           />

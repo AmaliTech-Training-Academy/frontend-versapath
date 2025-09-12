@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { Loader, PenBox } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SheetWrapper } from "../../components/sheet-wrapper";
-import { EditUserForm } from "./components/edit-user-form";
 import { UserProfileCard } from "./components/user-profile-card";
 import { UserBadges } from "./components/user-badges-card";
 import { GrowthTrack } from "./components/growth-track-card";
@@ -14,6 +12,7 @@ import Image from "next/image";
 import { PageHeader } from "./components/page-header";
 import { useParams } from "next/navigation";
 import { useFetchSingleUser } from "@/lib/api/users";
+import { EditUserPopoverTrigger } from "./components/edit-user-popover-trigger";
 
 export default function UserPage() {
   const { userId } = useParams();
@@ -66,18 +65,7 @@ export default function UserPage() {
           <article className="w-full p-4 space-y-4 border bg-base-light-white rounded-xl border-gray-stroke-weak">
             <UserProfileCard user={user as User} />
 
-            <SheetWrapper
-              headerTitle="Edit user Profile"
-              headerDescription="Update user information"
-              trigger={
-                <Button variant={"ghost"} className="bg-base-light-overlay/50">
-                  <PenBox />
-                  Edit user
-                </Button>
-              }
-            >
-              <EditUserForm initialData={user as User} />
-            </SheetWrapper>
+            <EditUserPopoverTrigger user={user as User} />
           </article>
           <UserBadges />
         </section>

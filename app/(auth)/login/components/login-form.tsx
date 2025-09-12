@@ -89,7 +89,7 @@ export const LoginForm = () => {
           )}
 
           <div className="flex justify-end">
-            <Link href="#" className="text-sm text-brand-primary-text">
+            <Link href="/reset-password" className="text-sm text-brand-primary-text">
               Forgot Password?
             </Link>
           </div>
