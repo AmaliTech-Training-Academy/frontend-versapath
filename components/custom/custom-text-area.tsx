@@ -36,7 +36,7 @@ export const CustomTextarea: React.FC<CustomTextareaProps> = ({
           />
         </div>
       </FormControl>
-      <FormMessage className="transition-all" />
+      <FormMessage className="transition-all -mt-1 text-xs" />
     </FormItem>
   );
 };
