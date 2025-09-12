@@ -14,18 +14,7 @@ import { addSkillSchema, AddSkillSchemaProps } from "@/lib/schemas/add-skill";
 import { CustomSelect } from "@/components/custom/custom-select";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
 import MultipleSelectChip from "@/components/custom/multiple-selection-input";
-
-const defaultTags = [
-  "Web development",
-  "Data Science",
-  "Machine Learning",
-  "Mobile Development",
-  "Cloud Computing",
-  "Cybersecurity",
-  "DevOps",
-  "UI/UX Design",
-  "Blockchain",
-];
+import { defaultTags } from "@/lib/constants/tags";
 
 export const AddSkillForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +33,7 @@ export const AddSkillForm = () => {
 
   const onSubmit = async (data: AddSkillSchemaProps) => {
     setError(null);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log(data);
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate network request - to be replaced with actual request
     toast.success("Skill added successfully", {
       action: {
         label: "Undo",

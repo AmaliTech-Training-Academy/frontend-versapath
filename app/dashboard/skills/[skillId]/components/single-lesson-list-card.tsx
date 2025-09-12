@@ -6,11 +6,7 @@ type IconsProp = ForwardRefExoticComponent<
     titleId?: string;
   } & RefAttributes<SVGSVGElement>
 >;
-export const SingleLessonListCard = ({
-  data,
-  index,
-  total,
-}: {
+type LessonListCardProps = {
   data: {
     title: string;
     id: number;
@@ -19,13 +15,17 @@ export const SingleLessonListCard = ({
   };
   index: number;
   total: number;
-}) => {
+};
+export const SingleLessonListCard = ({
+  data,
+  index,
+  total,
+}: LessonListCardProps) => {
   const isFirst = index === 0;
   const isLast = index === total - 1;
 
   return (
     <section className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50">
-      {/* Number line gutter */}
       <div className="ps-4 pe-5 py-4 bg-base-light-white relative">
         {!isFirst && (
           <div className="w-0.5 absolute left-[25.5px] top-0 bottom-10 bg-gray-text-weak/30" />
