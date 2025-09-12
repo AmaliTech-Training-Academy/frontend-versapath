@@ -52,7 +52,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const { user } = credentials as {
                     user: string
                 }
-                console.log(JSON.parse(user));
                 return JSON.parse(user);
             }
         })
