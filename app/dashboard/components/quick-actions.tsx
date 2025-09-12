@@ -7,8 +7,8 @@ export const QuickActions = () => {
             <p className="font-semibold text-lg">Quick Actions</p>
             <article className="grid grid-cols-4 gap-6">
                 {
-                    quickActions.map(action => (
-                        <QuickActionCard key={action.title} title={action.title} description={action.description} icon={action.icon} />
+                    quickActions.map((action, i) => (
+                        <QuickActionCard key={`${action.title} ${i}`} title={action.title} description={action.description} icon={action.icon} />
                     ))
                 }
             </article>

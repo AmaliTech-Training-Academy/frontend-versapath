@@ -14,26 +14,48 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import user from "@/public/images/user-profile.jpg";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 
 export const ProfileForm = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const inputId = "profile-image-input";
+
     const form = useForm<ProfileSchema>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
-            firstName: "Paul",
-            lastName: "Terku",
+            firstName: session?.user.firstName ?? "",
+            lastName: session?.user.lastName ?? "",
             email: session?.user.email ?? "",
-            phoneNumber: "+250798654321",
             image: undefined
         },
         mode: "onChange",
     });
 
+    // When session loads/changes, hydrate the form with user data
+    useEffect(() => {
+        if (!session?.user) return;
+        form.reset({
+            firstName: session.user.firstName ?? "",
+            lastName: session.user.lastName ?? "",
+            email: session.user.email ?? "",
+            phoneNumber: (session.user as any).phoneNumber ?? "",
+            image: undefined, // file inputs can't be prefilled; keep undefined
+        });
+    }, [session?.user, form]);
+
     const onSubmit = async (data: ProfileSchema) => {
         setTimeout(() => console.log(data), 2000);
         toast.success('Profile updated successfully!');
     };
+
+    if(status === "loading") {
+        return (
+            <div className="col-span-3 w-full min-h-1/2 flex items-center justify-center text-gray-stroke-strong">
+                <Loader className="animate-spin" />
+                <span>Loading...</span>
+            </div>
+        )
+    }
 
     return (
         <Form {...form}>
@@ -43,7 +65,7 @@ export const ProfileForm = () => {
             >
                 <div className="flex items-center gap-6">
                     <div className="w-[150px] h-[150px] relative rounded-full">
-                        <Image src={user} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" />
+                        <Image src={user} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" priority />
                         {/* <Button className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer">
                             <Camera className="text-base-white" size={24} />
                         </Button> */}
@@ -132,7 +154,7 @@ export const ProfileForm = () => {
                         render={({ field }) => (
                             <CustomInput
                                 label="Phone Number"
-                                placeholder="Enter your email address"
+                                placeholder="Enter your phone number"
                                 {...field}
                             />
                         )}
