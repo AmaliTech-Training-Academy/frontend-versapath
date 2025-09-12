@@ -57,6 +57,7 @@ export interface LoginData<T> {
 }
 
 export type ApiResponse<TData, TError = ApiErrors> = {
+  // status: number;
   success: boolean;
   message?: string;
   data?: TData | null;

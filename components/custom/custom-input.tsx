@@ -70,7 +70,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
           )}
         </div>
       </FormControl>
-      <FormMessage className="transition-all" />
+      <FormMessage className="transition-all -mt-1 text-xs" />
     </FormItem>
   );
 };
