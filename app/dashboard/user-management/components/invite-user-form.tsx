@@ -61,7 +61,7 @@ export const InviteUserForm = () => {
     if (roles.length === 0) {
       dispatch(fetchRoles());
     }
-  }, [dispatch]);
+  }, [dispatch, roles.length]);
   if (isFetchingRoles) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
