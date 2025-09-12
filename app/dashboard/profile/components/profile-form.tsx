@@ -15,6 +15,7 @@ import Image from "next/image";
 import user from "@/public/images/user-profile.jpg";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import { apiUpdateProfile } from "@/lib/api/profile";
 
 export const ProfileForm = () => {
     const { data: session, status } = useSession();
@@ -23,9 +24,9 @@ export const ProfileForm = () => {
     const form = useForm<ProfileSchema>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
-            firstName: session?.user.firstName ?? "",
-            lastName: session?.user.lastName ?? "",
-            email: session?.user.email ?? "",
+            firstName: "",
+            lastName: "",
+            userName: "",
             image: undefined
         },
         mode: "onChange",
@@ -37,18 +38,22 @@ export const ProfileForm = () => {
         form.reset({
             firstName: session.user.firstName ?? "",
             lastName: session.user.lastName ?? "",
-            email: session.user.email ?? "",
-            phoneNumber: (session.user as any).phoneNumber ?? "",
-            image: undefined, // file inputs can't be prefilled; keep undefined
+            userName: session.user.username ?? ""
         });
     }, [session?.user, form]);
 
     const onSubmit = async (data: ProfileSchema) => {
-        setTimeout(() => console.log(data), 2000);
-        toast.success('Profile updated successfully!');
+        const { firstName, lastName } = await profileFormSchema.parseAsync(data);
+        const result = await apiUpdateProfile(firstName, lastName);
+
+        if (!result.success) {
+            toast.error(result.error || "Unable to log in. Please try again.");
+        } else {
+            toast.success("Login successful! Redirecting...");
+        }
     };
 
-    if(status === "loading") {
+    if (status === "loading") {
         return (
             <div className="col-span-3 w-full min-h-1/2 flex items-center justify-center text-gray-stroke-strong">
                 <Loader className="animate-spin" />
@@ -66,9 +71,6 @@ export const ProfileForm = () => {
                 <div className="flex items-center gap-6">
                     <div className="w-[150px] h-[150px] relative rounded-full">
                         <Image src={user} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" priority />
-                        {/* <Button className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer">
-                            <Camera className="text-base-white" size={24} />
-                        </Button> */}
                         <FormField
                             control={form.control}
                             name="image"
@@ -134,27 +136,14 @@ export const ProfileForm = () => {
                         )}
                     />
 
-                    {/* email */}
+                    {/* Username */}
                     <FormField
                         control={form.control}
-                        name="email"
+                        name="userName"
                         render={({ field }) => (
                             <CustomInput
-                                label="Email"
-                                placeholder="Enter your email address"
-                                {...field}
-                            />
-                        )}
-                    />
-
-                    {/* email */}
-                    <FormField
-                        control={form.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                            <CustomInput
-                                label="Phone Number"
-                                placeholder="Enter your phone number"
+                                label="Username"
+                                placeholder="Enter your username"
                                 {...field}
                             />
                         )}
