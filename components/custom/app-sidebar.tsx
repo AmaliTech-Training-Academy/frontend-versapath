@@ -245,7 +245,7 @@ export function AppSidebar() {
           <User size={50} className="rounded-full h-10 w-10 flex-shrink-0" />
           <div className="space-y-2">
             <p className="font-semibold text-gray-text-strong">
-              {session?.user.username}
+              {`${session?.user.firstName} ${session?.user.lastName}`}
             </p>
             <p className="text-xs text-gray-text-weak">
               {session?.user.email}

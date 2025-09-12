@@ -18,7 +18,7 @@ import { useEffect } from "react";
 import { apiUpdateProfile } from "@/lib/api/profile";
 
 export const ProfileForm = () => {
-    const { data: session, status } = useSession();
+    const { data: session, status, update } = useSession();
     const inputId = "profile-image-input";
 
     const form = useForm<ProfileSchema>({
@@ -43,14 +43,26 @@ export const ProfileForm = () => {
     }, [session?.user, form]);
 
     const onSubmit = async (data: ProfileSchema) => {
-        const { firstName, lastName } = await profileFormSchema.parseAsync(data);
-        const result = await apiUpdateProfile(firstName, lastName);
+        const { firstName, lastName, userName: username } = await profileFormSchema.parseAsync(data);
+        const result = await apiUpdateProfile(firstName, lastName, username);
 
         if (!result.success) {
             toast.error(result.error || "Unable to log in. Please try again.");
-        } else {
-            toast.success("Login successful! Redirecting...");
+            return;
         }
+
+        // Push the fresh fields into the NextAuth session (token → session)
+        await update({
+            user: {
+                // merge only what changed; include any IDs/fields your session relies on
+                ...session?.user,
+                firstName: result.user.firstName,
+                lastName: result.user.lastName,
+                username: result.user.username
+            },
+        });
+
+        toast.success("Profile updated successfully");
     };
 
     if (status === "loading") {
