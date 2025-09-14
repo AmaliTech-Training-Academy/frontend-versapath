@@ -17,7 +17,6 @@ interface CustomSelectProps {
   selectValues?: string[] | { id: string; name: string }[];
   value?: string;
   onChange?: (value: string) => void;
-  placeholder?: string;
   disabled?: boolean;
 }
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -26,17 +25,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   onChange,
   label,
   disabled,
-  placeholder = "Select an option",
 }) => {
   return (
     <FormItem>
       <FormLabel>{label}</FormLabel>
-      <Select
-        onValueChange={onChange}
-        defaultValue={value}
-        value={value}
-        disabled={disabled}
-      >
+      <Select onValueChange={onChange} value={value || ""} disabled={disabled}>
         <FormControl>
           <SelectTrigger className="w-full h-auto py-2">
             <SelectValue
@@ -56,7 +49,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           ))}
         </SelectContent>
       </Select>
-      <FormMessage className="transition-all" />
+      <FormMessage className="transition-all -mt-1 text-xs" />
     </FormItem>
   );
 };

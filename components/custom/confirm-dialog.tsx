@@ -11,7 +11,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-// import { X } from "lucide-react"
+import { Loader } from "lucide-react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -20,9 +20,12 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   alternativeLabel?: string;
   destructive?: boolean;
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
   onAlternative?: () => void;
   onClose: () => void;
+  dialogClose?: boolean;
+  loading?: boolean; // New prop for loading state
+  preventCloseOnConfirm?: boolean; // New prop to prevent auto-close
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -35,9 +38,22 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onAlternative,
   onClose,
+  dialogClose,
+  loading = false,
+  preventCloseOnConfirm = false,
 }) => {
+  const handleConfirm = async () => {
+    if (onConfirm) {
+      await onConfirm();
+    }
+    // Only close automatically if preventCloseOnConfirm is false
+    if (!preventCloseOnConfirm) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={loading ? undefined : onClose}>
       <DialogContent className="lg:w-[480px] rounded-xl p-6">
         <DialogHeader className="flex flex-row justify-between items-start">
           <DialogTitle className="text-2xl font-semibold text-gray-text-strong/85">
@@ -50,6 +66,17 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {description}
         </DialogDescription>
         <DialogFooter className="flex justify-end gap-3 mt-6">
+          {dialogClose && (
+            <DialogClose asChild>
+              <Button
+                variant={"ghost"}
+                className="p-6 text-md"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+          )}
           {onAlternative && (
             <Button
               variant="outline"
@@ -58,6 +85,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   ? "h-8 p-6 text-md bg-brand-primary-text/10 border-none"
                   : ""
               }
+              disabled={loading}
               onClick={() => {
                 onAlternative?.();
                 onClose();
@@ -69,12 +97,17 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
           <Button
             className="bg-brand-primary-text p-6 text-md"
-            onClick={() => {
-              onConfirm?.();
-              onClose();
-            }}
+            disabled={loading}
+            onClick={handleConfirm}
           >
-            {confirmLabel}
+            {loading ? (
+              <>
+                <Loader className="animate-spin mr-2" size={16} />
+                {confirmLabel}
+              </>
+            ) : (
+              confirmLabel
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -4,9 +4,13 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
 import rolesReducer from "./slices/roles-slice";
+import categoriesReducer from "./slices/category-slice";
+import tagsReducer from "./slices/tags-slice";
 const rootReducer = combineReducers({
   updateUser,
   rolesReducer,
+  categoriesReducer,
+  tagsReducer,
 });
 const persistConfig = {
   key: "root",
