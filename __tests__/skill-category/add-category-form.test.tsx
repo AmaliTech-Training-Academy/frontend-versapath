@@ -1,4 +1,3 @@
-// __tests__/skill-category/add-category-form.test.tsx
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
