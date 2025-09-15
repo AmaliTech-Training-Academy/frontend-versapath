@@ -3,10 +3,14 @@ import { z } from "zod";
 export const registerSchema = z
   .object({
     email: z.email(),
-    fullName: z
+    firstName: z
       .string("Names are required")
       .nonempty("Full Name is required")
-      .min(4, "Full Name must be at least 4 characters long"),
+      .min(3, "Name must be at least 3 characters long"),
+    lastName: z
+      .string("Last name is required")
+      .nonempty("Last Name is required")
+      .min(2, "Last must be at least 2 characters long"),
     password: z
       .string({ error: "Password is required" })
       .nonempty("Password is required")
