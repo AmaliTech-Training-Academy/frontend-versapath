@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api/reset-password";
 import { resetPasswordSchema } from "@/lib/schemas/reset-passord";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type ResetPasswordFormData = {
   email: string;
@@ -33,10 +34,7 @@ export function ResetPasswordForm() {
     setErrorMessage("");
     try {
       const response = await authApi.resetPassword(data.email);
-      setSuccessMessage(response?.message || "Password reset email sent.");
-      setTimeout(() => {
-        router.push("reset-password/verify-email");
-      }, 1500);
+      router.push("reset-password/verify-email");
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -59,13 +57,6 @@ export function ResetPasswordForm() {
               Enter the email address associated with your account
             </p>
           </div>
-
-          {successMessage && (
-            <div className="mb-4 text-green-600 text-sm">{successMessage}</div>
-          )}
-          {errorMessage && (
-            <div className="mb-4 text-red-600 text-sm">{errorMessage}</div>
-          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2 text-left">
@@ -90,7 +81,16 @@ export function ResetPasswordForm() {
                 <p className="text-sm text-red-text">{errors.email.message}</p>
               )}
             </div>
-
+            {successMessage && (
+              <div className="mb-4 text-brand-primary-text text-sm">
+                {successMessage}
+              </div>
+            )}
+            {errorMessage && (
+              <div className="mb-4 text-destructive text-sm">
+                {errorMessage}
+              </div>
+            )}
             <Button
               type="submit"
               disabled={isSubmitting}

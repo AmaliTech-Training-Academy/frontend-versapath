@@ -4,7 +4,7 @@ import Image from "next/image";
 import { SkillAtomCard } from "./skill-atom-card";
 import { ConfirmDialog } from "@/components/custom/confirm-dialog";
 import { SkillAtom } from "@/lib/types/skill-atom";
-import { atomApi} from "@/lib/api/skill-atom-api";
+import { atomApi } from "@/lib/api/skill-atom-api";
 import { toast } from "sonner";
 
 interface SkillAtomListProps {
@@ -27,19 +27,17 @@ export const SkillAtomsList: React.FC<SkillAtomListProps> = ({
 
   const handleDeleteConfirm = async () => {
     if (!selectedLesson) return;
-
     setLoading(true);
-    const success = await atomApi.deleteAtom(selectedLesson.id);
-
-    if (success) {
+    try {
+      await atomApi.deleteAtom(selectedLesson.id);
       onDelete?.(selectedLesson.id);
+    } catch {
+    } finally {
       toast.success("Lesson deleted successfully");
-    } else {
-      alert("Failed to delete lesson. Please try again.");
+      onRefresh?.();
+      setLoading(false);
+      setSelectedLesson(null);
     }
-
-    setLoading(false);
-    setSelectedLesson(null);
   };
 
   if (skillAtoms.length === 0) {

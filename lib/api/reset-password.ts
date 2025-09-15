@@ -6,7 +6,9 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
-
+interface UpdatePasswordProps {
+  message: string;
+}
 export const authApi = {
   resetPassword: async (email: string) => {
     const result = await apiRequest<{ message: string }>(
@@ -26,7 +28,7 @@ export const authApi = {
     token: string,
     data: { password: string; confirmPassword: string }
   ) => {
-    const result = await apiRequest<{ message: string }>(
+    const result = await apiRequest<UpdatePasswordProps>(
       `/auth/reset-password?reset=${token}`,
       "POST",
       {
@@ -34,10 +36,8 @@ export const authApi = {
         confirmPassword: data.confirmPassword,
       }
     );
-    if (!result.success) {
-      throw new ApiError(400, result.message || "Failed to update password");
-    }
+   
 
-    return result.data;
+    return result;
   },
 };
