@@ -83,7 +83,7 @@ describe("LoginForm", () => {
     renderLoginForm();
     await fillAndSubmit("test@example.com", "wrongpass");
     await waitFor(() => {
-      expect(screen.getByText(/Email and password don't match. Please try again./i)).toBeInTheDocument();
+      expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument();
       expect(mockToast).not.toHaveBeenCalled();
     });
   });

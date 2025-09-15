@@ -320,7 +320,7 @@ export function AppSidebar() {
                       key={label}
                       variant="ghost"
                       className="cursor-pointer w-full flex items-center justify-start"
-                      aria-label="Profile"
+                      aria-label={label}
                       onClick={handleClick ?? undefined}
                     >
                       <Icon />
