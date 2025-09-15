@@ -6,6 +6,7 @@ export enum Status {
 }
 export interface User {
   id: string;
+  userId?: string;
   email: string;
   username: string;
   role: Roles;

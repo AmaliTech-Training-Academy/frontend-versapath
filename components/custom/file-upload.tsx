@@ -57,7 +57,7 @@ export const FileUpload = ({
       revokePreview();
       readerRef.current?.abort();
     };
-  }, [revokePreview]);
+  }, []);
 
   // file processing
   const startLocalReadForPreview = (file: File) => {
