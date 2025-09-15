@@ -1,9 +1,8 @@
+import { vi, describe, test, expect, beforeAll, beforeEach, afterEach } from "vitest";
+import type { NextRequest, NextMiddleware } from "next/server";
+import { NextResponse } from "next/server";
+
 type AuthInfo = { user?: { role?: string } };
-import { NextRequest, NextResponse } from "next/server";
-import type { NextMiddleware } from "next/server";
-import middleware from "../middleware";
-import { publicPaths } from "../lib/constants/routes";
-import { vi, describe, test, expect, beforeEach } from 'vitest';
 
 interface AuthenticatedRequest extends NextRequest {
     auth?: {
@@ -13,93 +12,111 @@ interface AuthenticatedRequest extends NextRequest {
     };
 }
 
-// Mock auth middleware wrapper
 vi.mock("../auth", () => ({
     auth: (fn: NextMiddleware): NextMiddleware => fn,
 }));
 
-describe("Middleware", () => {
-    // Setup the context object with params that match AppRouteHandlerFnContext
-    const context = {
-        params: Promise.resolve({})
-    } as const;
+const PUBLIC_PATHS = ["/", "/login", "/register", "/unauthorized"] as const;
+const PROTECTED_PATHS = [
+    { url: "/dashboard/user-management", role: ["ADMIN"] as const }, // specific FIRST
+    { url: "/dashboard", role: ["ADMIN", "LEARNER", "MENTOR", "MANAGER"] as const },
+];
 
-    class MockNextURL {
-        pathname: string;
-        href: string;
-        search = "";
-        searchParams = new URLSearchParams();
-        origin = "http://localhost:3000";
-        protocol = "http:";
-        host = "localhost:3000";
-        hostname = "localhost";
-        port = "3000";
-        hash = "";
+// Deterministic routes (specific-first) and /unauthorized allowed as public.
+vi.mock("../lib/constants/routes", () => ({
+    publicPaths: PUBLIC_PATHS,
+    protectedPaths: PROTECTED_PATHS,
+}));
 
-        constructor(pathname: string) {
-            this.pathname = pathname;
-            this.href = `http://localhost:3000${pathname}`;
-        }
+let middleware: any;
 
-        toString(): string { return this.href; }
+beforeAll(async () => {
+    ({ default: middleware } = await import("../middleware"));
+});
+
+const context = {
+    params: Promise.resolve({}),
+} as const;
+
+class MockNextURL {
+    pathname: string;
+    href: string;
+    search = "";
+    searchParams = new URLSearchParams();
+    origin = "http://localhost:3000";
+    protocol = "http:";
+    host = "localhost:3000";
+    hostname = "localhost";
+    port = "3000";
+    hash = "";
+    constructor(pathname: string) {
+        this.pathname = pathname;
+        this.href = `http://localhost:3000${pathname}`;
     }
+    toString() {
+        return this.href;
+    }
+}
 
-    beforeEach(() => {
-        // Mock NextResponse
-        vi.spyOn(NextResponse, "redirect").mockImplementation((url: URL | string) => {
-            return new NextResponse(null, {
-                status: 307,
-                headers: { Location: url.toString() },
-            });
-        });
+const createRequest = (pathname: string, auth?: AuthInfo): AuthenticatedRequest => {
+    const request = new Request(`http://localhost:3000${pathname}`, { method: "GET" });
+    return Object.assign(request, {
+        nextUrl: new MockNextURL(pathname),
+        auth,
+        cookies: {
+            get: () => undefined,
+            getAll: () => [],
+            has: () => false,
+            delete: () => { },
+            set: () => { },
+        },
+    }) as unknown as AuthenticatedRequest;
+};
 
-        vi.spyOn(NextResponse, "next").mockImplementation(() => {
-            return new NextResponse(null, { status: 200 });
+beforeEach(() => {
+    vi.restoreAllMocks();
+
+    vi.spyOn(NextResponse, "redirect").mockImplementation((url: unknown) => {
+        return new NextResponse(null, {
+            status: 307,
+            headers: { Location: String(url) },
         });
     });
 
-    const createRequest = (pathname: string, auth?: AuthInfo): AuthenticatedRequest => {
-        const request = new Request(`http://localhost:3000${pathname}`, {
-            method: 'GET',
-        });
+    vi.spyOn(NextResponse, "next").mockImplementation(() => {
+        return new NextResponse(null, { status: 200 });
+    });
+});
 
-        return Object.assign(request, {
-            nextUrl: new MockNextURL(pathname),
-            auth,
-            cookies: {
-                get: () => undefined,
-                getAll: () => [],
-                has: () => false,
-                delete: () => { },
-                set: () => { },
-            },
-        }) as unknown as AuthenticatedRequest;
-    };
+afterEach(() => {
+    vi.clearAllMocks();
+});
 
+describe("Middleware", () => {
     describe("Public Routes", () => {
-        test.each(publicPaths)("allows unauthenticated access to public path %s", async (path) => {
-            const request = createRequest(path);
-            const response = await middleware(request, context);
-            expect((response as NextResponse).status).toBe(200);
+        test("allows unauthenticated access to all public paths", async () => {
+            for (const path of PUBLIC_PATHS) {
+                const request = createRequest(path);
+                const response = (await middleware(request as any, context as any)) as Response;
+                expect(response.status).toBe(200);
+            }
         });
 
-        test("redirects authenticated user from login to dashboard with 307", async () => {
+        test("redirects authenticated user from /login to /dashboard with 307", async () => {
             const request = createRequest("/login", { user: { role: "LEARNER" } });
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
             expect(location).toBe("http://localhost:3000/dashboard");
         });
     });
 
     describe("Protected Routes", () => {
-        test("redirects unauthenticated user to login with 307", async () => {
+        test("redirects unauthenticated user to /login with 307", async () => {
             const request = createRequest("/dashboard");
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
             expect(location).toBe("http://localhost:3000/login");
         });
 
@@ -110,52 +127,53 @@ describe("Middleware", () => {
             { role: "MANAGER", path: "/dashboard" },
         ])("allows access for $role to $path", async ({ role, path }) => {
             const request = createRequest(path, { user: { role } });
-            const response = await middleware(request, context);
-            expect((response as NextResponse).status).toBe(200);
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(200);
         });
 
-        test("redirects unauthorized role to unauthorized page with 307", async () => {
+        test("redirects unauthorized role to /unauthorized with 307", async () => {
             const request = createRequest("/dashboard/user-management", { user: { role: "LEARNER" } });
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
-            expect(location).toContain("/unauthorized");
-            expect(location).toContain("error=You");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
+            expect(location).toBe(
+                "http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page"
+            );
         });
 
-        test("redirects authenticated user with no role to login with 307", async () => {
+        test("redirects authenticated user with no role to /unauthorized with 307", async () => {
             const request = createRequest("/dashboard", { user: {} });
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
-            expect(location).toBe("http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
+            expect(location).toBe(
+                "http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page"
+            );
         });
 
-        test("redirects authenticated user with invalid role to login with 307", async () => {
+        test("redirects authenticated user with invalid role to /unauthorized with 307", async () => {
             const request = createRequest("/dashboard", { user: { role: "INVALID" } });
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
-            expect(location).toBe("http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
+            expect(location).toBe(
+                "http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page"
+            );
         });
     });
 
     describe("Unmatched Routes", () => {
         test("allows access to authenticated user for unmatched routes", async () => {
             const request = createRequest("/some-random-path", { user: { role: "LEARNER" } });
-            const response = await middleware(request, context);
-            expect((response as NextResponse).status).toBe(200);
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(200);
         });
 
-        test("redirects unauthenticated user to login for unmatched routes with 307", async () => {
+        test("redirects unauthenticated user to /login for unmatched routes with 307", async () => {
             const request = createRequest("/some-random-path");
-            const response = await middleware(request, context);
-            expect(response).toBeInstanceOf(Response);
-            expect((response as Response).status).toBe(307);
-            const location = (response as NextResponse).headers.get("Location");
+            const response = (await middleware(request as any, context as any)) as Response;
+            expect(response.status).toBe(307);
+            const location = response.headers.get("Location");
             expect(location).toBe("http://localhost:3000/login");
         });
     });

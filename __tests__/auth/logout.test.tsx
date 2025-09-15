@@ -1,88 +1,139 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { signOut } from "next-auth/react";
-import { AppSidebar } from "@/components/custom/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import React from "react";
+import { vi } from "vitest";
 
-// Mock window.matchMedia
-const mockMatchMedia = vi.fn().mockImplementation((query: string) => ({
-  matches: false,
-  media: query,
-  onchange: null,
-  addListener: vi.fn(),
-  removeListener: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-}));
-
-// Add matchMedia to window
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: mockMatchMedia,
+  value: vi.fn().mockImplementation((q: string) => ({
+    matches: false,
+    media: q,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
-// Add innerWidth to window
 Object.defineProperty(window, "innerWidth", {
   writable: true,
-  value: 1024, // Desktop width
+  value: 1024,
 });
 
-// Mock next-auth sign out
-vi.mock("next-auth/react", () => ({
-  signOut: vi.fn(),
+vi.mock("@/lib/types", () => ({
+  Roles: { ADMIN: "ADMIN", MANAGER: "MANAGER", MENTOR: "MENTOR", LEARNER: "LEARNER" },
 }));
 
-// Mock next/navigation
+// Mock next/router
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
+  useRouter: () => ({ push: vi.fn() }),
 }));
 
+// Mock next/image to plain <img>
 vi.mock("next/image", () => ({
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    return <img {...props} alt={props.alt || "image"} />;
-  },
+  __esModule: true,
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} alt={props.alt || "image"} />,
 }));
 
-const renderWithSidebarProvider = (component: React.ReactNode) => {
-  return render(
-    <SidebarProvider defaultOpen={true}>{component}</SidebarProvider>
-  );
-};
+// Mock next-auth: useSession + signOut
+const signOutMock = vi.fn();
+vi.mock("next-auth/react", () => ({
+  __esModule: true,
+  useSession: () => ({
+    data: {
+      user: {
+        firstName: "Bob",
+        lastName: "Shema",
+        email: "bob@example.com",
+        role: "ADMIN",
+      },
+    },
+    status: "authenticated",
+  }),
+  signOut: (...args: any[]) => signOutMock(...args),
+}));
 
-describe("Logout Functionality", () => {
+// Mock the confirm dialog to render simple buttons when open
+vi.mock("@/components/custom/confirm-dialog", () => ({
+  ConfirmDialog: ({
+    open,
+    title,
+    description,
+    confirmLabel,
+    alternativeLabel,
+    onConfirm,
+    onAlternative,
+  }: any) =>
+    open ? (
+      <dialog open aria-label={title}>
+        <p>{description}</p>
+        <button onClick={onAlternative}>{alternativeLabel}</button>
+        <button onClick={onConfirm}>{confirmLabel}</button>
+      </dialog>
+    ) : null,
+}));
+
+// Mock CustomPopover to render trigger and its children
+vi.mock("@/components/custom/custom-popover", () => ({
+  CustomPopover: ({ trigger, children }: any) => (
+    <div>
+      {trigger}
+      <div data-testid="popover-content">{children}</div>
+    </div>
+  ),
+}));
+
+// Mock handleLogOut to invoke signOut
+vi.mock("@/lib/api/logout", async () => {
+  // Import the mocked signOut from next-auth/react
+  const mod = await import("next-auth/react");
+  return {
+    handleLogOut: vi.fn(async () => {
+      await mod.signOut({ redirectTo: "/login" });
+      return { success: true };
+    }),
+  };
+});
+
+import { AppSidebar } from "@/components/custom/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
+const renderWithProvider = (ui: React.ReactNode) =>
+  render(<SidebarProvider defaultOpen={true}>{ui}</SidebarProvider>);
+
+/** ---- TESTS ---- */
+describe("Logout flow", () => {
   beforeEach(() => {
-    // Clear mock function calls before each test
     vi.clearAllMocks();
   });
 
-  it("should render the user options button", () => {
-    renderWithSidebarProvider(<AppSidebar />);
-    const userOptionsButton = screen.getByRole("button", {
-      name: "User options",
-    });
-    expect(userOptionsButton).toBeInTheDocument();
+  it("renders the user options button", () => {
+    renderWithProvider(<AppSidebar />);
+    expect(
+      screen.getByRole("button", { name: "User options" })
+    ).toBeInTheDocument();
   });
 
-  it("should call signOut when clicking the sign out button", async () => {
-    renderWithSidebarProvider(<AppSidebar />);
+  it("logs out after confirming in the dialog", async () => {
+    renderWithProvider(<AppSidebar />);
 
-    // Find and click the more options button that opens the popover
-    const moreButton = screen.getByRole("button", {
-      name: "User options",
-    });
-    fireEvent.click(moreButton);
+    // 1) Open the popover
+    fireEvent.click(screen.getByRole("button", { name: /user options/i }));
 
-    // Wait for the sign out button to be visible in the popover
-    const signOutButton = await screen.findByRole("button", {
-      name: "Sign out",
-    });
+    // 2) Click the *popover* Logout
+    const popover = await screen.findByTestId("popover-content");
+    const popoverLogout = within(popover).getByRole("button", { name: /logout/i });
+    fireEvent.click(popoverLogout);
 
-    // Click the sign out button
-    fireEvent.click(signOutButton);
+    // 3) Now confirm in the dialog
+    const dialog = await screen.findByRole("dialog", { name: /logout/i });
+    const confirmLogout = within(dialog).getByRole("button", { name: /logout/i });
+    fireEvent.click(confirmLogout);
 
-    // Verify signOut was called with correct parameters
-    expect(signOut).toHaveBeenCalledTimes(1);
-    expect(signOut).toHaveBeenCalledWith({ redirectTo: "/login" });
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(signOutMock).toHaveBeenCalledWith({ redirectTo: "/login" });
   });
 });
