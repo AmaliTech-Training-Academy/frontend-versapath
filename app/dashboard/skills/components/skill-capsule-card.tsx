@@ -3,10 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { SkillCapsuleCardMenu } from "./skill-capsule-card-menu";
-export const SkillCapsuleCard: React.FC<{ skill: SKill }> = ({ skill }) => {
+export const SkillCapsuleCard: React.FC<{
+  skill: SKill;
+}> = ({ skill }) => {
   const imageUrl = skill.image ? skill.image : "/images/javascript.png";
   return (
-    <section className="flex flex-col h-fit gap-0 shadow-lg rounded-bl-lg rounded-br-lg">
+    <section className="flex flex-col gap-0 rounded-bl-lg rounded-br-lg shadow-lg h-fit">
       <div className="relative w-full min-h-[168px] aspect-[330/168]">
         <Image
           src={imageUrl}
@@ -16,11 +18,11 @@ export const SkillCapsuleCard: React.FC<{ skill: SKill }> = ({ skill }) => {
         />
       </div>
       <article className="w-full p-3 space-y-4">
-        <div className="w-full inline-flex justify-between items-center">
-          <div className="flex justify-start items-center gap-1 h-12">
+        <div className="inline-flex items-center justify-between w-full">
+          <div className="flex items-center justify-start h-12 gap-1">
             <Link
               href={`/dashboard/skills/${skill.id}`}
-              className="text-gray-text-strong/90 line-clamp-2  text-base font-semibold  leading-normal hover:underline hover:underline-offset-1 transition-all hover:text-brand-primary-text"
+              className="text-base font-semibold leading-normal transition-all text-gray-text-strong/90 line-clamp-2 hover:underline hover:underline-offset-1 hover:text-brand-primary-text"
             >
               {skill.name}
             </Link>
@@ -28,16 +30,16 @@ export const SkillCapsuleCard: React.FC<{ skill: SKill }> = ({ skill }) => {
               {skill.status === "ACTIVE" ? "Published" : "Draft"}
             </p>
           </div>
-          <p className="text-center justify-center text-Text-Text-Weak/70 text-xs  leading-tight">
-            23, Aug. 2024
+          <p className="justify-center text-xs leading-tight text-center text-Text-Text-Weak/70">
+            {new Date(skill.createdAt).toLocaleDateString("en-RW", {})}
           </p>
         </div>
-        <div className="flex gap-2 w-full justify-between">
+        <div className="flex justify-between w-full gap-2">
           <div className="space-x-2">
-            <p className=" inline-block px-2 py-1 w-fit bg-gray-text-strong/5 rounded-2xl border border-gray-text-weak/10  text-gray-text-strong/70 text-xs leading-tight uppercase ">
+            <p className="inline-block px-2 py-1 text-xs leading-tight uppercase border w-fit bg-gray-text-strong/5 rounded-2xl border-gray-text-weak/10 text-gray-text-strong/70">
               {skill.difficulty ?? "Beginner"}
             </p>
-            <p className="inline-block px-2 py-1 w-fit bg-gray-text-strong/5 rounded-2xl border border-gray-text-weak/10  text-gray-text-strong/70 text-xs leading-tight">
+            <p className="inline-block px-2 py-1 text-xs leading-tight border w-fit bg-gray-text-strong/5 rounded-2xl border-gray-text-weak/10 text-gray-text-strong/70">
               {skill.atomNumber} Lessons
             </p>
           </div>

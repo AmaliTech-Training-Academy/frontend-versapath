@@ -9,7 +9,7 @@ import {
 import { SKill } from "../types/skills";
 import { apiRequest } from "./api-request";
 import { AddSkillSchemaProps } from "../schemas/add-skill";
-import { success } from "zod";
+import { SkillAtom } from "../types/skill-atom";
 
 const fetcher = (url: string) => apiRequest<ListData<SKill>>(url, "GET");
 const singleSKillFetcher = (url: string) =>
@@ -25,6 +25,7 @@ export function useFetchSkills(pageIndex: number = 0) {
 }
 export const useFetchSingleSkill = (skillId: string) => {
   const endpoint = `/capsules/${skillId}`;
+  const { data, error, isLoading } = useSWR(endpoint, singleSKillFetcher);
   if (!skillId)
     return {
       skill: null,
@@ -35,7 +36,6 @@ export const useFetchSingleSkill = (skillId: string) => {
         errors: "The specified skill could not be found",
       },
     };
-  const { data, error, isLoading } = useSWR(endpoint, singleSKillFetcher);
   return {
     skill: data,
     isFetchingSkill: isLoading,
@@ -46,7 +46,7 @@ export function deleteSkill(skillId: string) {
   const endpoint = `/capsules/${skillId}`;
   return apiRequest<SKill>(endpoint, "DELETE");
 }
-export const updateSKillAtoms = ({
+export const updateSKillAtoms = async ({
   existingIds,
   selectedIds,
   skillId,
@@ -56,25 +56,62 @@ export const updateSKillAtoms = ({
   skillId: string;
 }) => {
   const endpoint = `/capsules/assignAtom/${skillId}`;
+  const deleteEndpoint = `/capsules/removeAtom?capsuleId=${skillId}`;
   const idsToAdd = selectedIds.filter((id) => !existingIds.includes(id));
   const idsToRemove = existingIds.filter((id) => !selectedIds.includes(id));
 
   if (idsToAdd.length === 0 && idsToRemove.length === 0) {
-    return Promise.resolve({
+    return {
       success: true,
       message: "No changes to update",
       data: null,
-    } as { success: boolean; message: string; data: null });
+    };
   }
-  if (idsToAdd.length > 0) {
-    return apiRequest<SKill>(endpoint, "PATCH", {
-      atomIds: [...new Set(idsToAdd)],
-    });
-  }
-  if (idsToRemove.length > 0) {
-    return apiRequest<SKill>(endpoint, "PATCH", {
-      removeAtomIds: [...new Set(idsToRemove)],
-    });
+
+  try {
+    const resultPromises = [];
+
+    if (idsToAdd.length > 0) {
+      resultPromises.push(
+        apiRequest<SKill>(endpoint, "PATCH", {
+          atomIds: [...new Set(idsToAdd)],
+        })
+      );
+    }
+
+    if (idsToRemove.length > 0) {
+      resultPromises.push(
+        apiRequest<SKill>(deleteEndpoint, "DELETE", {
+          atomIds: [...new Set(idsToRemove)],
+        })
+      );
+    }
+
+    const results = await Promise.all(resultPromises);
+
+    const allSuccessful = results.every((result) => result.success);
+
+    if (!allSuccessful) {
+      const failedResult = results.find((result) => !result.success);
+      return {
+        success: false,
+        message: failedResult?.message || "Failed to update skill atoms",
+        errors: failedResult?.errors || ["Update operation failed"],
+      };
+    }
+
+    return {
+      success: true,
+      message: "Skill atoms updated successfully",
+      data: results,
+    };
+  } catch (error) {
+    console.error("Error updating skill atoms:", error);
+    return {
+      success: false,
+      message: "An unexpected error occurred while updating skill atoms",
+      errors: [error instanceof Error ? error.message : "Unknown error"],
+    };
   }
 };
 export const handleSkillSubmission = async (
@@ -93,10 +130,9 @@ export const handleSkillSubmission = async (
     difficulty,
     proficiencyLevel,
     estimatedHours,
-    cover, // File object
+    cover,
   } = data;
 
-  // Handle tags logic (existing code)
   const clusterIds = existingCategories
     .filter((category) => categories.includes(category.name || category.id))
     .map((cat) => cat.id);
@@ -163,4 +199,22 @@ export const handleSkillSubmission = async (
     formData
   );
   return reponse;
+};
+export const removeLessonDuplicates = (lessons: SkillAtom[]) => {
+  const uniqueLessons: SkillAtom[] = [
+    ...new Set(lessons.map((obj) => JSON.stringify(obj))),
+  ].map((str) => JSON.parse(str));
+  return uniqueLessons;
+};
+
+export const useFetchLesson = (lessonId: string) => {
+  const endpoint = `/atoms/${lessonId}`;
+  const { data, error, isLoading } = useSWR(endpoint, (url) =>
+    apiRequest<ItemData<SkillAtom>>(url, "GET")
+  );
+  return {
+    lesson: data,
+    isFetchingLesson: isLoading,
+    fetchLessonError: error,
+  };
 };

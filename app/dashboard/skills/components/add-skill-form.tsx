@@ -19,7 +19,6 @@ import { fetchTags } from "@/lib/redux/slices/tags-slice";
 import { DifficultyLevels, ProfficiencyLevels } from "@/lib/types";
 import { handleSkillSubmission } from "@/lib/api/skills";
 import { mutate } from "swr";
-import { init } from "next/dist/compiled/webpack/webpack";
 import { FilePicker } from "./file-picker";
 
 interface AddSkillFormProps {
@@ -27,7 +26,7 @@ interface AddSkillFormProps {
   initialData?: AddSkillSchemaProps;
 }
 export const AddSkillForm: React.FC<AddSkillFormProps> = ({
-  isEditing,
+  isEditing = false,
   initialData,
 }) => {
   const dispatch = useAppDispatch();
@@ -43,9 +42,12 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
       name: initialData?.name ?? "",
       objectives: initialData?.objectives || "",
       categories: initialData?.categories || [],
-      difficulty: DifficultyLevels[initialData?.difficulty || "BEGINNER"],
-      proficiencyLevel:
-        ProfficiencyLevels[initialData?.proficiencyLevel || "L1"],
+      difficulty: isEditing
+        ? DifficultyLevels[initialData?.difficulty || "BEGINNER"]
+        : undefined,
+      proficiencyLevel: isEditing
+        ? ProfficiencyLevels[initialData?.proficiencyLevel || "L1"]
+        : undefined,
       estimatedHours: initialData?.estimatedHours || "",
       description: initialData?.description || "",
       tags: initialData?.tags || [],
@@ -95,7 +97,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-5">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-5 space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -180,7 +182,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
                 placeholder="Select tags"
                 label="Tags *"
               />
-              <FormMessage className="text-xs -mt-1" />
+              <FormMessage className="-mt-1 text-xs" />
             </FormItem>
           )}
         />
@@ -195,7 +197,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
             />
           )}
         />
-        {error && <p className="text-red-text text-sm mt-2">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-text">{error}</p>}
         <div className="flex justify-end space-x-3">
           <SheetClose asChild>
             <Button variant={"outline"} className="cursor-pointer">

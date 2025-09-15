@@ -1,13 +1,58 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { useFetchLesson } from "@/lib/api/skills";
+import { Loader, Play } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 export const MainSkillContents = () => {
+  const searchParams = useSearchParams();
+
+  const lessonId = searchParams.get("activeLesson") as string;
+  const {
+    lesson: fetchedLesson,
+    isFetchingLesson,
+    fetchLessonError,
+  } = useFetchLesson(lessonId);
+
+  if (fetchLessonError) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-4 text-center border-s-2 border-gray-stroke-weak/70">
+        <Image
+          src={"/not-found.png"}
+          alt="No lesson data found"
+          height={100}
+          width={100}
+        />
+        <p>
+          {fetchLessonError.message ||
+            "There was an error loading lesson data. Please try again"}
+        </p>
+      </div>
+    );
+  }
+  if (isFetchingLesson) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full py-5 border-s-2 border-gray-stroke-weak/70">
+        <Loader className="animate-spin" size={18} />
+        <p className="text-gray-text-weak">Loading lesson data...</p>
+      </div>
+    );
+  }
+  const lesson = fetchedLesson?.data?.item;
+  if (!lessonId || !lesson)
+    return (
+      <div className="w-full h-full py-10 border-s-2 border-gray-stroke-weak/70">
+        {!lessonId &&
+          "No lesson selected. Please select a lesson to view its details."}
+        {lessonId && !lesson && "Lesson data not found."}
+      </div>
+    );
   return (
     <section className="w-full p-4 pt-0 space-y-6 overflow-y-auto tabs_scrollbar border-s-2 border-gray-stroke-weak/70">
       <h2 className="justify-start text-lg font-semibold leading-relaxed text-start text-gray-text-strong/90">
-        What is JavaScript?
+        {lesson?.name || "N/A"}
       </h2>
       <div className="w-full aspect-video max-h-[500px] relative top-0 left-0">
         <Image
@@ -23,12 +68,7 @@ export const MainSkillContents = () => {
         </div>
       </div>
       <article className=" text-start text-gray-text-weak">
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-        illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-        explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-        odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-        voluptatem sequi nesciunt.lorem100 Lorem ipsum dolor sit amet
+        {lesson?.description || "No description available for this lesson."}
       </article>
       <div className="flex justify-end gap-4">
         <Button variant={"ghost"} className="px-4">

@@ -15,10 +15,6 @@ const initialState: {
 const fetchCategories = createAsyncThunk<Cluster[], void, { state: RootState }>(
   "categories/fetchCategories",
   async (_, { getState }) => {
-    const { categories: existingCategories } = getState().categoriesReducer;
-    if (existingCategories.length > 0) {
-      return existingCategories;
-    }
     const response = await apiRequest<ListData<Cluster>>("/clusters", "GET");
 
     if (response?.data?.items) {

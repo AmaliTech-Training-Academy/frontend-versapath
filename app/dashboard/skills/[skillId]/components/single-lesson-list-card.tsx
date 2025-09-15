@@ -18,9 +18,7 @@ export const SingleLessonListCard = ({
 
   return (
     <Link
-      href={`/dashboard/skills/${data.skillId}/contents?activeLesson=${
-        index + 1
-      }`}
+      href={`/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}`}
       className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50 group"
     >
       {/* Number line gutter */}

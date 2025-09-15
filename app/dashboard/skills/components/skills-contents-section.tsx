@@ -18,10 +18,10 @@ export const SKillsContentsSection = () => {
   );
 
   const items = skills?.data?.items ?? [];
-  const pageInfo = skills?.data?.pagination ?? null;
+  const pageInfo = skills?.data?.pagination ?? undefined;
 
   const {
-    currentPageZeroBased,
+    currentPage,
     end,
     nextDisabled,
     prevDisabled,
@@ -102,10 +102,10 @@ export const SKillsContentsSection = () => {
             handleNext={handleNext}
             handlePaginationBtnClick={handlePaginationBtnClick}
             handlePrev={handlePrev}
-            nextDisabled={nextDisabled}
-            prevDisabled={prevDisabled}
+            nextDisabled={!nextDisabled}
+            prevDisabled={!prevDisabled}
             totalPages={totalPages}
-            activePage={currentPageZeroBased + 1}
+            activePage={currentPage + 1}
           />
         </article>
       </>

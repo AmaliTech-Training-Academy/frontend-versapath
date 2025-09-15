@@ -12,4 +12,6 @@ export interface SKill {
   status: Status;
   atomNumber: number;
   image: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

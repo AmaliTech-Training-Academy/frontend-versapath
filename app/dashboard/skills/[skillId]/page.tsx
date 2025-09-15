@@ -8,7 +8,7 @@ import { SheetWrapper } from "../../components/sheet-wrapper";
 import { SkillMoreInfo } from "./components/skill-more-info";
 import { SingleLessonListCard } from "./components/single-lesson-list-card";
 import { LessonsList } from "./components/lessons-list";
-import { useFetchSingleSkill } from "@/lib/api/skills";
+import { removeLessonDuplicates, useFetchSingleSkill } from "@/lib/api/skills";
 import { useParams } from "next/navigation";
 import { SingleSkillResponse } from "@/lib/types/api";
 import { SkillAtom } from "@/lib/types/skill-atom";
@@ -26,12 +26,7 @@ function SingleSkillPage() {
   useEffect(() => {
     if (fetchedSkill?.data) {
       setSkill(fetchedSkill.data.item);
-      const uniqueLessons: SkillAtom[] = [
-        ...new Set(
-          fetchedSkill.data.item.skillAtoms.map((obj) => JSON.stringify(obj))
-        ),
-      ].map((str) => JSON.parse(str));
-      setLessons(uniqueLessons);
+      setLessons(removeLessonDuplicates(fetchedSkill.data.item.skillAtoms));
     }
   }, [fetchedSkill]);
   if (isFetchingSkill)
@@ -46,7 +41,7 @@ function SingleSkillPage() {
       <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
         <Image
           src={"/not-found.png"}
-          alt="No users found"
+          alt="No such skill found"
           height={100}
           width={100}
         />
@@ -70,6 +65,7 @@ function SingleSkillPage() {
         </div>
       </div>
     );
+  const imageUrl = skill?.image ? skill.image : "/images/javascript.png";
   return (
     <section>
       <h1 className="text-3xl font-semibold leading-10">Skills</h1>
@@ -82,21 +78,22 @@ function SingleSkillPage() {
         </Link>
         <ChevronRight className="w-4 h-4 text-neutral-900/30" />
         <p className="justify-start text-xs font-semibold leading-tight text-center text-brand-primary-text">
-          Javascript Essentials
+          {skill?.name}
         </p>
       </article>
-      <section className="w-full p-5 text-center rounded-lg  bg-base-light-white">
+      <section className="w-full p-5 text-center rounded-lg bg-base-light-white">
         <article className="w-full text-start  p-5 bg-base-light-white rounded-lg relative top-0 left-0 min-h-[290px] overflow-hidden">
           <div className="absolute top-0 left-0 block w-full h-full max-w-full aspect-video ">
             <Image
-              src={"/images/javascript.png"}
+              src={imageUrl}
               fill
-              alt="Skill capsule image"
+              alt={`${skill?.name}'s cover image`}
               className="object-cover "
             />
+            <div className="absolute top-0 left-0 z-10 w-full h-full bg-base-dark-overlay/40 " />
           </div>
           <div className="relative z-10 inline-flex flex-col mt-16 text-base-light-white">
-            <h3 className="text-xs leading-tight ">Skill Capsule</h3>
+            <h3 className="text-xs leading-tight ">Skill</h3>
             <h2 className="justify-start text-2xl font-semibold leading-loose">
               {skill?.name}
             </h2>
@@ -118,7 +115,7 @@ function SingleSkillPage() {
           </div>
         </article>
         <SkillMoreInfo />
-        <div className="mt-10 text-lg font-semibold leading-relaxed  text-start">
+        <div className="mt-10 text-lg font-semibold leading-relaxed text-start">
           About this skill
         </div>
         <div className="text-base text-start text-gray-text-strong/70">
