@@ -20,14 +20,6 @@ export const Navbar = () => {
                         Log In
                     </Button>
                 </Link>
-                <Link href="/register">
-                    <Button
-                        size="lg"
-                        className="px-6 cursor-pointer"
-                    >
-                        Register
-                    </Button>
-                </Link>
             </div>
         </nav>
     );
