@@ -29,7 +29,7 @@ import { Input } from "../ui/input";
 import { useSession } from "next-auth/react";
 import { ConfirmDialog } from "./confirm-dialog";
 import { useState } from "react";
-
+import { Roles } from "@/lib/types";
 
 // Types
 type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -38,13 +38,19 @@ type LeafItem = {
   title: string;
   url: string;
   icon?: SvgIcon;
+  allowedRoles?: Roles[];
+};
+
+type SubItem = Pick<LeafItem, "title" | "url"> & {
+  allowedRoles?: Roles[];
 };
 
 type ParentItem = {
   title: string;
   url: string;
   icon: SvgIcon;
-  items: Array<Pick<LeafItem, "title" | "url">>;
+  items: SubItem[];
+  allowedRoles?: Roles[];
 };
 
 type SidebarItem = LeafItem | ParentItem;
@@ -54,6 +60,7 @@ type FooterItem = {
   url: string;
   icon: SvgIcon;
   count?: number;
+  allowedRoles?: Roles[];
 };
 
 type PopoverItem = {
@@ -68,37 +75,47 @@ const sidebarItems: SidebarItem[] = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Squares2X2Icon,
+    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER]
   },
   {
     title: "User Management",
     url: "/dashboard/user-management",
     icon: UsersIcon,
+    allowedRoles: [Roles.ADMIN]
   },
   {
     title: "Skills & Learning",
     url: "#",
     icon: BookOpenIcon,
+    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
     items: [
-      { title: "Skill Categories", url: "/dashboard/skill-categories" },
-      { title: "Skills", url: "/dashboard/skills" },
-      { title: "Lessons", url: "/dashboard/lessons" },
-      { title: "Skill Tags", url: "#" },
-      { title: "Roadmap", url: "/dashboard/roadmap" },
+      { title: "Skill Categories", url: "/dashboard/skill-categories", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
+      { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
+      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
+      { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },
+      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
     ],
   },
   {
     title: "Growth Track",
     url: "#",
     icon: TrendingUp,
+    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER]
   },
 
 ];
 
 const sidebarFooterItems: FooterItem[] = [
-  { title: "Notifications", url: "#", icon: Bell, count: 0 },
-  { title: "Support", url: "#", icon: LifeBuoy },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Notifications", url: "#", icon: Bell, count: 0, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
+  { title: "Support", url: "#", icon: LifeBuoy, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
+  { title: "Settings", url: "#", icon: Settings, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
 ];
+
+const canSee = (userRole: Roles, allowed?: Roles[]) =>
+  !allowed || allowed.length === 0 || allowed.includes(userRole);
+
+const isParent = (i: SidebarItem): i is ParentItem =>
+  (i as ParentItem).items !== undefined;
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -117,7 +134,30 @@ export function AppSidebar() {
       icon: LogOut,
       handleClick: () => setIsOpen(true)
     }
-  ]
+  ];
+
+  const userRole = session?.user?.role as Roles;
+
+  const filteredSidebarItems = sidebarItems
+    .map((item) => {
+      if (isParent(item)) {
+        // Filter children
+        const children = item.items.filter((s) =>
+          canSee(userRole, s.allowedRoles)
+        );
+
+        // If parent is visible OR any child is visible, keep it
+        const parentVisible = canSee(userRole, item.allowedRoles);
+        if (!parentVisible && children.length === 0) return null;
+
+        return { ...item, items: children };
+      } else {
+        return canSee(userRole, item.allowedRoles) ? item : null;
+      }
+    });
+
+
+  const filteredFooterItems = sidebarFooterItems.filter((f) => canSee(userRole, f.allowedRoles));
 
   return (
     <Sidebar className="border-none ">
@@ -157,58 +197,68 @@ export function AppSidebar() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
-              {sidebarItems.map((item) =>
-                "items" in item ? (
-                  <Collapsible key={item.title} asChild>
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          className="p-4 text-gray-text-weak font-semibold"
-                        >
-                          <item.icon />
-                          <span>{item.title}</span>
-                          <ChevronDown className="ml-auto" />
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-
-                      <CollapsibleContent>
-                        <SidebarMenu className="pl-8">
-                          {item.items.map((subItem) => (
-                            <SidebarMenuItem key={subItem.title}>
+              {
+                filteredSidebarItems.map((item) => {
+                  if (!item) return null;
+                  return (
+                    isParent(item) ? (
+                      // Only render group if parent visible or any child exists
+                      (item.items.length > 0 || canSee(userRole, item.allowedRoles)) && (
+                        <Collapsible key={item.title} asChild>
+                          <SidebarMenuItem>
+                            <CollapsibleTrigger asChild>
                               <SidebarMenuButton
-                                asChild
-                                className="text-gray-text-weak font-semibold"
-                                isActive={pathname === subItem.url}
+                                tooltip={item.title}
+                                className="p-4 text-gray-text-weak font-semibold"
                               >
-                                <Link
-                                  href={subItem.url}
-                                  aria-label={`${subItem.title} page`}
-                                >
-                                  <span>{subItem.title}</span>
-                                </Link>
+                                <item.icon />
+                                <span>{item.title}</span>
+                                <ChevronDown className="ml-auto" />
                               </SidebarMenuButton>
-                            </SidebarMenuItem>
-                          ))}
-                        </SidebarMenu>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className="p-4 text-gray-text-weak"
-                    >
-                      <Link href={item.url} aria-label={`${item.title} page`}>
-                        {item.icon ? <item.icon strokeWidth={2} /> : null}
-                        <span className="font-semibold">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              )}
+                            </CollapsibleTrigger>
+
+                            {item.items.length > 0 && (
+                              <CollapsibleContent>
+                                <SidebarMenu className="pl-8">
+                                  {item.items.map((subItem) => (
+                                    <SidebarMenuItem key={subItem.title}>
+                                      <SidebarMenuButton
+                                        asChild
+                                        className="text-gray-text-weak font-semibold"
+                                        isActive={pathname === subItem.url}
+                                      >
+                                        <Link
+                                          href={subItem.url}
+                                          aria-label={`${subItem.title} page`}
+                                        >
+                                          <span>{subItem.title}</span>
+                                        </Link>
+                                      </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                  ))}
+                                </SidebarMenu>
+                              </CollapsibleContent>
+                            )}
+                          </SidebarMenuItem>
+                        </Collapsible>
+                      )
+                    ) : (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === item.url}
+                          className="p-4 text-gray-text-weak"
+                        >
+                          <Link href={item.url} aria-label={`${item.title} page`}>
+                            {item.icon ? <item.icon strokeWidth={2} /> : null}
+                            <span className="font-semibold">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  )
+                }
+                )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -218,25 +268,26 @@ export function AppSidebar() {
         <div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {sidebarFooterItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className=" text-gray-text-weak"
-                  >
-                    <Link href={item.url} aria-label={`${item.title} page`}>
-                      <item.icon strokeWidth={2} />
-                      <span className="font-semibold">{item.title}</span>
-                      {item.count !== undefined && (
-                        <span className="rounded-xs ml-auto py-1 px-2 bg-brand-primary-text text-base-light-white text-xs font-semibold">
-                          {item.count}
-                        </span>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {
+                filteredFooterItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className=" text-gray-text-weak"
+                    >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
+                        <item.icon strokeWidth={2} />
+                        <span className="font-semibold">{item.title}</span>
+                        {item.count !== undefined && (
+                          <span className="rounded-xs ml-auto py-1 px-2 bg-brand-primary-text text-base-light-white text-xs font-semibold">
+                            {item.count}
+                          </span>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
@@ -298,4 +349,4 @@ export function AppSidebar() {
       />
     </Sidebar>
   );
-}
+};
