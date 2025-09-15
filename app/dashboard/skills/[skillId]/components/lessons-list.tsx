@@ -26,9 +26,8 @@ export const LessonsList: FC<{ skillId: string }> = ({ skillId }) => {
   };
   const handleAddLessons = async () => {
     // Logic to add selected lessons to the skill
-    
+
     setIsSubmitting(true);
-    console.log("Adding lessons:", checkedLessons);
     const response = await apiRequest(
       `/capsules/assignAtom/${skillId}`,
       "PATCH",
@@ -49,9 +48,7 @@ export const LessonsList: FC<{ skillId: string }> = ({ skillId }) => {
     setIsSubmitting(false);
     mutate(`/capsules/${skillId}`);
   };
-  useEffect(() => {
-    console.log("Checked lessons:", checkedLessons);
-  }, [checkedLessons]);
+  useEffect(() => {}, [checkedLessons]);
   useEffect(() => {
     if (skill?.data?.item.skillAtoms) {
       setCheckedLessons([

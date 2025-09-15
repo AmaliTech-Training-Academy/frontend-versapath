@@ -58,13 +58,11 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
 
   const onSubmit = async (data: AddSkillSchemaProps) => {
     setError(null);
-    console.log("Form Data: ", data);
     const response = await handleSkillSubmission(data, {
       existingTags: tags,
       existingCategories: categories,
     });
 
-    console.log("Response from handleSkillSubmission: ", response);
     if (!response.success) {
       setError(
         response.errors?.[0] ||
@@ -78,9 +76,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
     form.reset();
     closeRef.current?.click();
   };
-  useEffect(() => {
-    console.log("Form Errors: ", form.formState.errors);
-  }, [form.formState.errors]);
+
   useEffect(() => {
     if (tags.length === 0) {
       dispatch(fetchTags());

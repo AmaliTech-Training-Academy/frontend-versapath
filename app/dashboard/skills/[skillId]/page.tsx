@@ -3,21 +3,37 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Loader, PenBox, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { SheetWrapper } from "../../components/sheet-wrapper";
 import { SkillMoreInfo } from "./components/skill-more-info";
 import { SingleLessonListCard } from "./components/single-lesson-list-card";
 import { LessonsList } from "./components/lessons-list";
 import { useFetchSingleSkill } from "@/lib/api/skills";
 import { useParams } from "next/navigation";
+import { SingleSkillResponse } from "@/lib/types/api";
+import { SkillAtom } from "@/lib/types/skill-atom";
 
 function SingleSkillPage() {
   const { skillId } = useParams();
+  const [skill, setSkill] = React.useState<SingleSkillResponse | null>(null);
+  const [lessons, setLessons] = React.useState<SkillAtom[] | null>(null);
   const {
     skill: fetchedSkill,
     isFetchingSkill,
     fetchSkillError,
   } = useFetchSingleSkill(skillId as string);
+
+  useEffect(() => {
+    if (fetchedSkill?.data) {
+      setSkill(fetchedSkill.data.item);
+      const uniqueLessons: SkillAtom[] = [
+        ...new Set(
+          fetchedSkill.data.item.skillAtoms.map((obj) => JSON.stringify(obj))
+        ),
+      ].map((str) => JSON.parse(str));
+      setLessons(uniqueLessons);
+    }
+  }, [fetchedSkill]);
   if (isFetchingSkill)
     return (
       <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
@@ -54,7 +70,6 @@ function SingleSkillPage() {
         </div>
       </div>
     );
-  const skill = fetchedSkill?.data?.item;
   return (
     <section>
       <h1 className="text-3xl font-semibold leading-10">Skills</h1>
@@ -141,15 +156,15 @@ function SingleSkillPage() {
             </SheetWrapper>
           </div>
           <div className="w-full p-5 text-center text-gray-text-strong/70 ">
-            {skill?.skillAtoms.length === 0 ? (
+            {lessons && lessons.length === 0 ? (
               <p className="py-5">No lessons linked to this skill found</p>
             ) : (
-              skill?.skillAtoms.map((data, i) => (
+              lessons?.map((data, i) => (
                 <SingleLessonListCard
-                  data={{ ...data, skillId: skill.id }}
+                  data={{ ...data, skillId: skill?.id ?? "" }}
                   key={data.id}
                   index={i}
-                  total={skill.skillAtoms.length}
+                  total={skill?.skillAtoms.length ?? 0}
                 />
               ))
             )}

@@ -15,8 +15,6 @@ export const apiServerRequest = async <T>(
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
-  console.log("Making server request to:", url);
-
   const makeRequest = async (): Promise<Response> => {
     const options: RequestInit = {
       method,
@@ -46,8 +44,6 @@ export const apiServerRequest = async <T>(
       responseData.message === "JWT token is missing or invalid" ||
       response.status === 401
     ) {
-      console.log("Authentication failed, attempting refresh via API route");
-
       // Call our internal refresh API
       const refreshResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/refresh-token`,
@@ -62,7 +58,6 @@ export const apiServerRequest = async <T>(
       if (refreshResponse.ok) {
         const refreshData = await refreshResponse.json();
         if (refreshData.success) {
-          console.log("Token refresh successful, retrying request");
           // Retry the original request
           const retryResponse = await makeRequest();
           return await retryResponse.json();
@@ -70,7 +65,6 @@ export const apiServerRequest = async <T>(
       }
 
       // If refresh failed, redirect to login
-      console.log("Token refresh failed, redirecting to login");
       redirect("/login");
     }
 

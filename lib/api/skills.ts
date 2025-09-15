@@ -157,7 +157,6 @@ export const handleSkillSubmission = async (
   if (cover) {
     formData.append("image", cover);
   }
-  console.log("FormData entries:", formData);
   const reponse = await apiRequest<ItemData<SKill>>(
     `/capsules`,
     "POST",
