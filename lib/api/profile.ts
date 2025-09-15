@@ -1,5 +1,4 @@
-import { signIn, signOut } from "next-auth/react";
-import { ItemData, User } from "../types/api";
+import { User } from "../types/api";
 import { extractErrorMessage } from "../utils";
 import { apiRequest } from "./api-request";
 

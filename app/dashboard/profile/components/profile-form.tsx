@@ -16,6 +16,7 @@ import user from "@/public/images/user-profile.jpg";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { apiUpdateProfile } from "@/lib/api/profile";
+import { toFormData } from "@/lib/hooks/to-form-data";
 
 export const ProfileForm = () => {
     const { data: session, status, update } = useSession();
@@ -80,46 +81,51 @@ export const ProfileForm = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="col-span-3 w-full h-fit space-y-6"
             >
-                <div className="flex items-center gap-6">
-                    <div className="w-[150px] h-[150px] relative rounded-full">
-                        <Image src={user} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" priority />
-                        <FormField
-                            control={form.control}
-                            name="image"
-                            render={({ field: { onChange, onBlur, name, ref } }) => (
-                                <>
-                                    <Input
-                                        id={inputId}
-                                        type="file"
-                                        className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer"
-                                        accept="image/jpeg,image/png,.jpg,.jpeg,.png"
-                                        multiple={false}
-                                        name={name}
-                                        ref={ref}
-                                        onBlur={onBlur}
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            onChange(file ?? undefined);
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="profile-image-input"
-                                        className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer"
-                                    >
-                                        <Camera className="text-base-white" size={20} />
-                                    </label></>
+                {/* The change profile image functionality is not yet implemented on the backend */}
+                {
+                    false && (
+                        <div className="flex items-center gap-6">
+                            <div className="w-[150px] h-[150px] relative rounded-full">
+                                <Image src={user} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" priority />
+                                <FormField
+                                    control={form.control}
+                                    name="image"
+                                    render={({ field: { onChange, onBlur, name, ref } }) => (
+                                        <>
+                                            <Input
+                                                id={inputId}
+                                                type="file"
+                                                className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer"
+                                                accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                                                multiple={false}
+                                                name={name}
+                                                ref={ref}
+                                                onBlur={onBlur}
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    onChange(file ?? undefined);
+                                                }}
+                                            />
+                                            <label
+                                                htmlFor="profile-image-input"
+                                                className="w-[30px] h-[30px] absolute bottom-3 right-1 rounded-full bg-brand-primary-text flex items-center justify-center cursor-pointer"
+                                            >
+                                                <Camera className="text-base-white" size={20} />
+                                            </label></>
 
-                            )}
-                        />
-                    </div>
-                    {
-                        form.formState.defaultValues?.image !== undefined && (
-                            <Button>
-                                Remove Photo
-                            </Button>
-                        )
-                    }
-                </div>
+                                    )}
+                                />
+                            </div>
+                            {
+                                form.formState.defaultValues?.image !== undefined && (
+                                    <Button>
+                                        Remove Photo
+                                    </Button>
+                                )
+                            }
+                        </div>
+                    )
+                }
 
                 <div className="space-y-6">
                     {/* First Name */}

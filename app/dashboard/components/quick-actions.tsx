@@ -1,7 +1,7 @@
 import { quickActions } from "@/lib/api/quick-actions";
 import { QuickActionCard } from "./quick-action-card";
 
-export const QuickActions = () => {
+export const QuickActions = async () => {
     return (
         <section className='bg-sidebar rounded-xl p-5 space-y-4'>
             <p className="font-semibold text-lg">Quick Actions</p>
