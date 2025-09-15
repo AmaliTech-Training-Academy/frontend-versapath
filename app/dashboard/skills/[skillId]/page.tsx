@@ -1,21 +1,60 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, PenBox, Plus } from "lucide-react";
+import { ChevronRight, Loader, PenBox, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { SheetWrapper } from "../../components/sheet-wrapper";
 import { SkillMoreInfo } from "./components/skill-more-info";
 import { SingleLessonListCard } from "./components/single-lesson-list-card";
-import { lessonsMocks } from "@/lib/mocks/lessons";
 import { LessonsList } from "./components/lessons-list";
+import { useFetchSingleSkill } from "@/lib/api/skills";
+import { useParams } from "next/navigation";
 
-async function SingleSkillPage({
-  params,
-}: {
-  readonly params: Promise<{ skillId: string }>;
-}) {
-  const { skillId } = await params;
-  console.log("Skill ID:", skillId); // For debugging purposes - To be removed later once dynamic data are integrated
+function SingleSkillPage() {
+  const { skillId } = useParams();
+  const {
+    skill: fetchedSkill,
+    isFetchingSkill,
+    fetchSkillError,
+  } = useFetchSingleSkill(skillId as string);
+  if (isFetchingSkill)
+    return (
+      <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
+        <Loader className="animate-spin" size={40} />
+        <p>Loading skill data...</p>
+      </div>
+    );
+  if (!fetchedSkill?.success || fetchSkillError)
+    return (
+      <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
+        <Image
+          src={"/not-found.png"}
+          alt="No users found"
+          height={100}
+          width={100}
+        />
+        <p>
+          There were unexpected error. Please refresh the page or consider going
+          back and trying again.
+        </p>
+        <div className="flex gap-2">
+          <Link href={"/dashboard/skills"}>
+            <Button variant={"ghost"} className="bg-base-light-overlay/50">
+              Go back
+            </Button>
+          </Link>
+          <Button
+            variant={"outline"}
+            className="bg-transparent"
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </Button>
+        </div>
+      </div>
+    );
+  const skill = fetchedSkill?.data?.item;
   return (
     <section>
       <h1 className="text-3xl font-semibold leading-10">Skills</h1>
@@ -44,7 +83,7 @@ async function SingleSkillPage({
           <div className="relative z-10 inline-flex flex-col mt-16 text-base-light-white">
             <h3 className="text-xs leading-tight ">Skill Capsule</h3>
             <h2 className="justify-start text-2xl font-semibold leading-loose">
-              JavaScript Essentials
+              {skill?.name}
             </h2>
             <SheetWrapper
               headerDescription="Update skill information"
@@ -68,13 +107,7 @@ async function SingleSkillPage({
           About this skill
         </div>
         <div className="text-base text-start text-gray-text-strong/70">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          {skill?.description}
         </div>
         <article className="w-full mt-10 border text-start rounded-xl border-gray-stroke-weak">
           <div className="inline-flex items-center self-stretch justify-between w-full px-4 py-2 overflow-hidden bg-gray-text-weak/10">
@@ -84,7 +117,7 @@ async function SingleSkillPage({
               </h3>
               <div className="inline-flex items-start justify-start gap-4">
                 <p className="justify-start text-xs leading-tight text-gray-text-weak/70">
-                  15 Lessons
+                  {skill?.skillAtoms.length} Lessons
                 </p>
                 <p className="justify-start text-xs leading-tight text-gray-text-weak/70">
                   5 Quiz Assessments
@@ -104,19 +137,22 @@ async function SingleSkillPage({
                 </Button>
               }
             >
-              <LessonsList />
-              
+              <LessonsList skillId={skill?.id ?? ""} />
             </SheetWrapper>
           </div>
           <div className="w-full p-5 text-center text-gray-text-strong/70 ">
-            {lessonsMocks.map((data, i) => (
-              <SingleLessonListCard
-                key={data.id}
-                data={data}
-                index={i}
-                total={lessonsMocks.length}
-              />
-            ))}
+            {skill?.skillAtoms.length === 0 ? (
+              <p className="py-5">No lessons linked to this skill found</p>
+            ) : (
+              skill?.skillAtoms.map((data, i) => (
+                <SingleLessonListCard
+                  data={{ ...data, skillId: skill.id }}
+                  key={data.id}
+                  index={i}
+                  total={skill.skillAtoms.length}
+                />
+              ))
+            )}
           </div>
         </article>
       </section>

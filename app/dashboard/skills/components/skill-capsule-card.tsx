@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { SkillCapsuleCardMenu } from "./skill-capsule-card-menu";
-
 export const SkillCapsuleCard: React.FC<{ skill: SKill }> = ({ skill }) => {
+  const imageUrl = skill.image ? skill.image : "/images/javascript.png";
   return (
     <section className="flex flex-col h-fit gap-0 shadow-lg rounded-bl-lg rounded-br-lg">
       <div className="relative w-full min-h-[168px] aspect-[330/168]">
         <Image
-          src={"/images/javascript.png"}
+          src={imageUrl}
           fill
           alt="SKill capsule image"
           className="object-cover w-full h-full"

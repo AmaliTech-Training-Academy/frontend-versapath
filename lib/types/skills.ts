@@ -11,4 +11,5 @@ export interface SKill {
   estimatedHours: number;
   status: Status;
   atomNumber: number;
+  image: string | null;
 }

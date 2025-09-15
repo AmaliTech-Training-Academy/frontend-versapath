@@ -32,16 +32,16 @@ export const CategoryList = () => {
         { "items-center justify-center": loading || error || !hasData }
     );
 
-    if (loading) {
-        return (
-            <section className={containerClass} aria-busy="true" aria-live="polite">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                    <Loader className="size-4 animate-spin" />
-                    <span>Loading…</span>
-                </div>
-            </section>
-        );
-    }
+  if (loading) {
+    return (
+      <section className={containerClass} aria-busy="true" aria-live="polite">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader className="size-4 animate-spin" />
+          <span>Loading…</span>
+        </div>
+      </section>
+    );
+  }
 
     if (error) {
         return (
