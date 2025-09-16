@@ -1,3 +1,4 @@
+import { signOut } from "next-auth/react";
 import { ApiResponse } from "../types/api";
 
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -51,8 +52,11 @@ export const apiRequest = async <T>(
         credentials: "include",
       }
     ).then((res) => res.json());
-    if (refresh.success)
+    if (refresh.success) {
       return await fetch(url, options).then((res) => res.json());
+    } else {
+      await signOut({ redirectTo: "/login" });
+    }
   }
   return response;
 };

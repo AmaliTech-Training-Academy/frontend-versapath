@@ -1,32 +1,44 @@
-import { PageInfo } from "../types/api";
-
-export function paginationCalculator <T>({ items, pageInfo, pagination }: {
-    items?: T[] | null;
-    pageInfo: PageInfo | null;
-    pagination: {
-        pageIndex: number;
-        pageSize: number;
-    }
+export function paginationCalculator<T>({ items, pageInfo, pagination }: {
+  items?: T[] | null;
+  pageInfo: {
+    page?: number;
+    size?: number;
+    totalElements?: number;
+    totalPages?: number;
+    hasNext?: boolean;
+    hasPrevious?: boolean;
+  };
+  pagination: {
+    pageIndex: number;
+    pageSize: number;
+  }
 }) {
-  const currentPageZeroBased = pageInfo?.page ?? pagination.pageIndex ?? 0;
-  const pageSize = pageInfo?.size ?? pagination.pageSize ?? 10;
-  const totalItems = pageInfo?.totalElements;
-
-  const computedFromTotal = totalItems !== undefined ? Math.max(Math.ceil(totalItems / pageSize), 1) : 1;
-
-  const totalPages = pageInfo?.totalPages !== undefined ? Math.max(pageInfo.totalPages, 1) : computedFromTotal;
-
+  const currentPage = pageInfo?.page ?? 0;
+  const totalItems = pageInfo?.totalElements ?? 0;
+  const pageSize = pageInfo?.size ?? pagination.pageSize;
   const countOnPage = items?.length ?? 0;
-  const hasItems = countOnPage > 0;
+  const start = items?.length ? currentPage * pageSize + 1 : 0;
+  const end = items?.length ? currentPage * pageSize + countOnPage : 0;
+  const totalPages = pageInfo?.totalPages ?? 1;
+  const prevDisabled = !!pageInfo?.hasPrevious;
+  const nextDisabled = !!pageInfo?.hasNext;
 
-  const start = hasItems ? currentPageZeroBased * pageSize + 1 : 0;
-  const end = hasItems ? currentPageZeroBased * pageSize + countOnPage : 0;
 
-  const prevDisabled = currentPageZeroBased <= 0;
-  const nextDisabled = currentPageZeroBased + 1 >= totalPages;
+  console.log("Page data: ", pageInfo);
+
+  console.log(`
+    Start: ${start},
+    End: ${end},
+    Current Page: ${currentPage},
+    Page Size: ${pageSize},
+    Total Items: ${totalItems},
+    Total pages: ${totalPages},
+    hasPrevious: ${prevDisabled},
+    hasNext: ${nextDisabled}
+    `);
 
   return {
-    currentPageZeroBased,
+    currentPage,
     pageSize,
     totalPages,
     totalItems,

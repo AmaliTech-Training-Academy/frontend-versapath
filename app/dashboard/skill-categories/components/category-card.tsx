@@ -13,7 +13,7 @@ export const CategoryCard = ({ category: {
     return (
         <Link href="#" aria-label={`View category ${name}`}>
             <div className="rounded-b-xl shadow-lg">
-                <Image src={imageName ?? image} alt={name} width={1000} height={667} className="min-h-[250px]" />
+                <Image src={imageName ?? image} alt={name} width={1000} height={667} className="min-h-[250px] object-cover" />
                 <div className="py-3 px-2 space-y-4">
                     <div className="space-y-1">
                         <p className="font-semibold text-lg text-gray-text-strong">{name}</p>

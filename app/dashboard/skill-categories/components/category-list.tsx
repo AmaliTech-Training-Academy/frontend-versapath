@@ -1,33 +1,29 @@
 "use client";
 import { EmptyState } from "@/components/custom/empty-state";
-import { useClusters } from "@/lib/hooks/use-clusters";
 import { CategoryCard } from "./category-card";
 import { Loader } from "lucide-react";
 import clsx from "clsx";
 import { useState } from "react";
 import { Pagination } from "@/components/custom/pagination";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
+import { useClusters } from "@/lib/api/clusters";
 
 export const CategoryList = () => {
-    const { items, pageInfo, loading, error } = useClusters();
-    const [pagination, setPagination] = useState({
-        pageIndex: 0, // zero-based page index sent to API
-        pageSize: 10,
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const { items, pageInfo, loading, error } = useClusters({
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
     });
 
     const {
-        currentPageZeroBased,
+        currentPage,
         totalPages,
         totalItems,
         start,
         end,
         prevDisabled,
         nextDisabled,
-    } = paginationCalculator({
-        items,
-        pageInfo,
-        pagination,
-    });
+    } = paginationCalculator({ items, pageInfo, pagination });
 
     const containerClass = clsx(
         "w-full h-full mt-4 flex flex-col rounded-xl p-4 gap-6",
@@ -69,13 +65,11 @@ export const CategoryList = () => {
                         </div>
                         <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                             <div className="flex-1 text-sm text-muted-foreground">
-                                Showing {start} to {end}
-                                {typeof totalItems === "number" ? <> of {totalItems}</> : null}{" "}
-                                resources.
+                                Showing {start} to {end} of {totalItems} resources.
                             </div>
                             <Pagination
-                                nextDisabled={nextDisabled}
-                                prevDisabled={prevDisabled}
+                                nextDisabled={!nextDisabled}
+                                prevDisabled={!prevDisabled}
                                 handleNext={() =>
                                     setPagination((prev) => ({
                                         ...prev,
@@ -88,10 +82,9 @@ export const CategoryList = () => {
                                         pageIndex: Math.max(prev.pageIndex - 1, 0),
                                     }))
                                 }
-                                activePage={currentPageZeroBased + 1}
+                                activePage={currentPage + 1}
                                 totalPages={totalPages}
                                 handlePaginationBtnClick={(val) =>
-                                    // val is 1-based from the pager; convert to 0-based
                                     setPagination((prev) => ({
                                         ...prev,
                                         pageIndex: Math.max(val - 1, 0),
