@@ -2,14 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import {
-    Sidebar,
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail
+    SidebarMenuItem
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 

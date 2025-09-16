@@ -13,14 +13,11 @@ import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
 import { apiRequest } from "@/lib/api/api-request";
 import { Cluster, ItemData } from "@/lib/types/api";
-import { useClusters } from "@/lib/hooks/use-clusters";
 import { extractErrorMessage } from "@/lib/utils";
 import { toFormData } from "@/lib/hooks/to-form-data";
 
-export const AddCategoryForm = () => {
+export const AddCategoryForm = ({ revalidateAction }: { revalidateAction: () => void }) => {
   const [error, setError] = useState<string | null>(null);
-  const { refetch } = useClusters();
-  // Ref to programmatically close the sheet
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm<AddCategoryInputs>({
@@ -50,7 +47,7 @@ export const AddCategoryForm = () => {
     }
     toast.success("Skill category added successfully!");
     form.reset();
-    refetch();
+    revalidateAction();
     closeRef.current?.click();
   };
   return (

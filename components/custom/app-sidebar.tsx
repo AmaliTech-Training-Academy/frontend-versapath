@@ -293,12 +293,12 @@ export function AppSidebar() {
         </div>
 
         <div className="flex gap-2 py-6 justify-between items-center">
-          <User size={50} className="rounded-full h-10 w-10 flex-shrink-0" />
+          <User size={30} className="rounded-full h-10 w-10 flex-shrink-0" />
           <div className="space-y-2">
-            <p className="font-semibold text-gray-text-strong">
+            <p className="font-semibold text-gray-text-strong text-wrap">
               {`${session?.user.firstName} ${session?.user.lastName}`}
             </p>
-            <p className="text-xs text-gray-text-weak">
+            <p className="text-xs text-gray-text-weak text-wrap">
               {session?.user.email}
             </p>
           </div>

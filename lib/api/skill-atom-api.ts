@@ -1,7 +1,7 @@
 import { SkillAtom } from "@/lib/types/skill-atom";
 import { apiRequest } from "./api-request";
 import { ApiError } from "./reset-password";
-import { ApiResponse, ItemData, ListData } from "../types/api";
+import { ItemData, ListData } from "../types/api";
 
 
 export const atomApi = {

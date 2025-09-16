@@ -1,3 +1,4 @@
+import { signOut } from "next-auth/react";
 import { ApiResponse } from "../types/api";
 
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -42,8 +43,8 @@ export const apiRequest = async <T>(
     }
   }
 
-  const response = await fetch(url, options).then((res) => res.json());
-  if (response.message === "Authentication required") {
+  const response = await fetch(url, options);
+  if (response.status === 401) {
     const refresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {
@@ -51,8 +52,12 @@ export const apiRequest = async <T>(
         credentials: "include",
       }
     ).then((res) => res.json());
-    if (refresh.success)
+    if (refresh.success) {
       return await fetch(url, options).then((res) => res.json());
+    } else {
+      await signOut({ redirectTo: "/login" });
+    }
   }
-  return response;
+
+  return await response.json();
 };
