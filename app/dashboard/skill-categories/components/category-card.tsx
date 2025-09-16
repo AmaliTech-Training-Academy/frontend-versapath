@@ -10,7 +10,6 @@ export const CategoryCard = ({ category: {
     description,
     imageName
 } }: { category: Cluster }) => {
-    console.log(imageName);
     return (
         <Link href="#" aria-label={`View category ${name}`} className="w-full h-full">
             <div className="rounded-b-xl shadow-lg w-full h-full">
