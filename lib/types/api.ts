@@ -45,16 +45,6 @@ export interface ListData<T> {
   pagination: PageInfo;
 }
 
-export interface AltListData<T> {
-  items: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
-
 export interface ItemData<T> {
   item: T;
 }
