@@ -16,7 +16,6 @@ import user from "@/public/images/user-profile.jpg";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { apiUpdateProfile } from "@/lib/api/profile";
-import { toFormData } from "@/lib/hooks/to-form-data";
 
 export const ProfileForm = () => {
     const { data: session, status, update } = useSession();
