@@ -1,19 +1,10 @@
+import { SkillAtom as LessonProps } from "@/lib/types/skill-atom";
 import Link from "next/link";
-import { ForwardRefExoticComponent, RefAttributes, SVGProps } from "react";
 
-type IconsProp = ForwardRefExoticComponent<
-  Omit<SVGProps<SVGSVGElement>, "ref"> & {
-    title?: string;
-    titleId?: string;
-  } & RefAttributes<SVGSVGElement>
->;
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
+
 type LessonListCardProps = {
-  data: {
-    title: string;
-    id: number;
-    icon: IconsProp;
-    type: string;
-  };
+  data: LessonProps & { skillId: string };
   index: number;
   total: number;
 };
@@ -27,7 +18,7 @@ export const SingleLessonListCard = ({
 
   return (
     <Link
-      href={`/dashboard/skills/${data.id}/contents?activeLesson=${index + 1}`}
+      href={`/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}`}
       className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50 group"
     >
       {/* Number line gutter */}
@@ -46,13 +37,13 @@ export const SingleLessonListCard = ({
 
       <div className="flex items-center w-full gap-6 text-gray-text-strong/70 py-4 ps-1">
         <div>
-          <data.icon className="size-6 text-gray-text-strong/70" />
+          <DocumentTextIcon className="size-6 text-gray-text-strong/70" />
         </div>
         <p className="font-semibold leading-none capitalize min-w-20 text-gray-text-strong/90">
-          {data.type}
+          Lesson
         </p>
         <h3 className="w-full line-clamp-1 group-hover:underline group-hover:underline-offset-1 transition-all duration-300">
-          {data.title}
+          {data.name}
         </h3>
       </div>
     </Link>

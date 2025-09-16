@@ -24,14 +24,16 @@ interface MultipleSelectChipProps {
   onChange?: (tags: string[]) => void;
   placeholder?: string;
   label?: string;
+  addNewAllowed?: boolean;
 }
 
-export default function MultipleSelectChip({
+export function MultipleSelectChip({
   defaultTags,
   value = [],
   onChange,
   placeholder = "Select tags",
   label = "Tags",
+  addNewAllowed = true,
 }: Readonly<MultipleSelectChipProps>) {
   const [open, setOpen] = React.useState(false);
   const [names, setNames] = React.useState<string[]>(defaultTags);
@@ -94,12 +96,14 @@ export default function MultipleSelectChip({
         <PopoverContent className="w-[350px] p-0 border-none tabs_scrollbar">
           <Command className="bg-base-light-white p-1 border-none tabs_scrollbar">
             <CommandInput
-              placeholder="Search or type to add..."
+              placeholder={
+                addNewAllowed ? "Search or type to add..." : "Type to search..."
+              }
               value={search}
               onValueChange={setSearch}
             />
             <CommandList>
-              {search && !names.includes(search) && (
+              {addNewAllowed && search && !names.includes(search) && (
                 <CommandItem onSelect={addNewValue}>
                   <Plus className="mr-2 h-4 w-4" /> Add "{search}"
                 </CommandItem>
