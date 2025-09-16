@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { CategoryList } from "./components/category-list";
 import { SheetWrapper } from "../components/sheet-wrapper";
 import { AddCategoryForm } from "./components/add-category-form";
+import { revalidateAllClusters } from "@/lib/api/clusters";
 
 export default function SkillClustersPage() {
     return (
@@ -24,7 +25,7 @@ export default function SkillClustersPage() {
                                 </Button>
                             }
                         >
-                            <AddCategoryForm />
+                            <AddCategoryForm revalidateAction={revalidateAllClusters} />
                         </SheetWrapper>
                     }
                 />

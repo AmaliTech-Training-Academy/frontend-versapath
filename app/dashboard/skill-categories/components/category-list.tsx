@@ -24,10 +24,12 @@ export const CategoryList = () => {
         prevDisabled,
         nextDisabled,
     } = paginationCalculator({ items, pageInfo, pagination });
+    
+    const hasData = items && items.length > 0;
 
     const containerClass = clsx(
         "w-full h-full mt-4 flex flex-col rounded-xl p-4 gap-6",
-        { "items-center justify-center": loading || error }
+        { "items-center justify-center": loading || error || !hasData }
     );
 
     if (loading) {
@@ -48,8 +50,6 @@ export const CategoryList = () => {
             </section>
         );
     }
-
-    const hasData = items && items.length > 0;
 
     return (
         <section className={containerClass}>

@@ -15,9 +15,8 @@ import { apiRequest } from "@/lib/api/api-request";
 import { Cluster, ItemData } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
 import { toFormData } from "@/lib/hooks/to-form-data";
-import { revalidateAllClusters } from "@/lib/api/clusters";
 
-export const AddCategoryForm = () => {
+export const AddCategoryForm = ({ revalidateAction }: { revalidateAction: () => void }) => {
   const [error, setError] = useState<string | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -48,7 +47,7 @@ export const AddCategoryForm = () => {
     }
     toast.success("Skill category added successfully!");
     form.reset();
-    revalidateAllClusters();
+    revalidateAction();
     closeRef.current?.click();
   };
   return (

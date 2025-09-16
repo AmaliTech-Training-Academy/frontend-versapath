@@ -44,7 +44,7 @@ export const apiRequest = async <T>(
   }
 
   const response = await fetch(url, options).then((res) => res.json());
-  if (response.message === "Authentication required") {
+  if (response.message === "JWT token is missing or invalid") {
     const refresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {

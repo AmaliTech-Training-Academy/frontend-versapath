@@ -43,7 +43,7 @@ export const apiServerRequest = async <T>(
 
     // If authentication fails, try refresh via our API route
     if (
-      responseData.message === "Authentication required" ||
+      responseData.message === "JWT token is missing or invalid" ||
       response.status === 401
     ) {
       console.log("Authentication failed, attempting refresh via API route");
@@ -118,7 +118,7 @@ export const apiServerRequestWithRetry = async <T>(
 
     // If authentication fails and we haven't retried yet
     if (
-      (responseData.message === "Authentication required" ||
+      (responseData.message === "JWT token is missing or invalid" ||
         response.status === 401) &&
       retryCount === 0
     ) {
