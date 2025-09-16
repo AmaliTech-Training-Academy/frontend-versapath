@@ -65,7 +65,7 @@ export const CategoryList = () => {
                         </div>
                         <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                             <div className="flex-1 text-sm text-muted-foreground">
-                                Showing {start} to {end} of {totalItems} resources.
+                                Showing {start} to {end} { totalItems > end && <> of {totalItems}</>} resources.
                             </div>
                             <Pagination
                                 nextDisabled={!nextDisabled}

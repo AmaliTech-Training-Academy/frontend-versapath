@@ -43,8 +43,8 @@ export const apiRequest = async <T>(
     }
   }
 
-  const response = await fetch(url, options).then((res) => res.json());
-  if (response.message === "JWT token is missing or invalid") {
+  const response = await fetch(url, options);
+  if (response.status === 401) {
     const refresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {
@@ -58,5 +58,6 @@ export const apiRequest = async <T>(
       await signOut({ redirectTo: "/login" });
     }
   }
-  return response;
+
+  return await response.json();
 };

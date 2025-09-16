@@ -1,13 +1,8 @@
+import { PageInfo } from "../types/api";
+
 export function paginationCalculator<T>({ items, pageInfo, pagination }: {
   items?: T[] | null;
-  pageInfo: {
-    page?: number;
-    size?: number;
-    totalElements?: number;
-    totalPages?: number;
-    hasNext?: boolean;
-    hasPrevious?: boolean;
-  };
+  pageInfo: PageInfo | undefined;
   pagination: {
     pageIndex: number;
     pageSize: number;
@@ -22,20 +17,6 @@ export function paginationCalculator<T>({ items, pageInfo, pagination }: {
   const totalPages = pageInfo?.totalPages ?? 1;
   const prevDisabled = !!pageInfo?.hasPrevious;
   const nextDisabled = !!pageInfo?.hasNext;
-
-
-  console.log("Page data: ", pageInfo);
-
-  console.log(`
-    Start: ${start},
-    End: ${end},
-    Current Page: ${currentPage},
-    Page Size: ${pageSize},
-    Total Items: ${totalItems},
-    Total pages: ${totalPages},
-    hasPrevious: ${prevDisabled},
-    hasNext: ${nextDisabled}
-    `);
 
   return {
     currentPage,
