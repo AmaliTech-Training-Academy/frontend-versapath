@@ -9,7 +9,7 @@ import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
 import { useClusters } from "@/lib/api/clusters";
 
 export const CategoryList = () => {
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 12 });
     const { items, pageInfo, loading, error } = useClusters({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
