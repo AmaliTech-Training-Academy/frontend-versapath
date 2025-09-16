@@ -7,12 +7,13 @@ import Image from "next/image";
 
 export const CategoryCard = ({ category: {
     name,
-    description
+    description,
+    imageName
 } }: { category: Cluster }) => {
     return (
-        <Link href="#" aria-label={`View category ${name}`}>
-            <div className="rounded-br-xl shadow-lg">
-                <Image src={image} alt={name} width={1000} height={667} className="" />
+        <Link href="#" aria-label={`View category ${name}`} className="w-full h-full">
+            <div className="rounded-b-xl shadow-lg w-full h-full">
+                <Image src={imageName ?? image} alt={name} width={1000} height={667} className="min-h-[240px] object-cover" />
                 <div className="py-3 px-2 space-y-4">
                     <div className="space-y-1">
                         <p className="font-semibold text-lg text-gray-text-strong">{name}</p>

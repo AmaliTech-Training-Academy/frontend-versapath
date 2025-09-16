@@ -8,14 +8,12 @@ export const apiServerRequest = async <T>(
   data?: unknown
 ): Promise<ApiResponse<T>> => {
   const cookieStore = await cookies();
-  const url = `${process.env.FRONTEND_URL}/api/v1/${endpoint}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${endpoint}`;
 
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
-
-  console.log("Making server request to:", url);
 
   const makeRequest = async (): Promise<Response> => {
     const options: RequestInit = {
@@ -43,14 +41,12 @@ export const apiServerRequest = async <T>(
 
     // If authentication fails, try refresh via our API route
     if (
-      responseData.message === "Authentication required" ||
+      responseData.message === "JWT token is missing or invalid" ||
       response.status === 401
     ) {
-      console.log("Authentication failed, attempting refresh via API route");
-
       // Call our internal refresh API
       const refreshResponse = await fetch(
-        `http://localhost:3000/api/refresh-token`,
+        `${process.env.NEXT_PUBLIC_API_URL}/refresh-token`,
         {
           method: "POST",
           headers: {
@@ -62,7 +58,6 @@ export const apiServerRequest = async <T>(
       if (refreshResponse.ok) {
         const refreshData = await refreshResponse.json();
         if (refreshData.success) {
-          console.log("Token refresh successful, retrying request");
           // Retry the original request
           const retryResponse = await makeRequest();
           return await retryResponse.json();
@@ -70,7 +65,6 @@ export const apiServerRequest = async <T>(
       }
 
       // If refresh failed, redirect to login
-      console.log("Token refresh failed, redirecting to login");
       redirect("/login");
     }
 
@@ -118,7 +112,7 @@ export const apiServerRequestWithRetry = async <T>(
 
     // If authentication fails and we haven't retried yet
     if (
-      (responseData.message === "Authentication required" ||
+      (responseData.message === "JWT token is missing or invalid" ||
         response.status === 401) &&
       retryCount === 0
     ) {

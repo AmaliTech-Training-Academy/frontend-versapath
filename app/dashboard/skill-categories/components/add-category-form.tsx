@@ -13,12 +13,13 @@ import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
 import { apiRequest } from "@/lib/api/api-request";
 import { Cluster, ItemData } from "@/lib/types/api";
-import { useClusters } from "@/lib/hooks/use-clusters";
 import { extractErrorMessage } from "@/lib/utils";
+import { toFormData } from "@/lib/hooks/to-form-data";
 
-export const AddCategoryForm = () => {
+export const AddCategoryForm = ({ revalidateAction }: { revalidateAction: () => void }) => {
   const [error, setError] = useState<string | null>(null);
-  const { refetch } = useClusters();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   const form = useForm<AddCategoryInputs>({
     resolver: zodResolver(addCategorySchema),
     defaultValues: {
@@ -29,12 +30,16 @@ export const AddCategoryForm = () => {
     mode: "onChange",
   });
 
-  // Ref to programmatically close the sheet
-  const closeRef = useRef<HTMLButtonElement>(null);
-
   const onSubmit = async (data: AddCategoryInputs) => {
     setError(null);
-    const res = await apiRequest<ItemData<Cluster>>('/clusters', 'POST', data);
+
+    const formData = toFormData({
+      name: data.name,
+      description: data.description ?? "",
+      image: data.image,
+    });
+
+    const res = await apiRequest<ItemData<Cluster>>('/clusters', 'POST', formData);
 
     if (!res.success) {
       setError(extractErrorMessage(res.errors as string[], res.message));
@@ -42,7 +47,7 @@ export const AddCategoryForm = () => {
     }
     toast.success("Skill category added successfully!");
     form.reset();
-    refetch();
+    revalidateAction();
     closeRef.current?.click();
   };
   return (

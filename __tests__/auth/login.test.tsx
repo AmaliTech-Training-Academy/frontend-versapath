@@ -1,15 +1,12 @@
-import { expect } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { LoginForm } from "@/app/(auth)/login/components/login-form";
-import { vi } from "vitest";
 import { toast } from "sonner";
 import { apiLogin } from "@/lib/api/login";
 
-// Create a wrapper component with necessary providers
 const renderLoginForm = () => render(<LoginForm />);
 
-// Helper to fill and submit the form
+
 function getSubmitButton() {
   // Get all buttons and filter for type="submit"
   const submitBtn = screen.getAllByRole("button").find(
@@ -83,7 +80,7 @@ describe("LoginForm", () => {
     renderLoginForm();
     await fillAndSubmit("test@example.com", "wrongpass");
     await waitFor(() => {
-      expect(screen.getByText(/Email and password don't match. Please try again./i)).toBeInTheDocument();
+      expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument();
       expect(mockToast).not.toHaveBeenCalled();
     });
   });

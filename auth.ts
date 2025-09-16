@@ -6,23 +6,29 @@ declare module "next-auth" {
     interface Session {
         user: {
             userId: string;
-            username: string;
             email: string;
+            firstName: string;
+            lastName: string;
+            username: string;
             role: Roles;
         } & DefaultSession["user"]
     }
 
     interface User {
         userId: string;
-        username: string;
         email: string;
+        firstName: string;
+        lastName: string;
+        username: string;
         role: Roles;
     }
 
     interface JWT {
         userId: string;
-        username: string;
         email: string;
+        firstName: string;
+        lastName: string;
+        username: string;
         role: Roles;
     }
 }
@@ -57,23 +63,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.userId = user.userId;
                 token.email = user.email;
                 token.username = user.username;
                 token.role = user.role;
+                token.firstName = user.firstName;
+                token.lastName = user.lastName;
             }
+
+            if (trigger === "update") {
+                if (session?.user) {
+                    token.userId = session.user.userId;
+                    token.email = session.user.email;
+                    token.username = session.user.username;
+                    token.role = session.user.role;
+                    token.firstName = session.user.firstName;
+                    token.lastName = session.user.lastName;
+                }
+            }
+
             return token
         },
         async session({ session, token }) {
-            if (token && token?.userId) {
-                session.user = {
-                    ...session.user,
-                    id: token.userId as string,
-                    email: token.email as string,
-                    username: token.username as string,
-                    role: token.role as Roles
+            if (token) {
+                if (token?.userId) {
+                    session.user = {
+                        ...session.user,
+                        userId: token.userId as string,
+                        email: token.email as string,
+                        username: token.username as string,
+                        firstName: token.firstName as string,
+                        lastName: token.lastName as string,
+                        role: token.role as Roles
+                    }
                 }
             }
             return session;

@@ -1,13 +1,22 @@
+import { signOut } from "next-auth/react";
 import { ApiResponse } from "../types/api";
 
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type BodyType = FormData | Record<string, unknown> | Array<unknown>;
+
+const isFormData = (b: unknown): b is FormData =>
+  typeof FormData !== "undefined" && b instanceof FormData;
+
+const isBlobOrFile = (b: unknown): b is Blob | File =>
+  (typeof Blob !== "undefined" && b instanceof Blob) ||
+  (typeof File !== "undefined" && b instanceof File);
 
 export const apiRequest = async <T>(
   endpoint: string,
   method: ApiMethod,
-  data?: unknown
+  data?: BodyType
 ): Promise<ApiResponse<T>> => {
-  const url = `/api/v1${endpoint}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
   const options: RequestInit = {
     method,
     headers: {
@@ -17,21 +26,38 @@ export const apiRequest = async <T>(
   };
 
   if (data !== undefined) {
-    options.headers = {
-      ...options.headers,
-      "Content-Type": "application/json",
-    };
-    options.body = JSON.stringify(data);
+    if (isFormData(data)) {
+      options.body = data;
+    } else if (isBlobOrFile(data)) {
+      options.headers = {
+        ...options.headers,
+        "Content-Type": "application/octet-stream",
+      };
+      options.body = data;
+    } else {
+      options.headers = {
+        ...options.headers,
+        "Content-Type": "application/json",
+      };
+      options.body = JSON.stringify(data);
+    }
   }
 
-  const response = await fetch(url, options).then((res) => res.json());
-  if (response.message === "Authentication required") {
-    const refresh = await fetch(`/api/v1/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    }).then((res) => res.json());
-    if (refresh.success)
+  const response = await fetch(url, options);
+  if (response.status === 401) {
+    const refresh = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    ).then((res) => res.json());
+    if (refresh.success) {
       return await fetch(url, options).then((res) => res.json());
+    } else {
+      await signOut({ redirectTo: "/login" });
+    }
   }
-  return response;
+
+  return await response.json();
 };

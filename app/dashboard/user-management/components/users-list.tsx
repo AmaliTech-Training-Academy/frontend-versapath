@@ -66,7 +66,7 @@ export const UsersList = () => {
       <DataTable
         data={items}
         pagination={pagination}
-        setPagination={setPagination}
+        setPaginationAction={setPagination}
         pageMeta={pageMeta}
       />
     );

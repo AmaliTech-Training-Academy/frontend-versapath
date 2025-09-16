@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { DifficultyLevels } from "../types";
+import { DifficultyLevels, ProfficiencyLevels } from "../types";
+import { error } from "console";
 
 export const addSkillSchema = z.object({
   name: z
@@ -8,9 +9,15 @@ export const addSkillSchema = z.object({
   description: z
     .string({ error: "Description is required" })
     .min(10, "Description must be at least 10 characters long"),
-  category: z
-    .string({ error: "Category is required" })
-    .min(1, { error: "Category is required" }),
+  objectives: z
+    .string({ error: "Objectives are required" })
+    .min(10, "Objectives must be at least 10 characters long"),
+  proficiencyLevel: z.enum(ProfficiencyLevels, {
+    error: "Select a proficiency level",
+  }),
+  categories: z
+    .array(z.string(), "At least one category is required")
+    .min(1, "At least one category is required"),
   difficulty: z.enum(DifficultyLevels, {
     error: "Select a difficulty level",
   }),
@@ -20,7 +27,7 @@ export const addSkillSchema = z.object({
   tags: z.array(z.string()).min(1, "At least one tag is required"),
   cover: z
     .file()
-    .max(1_000_000)
+    .max(1_000_000, { error: "Max file size is 1MB." })
     .mime(["image/png", "image/jpeg", "image/webp"])
     .optional(),
 });
