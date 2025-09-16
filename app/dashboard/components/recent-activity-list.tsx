@@ -19,4 +19,7 @@ const activities = [
     { id: 1, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
     { id: 2, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
     { id: 3, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
+    { id: 4, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
+    { id: 5, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
+    { id: 6, title: "Started TypeScript Fundamentals", date: "23 hours ago" },
 ];
