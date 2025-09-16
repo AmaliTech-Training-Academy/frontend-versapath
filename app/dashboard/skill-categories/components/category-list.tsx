@@ -3,17 +3,22 @@ import { EmptyState } from "@/components/custom/empty-state";
 import { CategoryCard } from "./category-card";
 import { Loader } from "lucide-react";
 import clsx from "clsx";
-import { useState } from "react";
 import { Pagination } from "@/components/custom/pagination";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
 import { useClusters } from "@/lib/api/clusters";
+import { useServerSyncedPagination } from "@/lib/hooks/use-server-synced-pagination";
 
 export const CategoryList = () => {
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 12 });
+    const [pagination, setPagination] = useServerSyncedPagination(undefined);
+
+    // Fetch using desired pagination (from URL)
     const { items, pageInfo, loading, error } = useClusters({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
     });
+
+    // the hook will auto-normalize the URL on the next render
+    useServerSyncedPagination(pageInfo);
 
     const {
         currentPage,
@@ -24,7 +29,7 @@ export const CategoryList = () => {
         prevDisabled,
         nextDisabled,
     } = paginationCalculator({ items, pageInfo, pagination });
-    
+
     const hasData = items && items.length > 0;
 
     const containerClass = clsx(
@@ -65,30 +70,21 @@ export const CategoryList = () => {
                         </div>
                         <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                             <div className="flex-1 text-sm text-muted-foreground">
-                                Showing {start} to {end} { totalItems > end && <> of {totalItems}</>} resources.
+                                Showing {start} to {end} {totalItems > end && <> of {totalItems}</>} resources.
                             </div>
                             <Pagination
                                 nextDisabled={!nextDisabled}
                                 prevDisabled={!prevDisabled}
                                 handleNext={() =>
-                                    setPagination((prev) => ({
-                                        ...prev,
-                                        pageIndex: prev.pageIndex + 1,
-                                    }))
+                                    setPagination({ pageIndex: pagination.pageIndex + 1, pageSize: pagination.pageSize })
                                 }
                                 handlePrev={() =>
-                                    setPagination((prev) => ({
-                                        ...prev,
-                                        pageIndex: Math.max(prev.pageIndex - 1, 0),
-                                    }))
+                                    setPagination({ pageIndex: Math.max(pagination.pageIndex - 1, 0), pageSize: pagination.pageSize })
                                 }
                                 activePage={currentPage + 1}
                                 totalPages={totalPages}
                                 handlePaginationBtnClick={(val) =>
-                                    setPagination((prev) => ({
-                                        ...prev,
-                                        pageIndex: Math.max(val - 1, 0),
-                                    }))
+                                    setPagination({ pageIndex: Math.max(val, 0), pageSize: pagination.pageSize })
                                 }
                             />
                         </div>
