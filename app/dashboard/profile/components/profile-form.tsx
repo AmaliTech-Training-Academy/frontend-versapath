@@ -69,19 +69,26 @@ export const ProfileForm = () => {
     const imageSrc = previewUrl || (!removed && existingUrl) || userPlaceholder;
 
     const onSubmit = async (data: ProfileSchema) => {
-        const parsed = await profileFormSchema.parseAsync(data);
+        const { firstName, lastName, userName, phoneNumber } = await profileFormSchema.parseAsync(data);
 
-        const payload = {
-            firstName: parsed.firstName,
-            lastName: parsed.lastName,
-            username: parsed.userName,
-            phoneNumber: parsed.phoneNumber,
-            ...(selected instanceof File ? { profilePicture: selected } : {}),
+        const formData = new FormData();
+        const profileData = {
+            firstName,
+            lastName,
+            username: userName,
+            phoneNumber
         };
 
-        const formData = toFormData(payload);
+        const profileBlob = new Blob([JSON.stringify(profileData)], {
+            type: 'application/json'
+        });
+        formData.append('profile', profileBlob);
 
-        const result = await apiRequest<ItemData<User>>('/users/profile', 'PATCH', formData);
+        if (selected instanceof File) {
+            formData.append('profilePicture', selected);
+        }
+
+        const result = await apiRequest<User>('/users/profile', 'PATCH', formData);
 
         if (!result.success) {
             toast.error(extractErrorMessage(result.errors as string[], result.message));
@@ -93,10 +100,11 @@ export const ProfileForm = () => {
             user: {
                 // merge only what changed
                 ...session?.user,
-                firstName: result.data?.item.firstName ?? session?.user.firstName,
-                lastName: result.data?.item.lastName ?? session?.user.lastName,
-                username: result.data?.item.username ?? session?.user.username,
-                image: result.data?.item.image ?? session?.user.image
+                firstName: result.data?.firstName ?? session?.user.firstName,
+                lastName: result.data?.lastName ?? session?.user.lastName,
+                username: result.data?.username ?? session?.user.username,
+                phoneNumber: result.data?.phoneNumber ?? session?.user.phoneNumber,
+                image: result.data?.profilePictureUrl ?? session?.user.image
             },
         });
 
@@ -107,12 +115,19 @@ export const ProfileForm = () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
-    const removePhoto = () => {
+    const removePhoto = async () => {
         // If a file is selected, clear it; otherwise mark the existing URL as removed (UI shows placeholder)
         if (selected instanceof File) {
             form.setValue("image", undefined, { shouldDirty: true, shouldTouch: true });
             if (fileInputRef.current) fileInputRef.current.value = "";
         } else if (existingUrl) {
+            // remove user profile picture from backend as well
+            const result = await apiRequest<User>('/users/profile-picture', 'PATCH');
+            if (!result.success) {
+                toast.error(extractErrorMessage(result.errors as string[], result.message));
+                return;
+            }
+            toast.success(result.message || "Profile updated successfully");
             setRemoved(true);
             form.trigger();
         }
@@ -136,7 +151,7 @@ export const ProfileForm = () => {
                 {/* The change profile image functionality is not yet implemented on the backend */}
                 <div className="flex items-center gap-6">
                     <div className="w-[150px] h-[150px] relative rounded-full">
-                        <Image src={imageSrc} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-full" priority />
+                        <Image src={imageSrc} width={1880} height={1253} alt={`${session?.user.username} image`} className="w-full h-full object-cover rounded-[999px]" priority />
                         <FormField
                             control={form.control}
                             name="image"
