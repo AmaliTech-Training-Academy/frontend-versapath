@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { SkillCapsuleCard } from "./skill-capsule-card";
 import { Pagination } from "@/components/custom/pagination";
 import { Loader } from "lucide-react";
@@ -7,7 +7,15 @@ import { useFetchSkills } from "@/lib/api/skills";
 import Image from "next/image";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
 
-export const SKillsContentsSection = () => {
+interface SKillsContentsSectionProps {
+  searchQuery: string;
+  statusFilter: string;
+}
+
+export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
+  searchQuery,
+  statusFilter,
+}) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -17,8 +25,61 @@ export const SKillsContentsSection = () => {
     pagination.pageIndex
   );
 
-  const items = skills?.data?.items ?? [];
-  const pageInfo = skills?.data?.pagination ?? undefined;
+  const allItems = skills?.data?.items ?? [];
+
+  // Filter and search logic
+  const filteredItems = useMemo(() => {
+    let filtered = allItems;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (skill) =>
+          skill.name?.toLowerCase().includes(query) ||
+          skill.description?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter((skill) => {
+        if (statusFilter === "active") {
+          return skill.status === "ACTIVE";
+        } else if (statusFilter === "inactive") {
+          return skill.status === "INACTIVE";
+        }
+        return true;
+      });
+    }
+
+    return filtered;
+  }, [allItems, searchQuery, statusFilter]);
+
+  // Paginate the filtered results
+  const paginatedItems = useMemo(() => {
+    const start = pagination.pageIndex * pagination.pageSize;
+    const end = start + pagination.pageSize;
+    return filteredItems.slice(start, end);
+  }, [filteredItems, pagination]);
+
+  // Calculate pagination info for filtered results
+  const customPageInfo = useMemo(() => {
+    const totalElements = filteredItems.length;
+    const size = pagination.pageSize;
+    const page = pagination.pageIndex;
+    const totalPages = Math.ceil(totalElements / size);
+    const hasNext = page < totalPages - 1;
+    const hasPrevious = page > 0;
+    return {
+      page,
+      size,
+      totalElements,
+      totalPages,
+      hasNext,
+      hasPrevious,
+    };
+  }, [filteredItems.length, pagination]);
 
   const {
     currentPage,
@@ -29,10 +90,18 @@ export const SKillsContentsSection = () => {
     totalItems,
     totalPages,
   } = paginationCalculator({
-    items,
-    pageInfo,
+    items: paginatedItems,
+    pageInfo: customPageInfo,
     pagination,
   });
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  }, [searchQuery, statusFilter]);
 
   const handleNext = () => {
     if (!nextDisabled) {
@@ -58,52 +127,66 @@ export const SKillsContentsSection = () => {
       pageIndex,
     }));
   };
+
   let content;
 
-  if (isFetchingSkills || !items.length || fetchSkillsError) {
+  if (isFetchingSkills) {
     content = (
       <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
-        {isFetchingSkills ? (
-          <>
-            <Loader className="animate-spin" size={40} />
-            <p className="mt-2">Loading skills...</p>
-          </>
-        ) : (
-          (!items.length || fetchSkillsError) && (
-            <>
-              <Image
-                src={"/not-found.png"}
-                alt="No skills found"
-                height={100}
-                width={100}
-              />
-              <p className="mt-2">
-                No skills found. Please add a skill to get started.
-              </p>
-            </>
-          )
-        )}
+        <Loader className="animate-spin" size={40} />
+        <p className="mt-2">Loading skills...</p>
+      </section>
+    );
+  } else if (fetchSkillsError) {
+    content = (
+      <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
+        <Image
+          src={"/not-found.png"}
+          alt="Error loading skills"
+          height={100}
+          width={100}
+        />
+        <p className="mt-2">Error loading skills. Please try again.</p>
+      </section>
+    );
+  } else if (!filteredItems.length) {
+    const noResultsMessage =
+      searchQuery || statusFilter
+        ? "No skills match your search criteria."
+        : "No skills found. Please add a skill to get started.";
+
+    content = (
+      <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
+        <Image
+          src={"/not-found.png"}
+          alt="No skills found"
+          height={100}
+          width={100}
+        />
+        <p className="mt-2">{noResultsMessage}</p>
       </section>
     );
   } else {
     content = (
       <>
         <article className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 min-h-[60vh]">
-          {items.map((skill) => (
+          {paginatedItems.map((skill) => (
             <SkillCapsuleCard key={skill.id} skill={skill} />
           ))}
         </article>
 
         <article className="text-center flex justify-between mt-6 w-full">
           <p className="text-gray-text-weak">
-            Showing {start} to {end} of {totalItems || items.length} entries
+            Showing {start} to {end} of {totalItems} entries
+            {(searchQuery || statusFilter) &&
+              ` (filtered from ${allItems.length} total)`}
           </p>
           <Pagination
             handleNext={handleNext}
             handlePaginationBtnClick={handlePaginationBtnClick}
             handlePrev={handlePrev}
-            nextDisabled={!nextDisabled}
-            prevDisabled={!prevDisabled}
+            nextDisabled={nextDisabled}
+            prevDisabled={prevDisabled}
             totalPages={totalPages}
             activePage={currentPage + 1}
           />

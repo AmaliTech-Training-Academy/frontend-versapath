@@ -7,8 +7,14 @@ import React, { useEffect, useRef } from "react";
 export interface TopActionsProps {
   searchPlaceholder?: string;
   onSearch?: (value: string) => void;
+  onStatusFilter?: (value: string) => void;
+  onRoleFilter?: (value: string) => void;
   rightActions?: React.ReactNode;
   debounceMs?: number;
+  isRoleFilterable?: boolean;
+  isStatusFilterable?: boolean;
+  searchValue?: string; // Add this prop
+  statusValue?: string; // Add this prop for status filter
 }
 
 const ROLE_OPTIONS = [
@@ -18,6 +24,7 @@ const ROLE_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
+  { value: "all", label: "All" },
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
 ];
@@ -25,8 +32,14 @@ const STATUS_OPTIONS = [
 export const TopActions: React.FC<TopActionsProps> = ({
   searchPlaceholder = "Search...",
   onSearch,
+  onStatusFilter,
+  onRoleFilter,
   rightActions,
-  debounceMs = 500
+  debounceMs = 500,
+  isRoleFilterable = true,
+  isStatusFilterable = true,
+  searchValue = "",
+  statusValue = "",
 }) => {
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data: session } = useSession();
@@ -48,14 +61,20 @@ export const TopActions: React.FC<TopActionsProps> = ({
     const formData = new FormData(e.currentTarget);
     const searchValue = formData.get("searchInput") as string;
 
-    // Clear any pending debounced search and execute immediately
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
     onSearch?.(searchValue || "");
   };
 
-  // Cleanup timer on unmount
+  const handleStatusChange = (value: string) => {
+    onStatusFilter?.(value);
+  };
+
+  const handleRoleChange = (value: string) => {
+    onRoleFilter?.(value);
+  };
+
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -71,21 +90,35 @@ export const TopActions: React.FC<TopActionsProps> = ({
           className="flex items-center max-w-[340px] w-full"
           onSubmit={handleSubmit}
         >
-          <Input onChange={handleChange} placeholder={searchPlaceholder} name="searchInput" />
+          <Input
+            onChange={handleChange}
+            placeholder={searchPlaceholder}
+            name="searchInput"
+            defaultValue={searchValue}
+          />
         </form>
-        {
-          canView && (
-            <div className="flex items-center gap-2">
-              Filter:
-              <Select placeholder="All roles" options={ROLE_OPTIONS} />
-              <Select placeholder="All statuses" options={STATUS_OPTIONS} />
-            </div>
-          )
-        }
+        {canView && (
+          <div className="flex items-center gap-2">
+            Filter:
+            {isRoleFilterable && (
+              <Select
+                placeholder="All roles"
+                options={ROLE_OPTIONS}
+                handlevalueChange={handleRoleChange}
+              />
+            )}
+            {isStatusFilterable && (
+              <Select
+                placeholder="All statuses"
+                options={STATUS_OPTIONS}
+                handlevalueChange={handleStatusChange}
+                defaultValue={statusValue || "all"} // Set default value for status filter
+              />
+            )}
+          </div>
+        )}
       </article>
-      {
-        canView && rightActions
-      }
+      {canView && rightActions}
     </section>
-  )
-}
+  );
+};
