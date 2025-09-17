@@ -89,7 +89,7 @@ const sidebarItems: SidebarItem[] = [
     icon: BookOpenIcon,
     allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
     items: [
-      { title: "Skill Categories", url: "/dashboard/skill-categories", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
+      { title: "Skill Categories", url: "/dashboard/skill-categories?page=1&size=12", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
       { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
       { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
       { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },

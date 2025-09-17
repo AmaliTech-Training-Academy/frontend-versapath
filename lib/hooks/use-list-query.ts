@@ -21,20 +21,19 @@ export function useListQuery({
   const pathname = usePathname();
   const router = useRouter();
 
-  const page = Math.max(0, Number(sp.get(pageParam) ?? 0));
+  const page = Math.max(0, Number(sp.get(pageParam) ?? 0) - 1);
   const size = Math.max(1, Number(sp.get(sizeParam) ?? defaultSize));
   const name = sp.get(nameParam) ?? "";
 
   const setQuery = (params: Partial<ListQuery>) => {
     const next = new URLSearchParams(sp.toString());
+    next.set(pageParam, String((params.page ?? 0) + 1));
+    next.set(sizeParam, String(Math.max(1, params.size ?? defaultSize)));
 
-    if (params.page !== undefined) next.set(pageParam, String(Math.max(0, params.page)));
-    if (params.size !== undefined) next.set(sizeParam, String(Math.max(1, params.size)));
     if (params.name !== undefined) {
       const val = params.name.trim();
       if (val) next.set(nameParam, val);
       else next.delete(nameParam);
-      if (params.page === undefined) next.set(pageParam, "0");
     }
 
     router.replace(`${pathname}?${next.toString()}`);

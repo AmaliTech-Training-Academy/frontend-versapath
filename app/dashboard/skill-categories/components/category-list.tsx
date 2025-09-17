@@ -96,7 +96,7 @@ export const CategoryList = () => {
                         </div>
                     </>
                 ) : (
-                    <EmptyState message="No skill categories added yet." />
+                    <EmptyState message="No skill categories found." />
                 )
             }
         </section>
