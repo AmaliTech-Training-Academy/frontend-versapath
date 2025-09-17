@@ -1,5 +1,7 @@
 import { Select } from "@/components/custom/custom-selector";
 import { Input } from "@/components/ui/input";
+import { Roles } from "@/lib/types";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
 
 export interface TopActionsProps {
@@ -27,6 +29,8 @@ export const TopActions: React.FC<TopActionsProps> = ({
   debounceMs = 500
 }) => {
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { data: session } = useSession();
+  const canView = session?.user.role === Roles.ADMIN;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -69,13 +73,19 @@ export const TopActions: React.FC<TopActionsProps> = ({
         >
           <Input onChange={handleChange} placeholder={searchPlaceholder} name="searchInput" />
         </form>
-        <div className="flex items-center gap-2">
-          Filter:
-          <Select placeholder="All roles" options={ROLE_OPTIONS} />
-          <Select placeholder="All statuses" options={STATUS_OPTIONS} />
-        </div>
+        {
+          canView && (
+            <div className="flex items-center gap-2">
+              Filter:
+              <Select placeholder="All roles" options={ROLE_OPTIONS} />
+              <Select placeholder="All statuses" options={STATUS_OPTIONS} />
+            </div>
+          )
+        }
       </article>
-      {rightActions}
+      {
+        canView && rightActions
+      }
     </section>
   )
 }

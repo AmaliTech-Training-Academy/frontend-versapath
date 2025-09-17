@@ -36,7 +36,6 @@ export function useClusters(params?: Params) {
 // Refresh all cluster caches (both list and filter)
 export function revalidateAllClusters() {
   mutate((key) =>
-    typeof key === "string" &&
-    (key.startsWith("/clusters?") || key.startsWith("/clusters/filter?"))
+    typeof key === "string" && key.startsWith("/clusters?")
   );
 }
