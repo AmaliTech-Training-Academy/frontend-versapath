@@ -30,6 +30,7 @@ import { useSession } from "next-auth/react";
 import { ConfirmDialog } from "./confirm-dialog";
 import { useState } from "react";
 import { Roles } from "@/lib/types";
+import userPlaceholder from "@/public/images/user-placeholder.png";
 
 // Types
 type SvgIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -294,7 +295,7 @@ export function AppSidebar() {
         </div>
 
         <div className="flex gap-2 py-6 justify-between items-center">
-          <User size={30} className="rounded-full h-10 w-10 flex-shrink-0" />
+          <Image src={session?.user.image ?? userPlaceholder} width={400} height={400} alt="user profile" className="w-10 h-10 rounded-full" />
           <div className="space-y-2">
             <p className="font-semibold text-gray-text-strong text-wrap">
               {`${session?.user.firstName} ${session?.user.lastName}`}

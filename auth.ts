@@ -10,6 +10,8 @@ declare module "next-auth" {
             firstName: string;
             lastName: string;
             username: string;
+            phoneNumber?: string;
+            image?: string;
             role: Roles;
         } & DefaultSession["user"]
     }
@@ -20,6 +22,8 @@ declare module "next-auth" {
         firstName: string;
         lastName: string;
         username: string;
+        phoneNumber?: string;
+        image?: string;
         role: Roles;
     }
 
@@ -29,6 +33,8 @@ declare module "next-auth" {
         firstName: string;
         lastName: string;
         username: string;
+        phoneNumber?: string;
+        image?: string;
         role: Roles;
     }
 }
@@ -71,6 +77,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.role = user.role;
                 token.firstName = user.firstName;
                 token.lastName = user.lastName;
+                token.phoneNumber = user.phoneNumber;
+                token.image = user.image;
             }
 
             if (trigger === "update") {
@@ -81,6 +89,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     token.role = session.user.role;
                     token.firstName = session.user.firstName;
                     token.lastName = session.user.lastName;
+                    token.phoneNumber = session.user.phoneNumber;
+                    token.image = session.user.image;
                 }
             }
 
@@ -96,7 +106,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         username: token.username as string,
                         firstName: token.firstName as string,
                         lastName: token.lastName as string,
-                        role: token.role as Roles
+                        role: token.role as Roles,
+                        phoneNumber: token.phoneNumber as string ?? undefined,
+                        image: token.image as string ?? undefined,
                     }
                 }
             }
