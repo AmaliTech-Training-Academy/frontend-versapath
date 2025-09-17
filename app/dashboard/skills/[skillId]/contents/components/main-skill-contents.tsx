@@ -1,14 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useFetchLesson } from "@/lib/api/skills";
-import { Loader, Play } from "lucide-react";
+import { Roles } from "@/lib/types";
+import { Loader, PenBox, Play } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
 export const MainSkillContents = () => {
   const searchParams = useSearchParams();
-
+  const { data: userSession } = useSession();
   const lessonId = searchParams.get("activeLesson") as string;
   const {
     lesson: fetchedLesson,
@@ -51,9 +53,17 @@ export const MainSkillContents = () => {
     );
   return (
     <section className="w-full p-4 pt-0 space-y-6 overflow-y-auto tabs_scrollbar border-s-2 border-gray-stroke-weak/70">
-      <h2 className="justify-start text-lg font-semibold leading-relaxed text-start text-gray-text-strong/90">
-        {lesson?.name || "N/A"}
-      </h2>
+      <article className="w-full flex justify-between items-center">
+        <h2 className="justify-start text-lg font-semibold leading-relaxed text-start text-gray-text-strong/90">
+          {lesson?.name || "N/A"}
+        </h2>
+        {userSession?.user.role === Roles.ADMIN && (
+          <Button variant={"ghost"} className="px-4 bg-gray-stroke-weak/60">
+            <PenBox size={16} />
+            <span className="ml-2">Edit lesson</span>
+          </Button>
+        )}
+      </article>
       <div className="w-full aspect-video max-h-[500px] relative top-0 left-0">
         <Image
           src={"/images/javascript.png"}

@@ -3,7 +3,7 @@ import { BookOpen } from "lucide-react";
 
 export const SkillMoreInfo = () => {
   return (
-    <div className="max-w-[900px] w-full text-center mx-auto -mt-10 relative z-10  px-7 py-6  bg-base-light-white rounded-lg shadow-lg inline-flex justify-between items-center ">
+    <div className="max-w-[850px] w-full text-center mx-auto -mt-10 relative z-10  px-7 py-6  bg-base-light-white rounded-lg shadow-lg inline-flex flex-col md:flex-row gap-2 justify-between items-start md:items-center ">
       <div className="flex justify-start items-center gap-4">
         <ChartBarIcon className="size-6" />
         <div className="w-16 inline-flex flex-col justify-start items-start">

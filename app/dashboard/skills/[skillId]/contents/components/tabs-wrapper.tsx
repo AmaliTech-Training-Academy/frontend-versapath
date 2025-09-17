@@ -6,11 +6,13 @@ import React, { useEffect } from "react";
 import { TabSkillContents } from "./tab-skill-contents";
 import { TabAIContents } from "./tab-ai-contents";
 import { useChangeSearchParams } from "@/lib/hooks/use-change-searchparams";
+import { useSession } from "next-auth/react";
+import { Roles } from "@/lib/types";
 
 export const TabsWrapper = () => {
   const [openTab, setOpenTab] = React.useState("details");
   const { searchParams, setSearchParam } = useChangeSearchParams();
-
+  const { data: userSession } = useSession();
   useEffect(() => {
     const open = searchParams.get("subsection");
     if (open) setOpenTab(open);
@@ -27,20 +29,22 @@ export const TabsWrapper = () => {
       defaultValue={openTab}
       value={openTab}
     >
-      <TabsList className="bg-inherit">
-        <TabsTrigger
-          value="details"
-          className="font-semibold tabs_list_header text-gray-text-weak"
-        >
-          Skill Content
-        </TabsTrigger>
-        <TabsTrigger
-          value="ai"
-          className="font-semibold tabs_list_header text-gray-text-weak"
-        >
-          <Sparkles strokeWidth={1.7} /> AI assistance
-        </TabsTrigger>
-      </TabsList>
+      {userSession?.user.role === Roles.LEARNER && (
+        <TabsList className="bg-inherit">
+          <TabsTrigger
+            value="details"
+            className="font-semibold tabs_list_header text-gray-text-weak"
+          >
+            Skill Content
+          </TabsTrigger>
+          <TabsTrigger
+            value="ai"
+            className="font-semibold tabs_list_header text-gray-text-weak"
+          >
+            <Sparkles strokeWidth={1.7} /> AI assistance
+          </TabsTrigger>
+        </TabsList>
+      )}
       <TabsContent value="details" className="overflow-y-auto tabs_scrollbar">
         <TabSkillContents />
       </TabsContent>

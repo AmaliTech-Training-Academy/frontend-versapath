@@ -12,9 +12,13 @@ import { removeLessonDuplicates, useFetchSingleSkill } from "@/lib/api/skills";
 import { useParams } from "next/navigation";
 import { SingleSkillResponse } from "@/lib/types/api";
 import { SkillAtom } from "@/lib/types/skill-atom";
+import { SkillContentProgressBar } from "./components/skill-contents-progress-bar";
+import { useSession } from "next-auth/react";
+import { Roles } from "@/lib/types";
 
 function SingleSkillPage() {
   const { skillId } = useParams();
+  const { data: userSession } = useSession();
   const [skill, setSkill] = React.useState<SingleSkillResponse | null>(null);
   const [lessons, setLessons] = React.useState<SkillAtom[] | null>(null);
   const {
@@ -97,24 +101,34 @@ function SingleSkillPage() {
             <h2 className="justify-start text-2xl font-semibold leading-loose">
               {skill?.name}
             </h2>
-            <SheetWrapper
-              headerDescription="Update skill information"
-              headerTitle="Edit Skill"
-              trigger={
-                <Button
-                  variant={"ghost"}
-                  className="bg-base-light-white text-brand-primary-text hover:bg-base-light-white/90 w-fit"
-                >
-                  <PenBox />
-                  Edit Skill
-                </Button>
-              }
-            >
-              <div className="w-full h-96">Form goes here</div>
-            </SheetWrapper>
+            {userSession?.user.role === Roles.LEARNER && (
+              <SkillContentProgressBar />
+            )}
+            {userSession?.user.role === Roles.ADMIN && (
+              <SheetWrapper
+                headerDescription="Update skill information"
+                headerTitle="Edit Skill"
+                trigger={
+                  <Button
+                    variant={"ghost"}
+                    className="bg-base-light-white text-brand-primary-text hover:bg-base-light-white/90 w-fit"
+                  >
+                    <PenBox />
+                    Edit Skill
+                  </Button>
+                }
+              >
+                <div className="w-full h-96">Form goes here</div>
+              </SheetWrapper>
+            )}
+            {userSession?.user.role === Roles.LEARNER && (
+              <Button className="max-w-fit px-4">Start</Button>
+            )}
           </div>
         </article>
-        <SkillMoreInfo />
+        <div className="w-full px-4">
+          <SkillMoreInfo />
+        </div>
         <div className="mt-10 text-lg font-semibold leading-relaxed text-start">
           About this skill
         </div>
@@ -136,21 +150,23 @@ function SingleSkillPage() {
                 </p>
               </div>
             </div>
-            <SheetWrapper
-              headerDescription="Add at least one lesson to this skill capsule"
-              headerTitle="Add Lesson"
-              trigger={
-                <Button
-                  variant="ghost"
-                  className=" bg-base-light-white hover:bg-base-light-white/80"
-                >
-                  <Plus />
-                  Add Lesson
-                </Button>
-              }
-            >
-              <LessonsList skillId={skill?.id ?? ""} />
-            </SheetWrapper>
+            {userSession?.user.role === Roles.ADMIN && (
+              <SheetWrapper
+                headerDescription="Add at least one lesson to this skill capsule"
+                headerTitle="Add Lesson"
+                trigger={
+                  <Button
+                    variant="ghost"
+                    className=" bg-base-light-white hover:bg-base-light-white/80"
+                  >
+                    <Plus />
+                    Add Lesson
+                  </Button>
+                }
+              >
+                <LessonsList skillId={skill?.id ?? ""} />
+              </SheetWrapper>
+            )}
           </div>
           <div className="w-full p-5 text-center text-gray-text-strong/70 ">
             {lessons && lessons.length === 0 ? (
