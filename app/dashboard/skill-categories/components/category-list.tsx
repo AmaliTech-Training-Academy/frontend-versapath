@@ -6,19 +6,27 @@ import clsx from "clsx";
 import { Pagination } from "@/components/custom/pagination";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
 import { useClusters } from "@/lib/api/clusters";
-import { useServerSyncedPagination } from "@/lib/hooks/use-server-synced-pagination";
+import { useListQuery } from "@/lib/hooks/use-list-query";
+import { useEffect } from "react";
 
 export const CategoryList = () => {
-    const [pagination, setPagination] = useServerSyncedPagination(undefined);
+    const [query, setQuery] = useListQuery();
 
-    // Fetch using desired pagination (from URL)
     const { items, pageInfo, loading, error } = useClusters({
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
+        pageIndex: query.page,
+        pageSize: query.size,
+        name: query.name,
     });
 
-    // the hook will auto-normalize the URL on the next render
-    useServerSyncedPagination(pageInfo);
+    // Optional: one small normalization to server truth (no extra bells/whistles)
+    useEffect(() => {
+        if (!pageInfo) return;
+        const serverPage = Math.max(0, pageInfo.page ?? query.page);
+        const serverSize = Math.max(1, pageInfo.size ?? query.size);
+        if (serverPage !== query.page || serverSize !== query.size) {
+            setQuery({ page: serverPage, size: serverSize });
+        }
+    }, [pageInfo, query.page, query.size, setQuery]);
 
     const {
         currentPage,
@@ -28,7 +36,11 @@ export const CategoryList = () => {
         end,
         prevDisabled,
         nextDisabled,
-    } = paginationCalculator({ items, pageInfo, pagination });
+    } = paginationCalculator({
+        items,
+        pageInfo,
+        pagination: { pageIndex: query.page, pageSize: query.size }
+    });
 
     const hasData = items && items.length > 0;
 
@@ -75,22 +87,16 @@ export const CategoryList = () => {
                             <Pagination
                                 nextDisabled={!nextDisabled}
                                 prevDisabled={!prevDisabled}
-                                handleNext={() =>
-                                    setPagination({ pageIndex: pagination.pageIndex + 1, pageSize: pagination.pageSize })
-                                }
-                                handlePrev={() =>
-                                    setPagination({ pageIndex: Math.max(pagination.pageIndex - 1, 0), pageSize: pagination.pageSize })
-                                }
+                                handleNext={() => setQuery({ page: query.page + 1 })}
+                                handlePrev={() => setQuery({ page: Math.max(query.page - 1, 0) })}
                                 activePage={currentPage + 1}
                                 totalPages={totalPages}
-                                handlePaginationBtnClick={(val) =>
-                                    setPagination({ pageIndex: Math.max(val, 0), pageSize: pagination.pageSize })
-                                }
+                                handlePaginationBtnClick={(val) => setQuery({ page: Math.max(val, 0) })}
                             />
                         </div>
                     </>
                 ) : (
-                    <EmptyState message="No skill categories added yet." />
+                    <EmptyState message="No skill categories found." />
                 )
             }
         </section>

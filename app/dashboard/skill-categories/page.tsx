@@ -7,14 +7,17 @@ import { CategoryList } from "./components/category-list";
 import { SheetWrapper } from "../components/sheet-wrapper";
 import { AddCategoryForm } from "./components/add-category-form";
 import { revalidateAllClusters } from "@/lib/api/clusters";
+import { useListQuery } from "@/lib/hooks/use-list-query";
 
 export default function SkillClustersPage() {
+    const [, setQuery] = useListQuery();
     return (
         <>
             <DashboardHeader title="Skill Categories" />
             <section className="bg-sidebar p-3 rounded-lg flex-grow">
                 <TopActions
                     searchPlaceholder="Search by skill categories"
+                    onSearch={(val) => setQuery({ name: val })}
                     rightActions={
                         <SheetWrapper
                             headerTitle="Add New Category"
