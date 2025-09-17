@@ -6,21 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { AddSkillForm } from "./components/add-skill-form";
 import { SKillsContentsSection } from "./components/skills-contents-section";
-import { useSession } from "next-auth/react";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 import { StreakBanner } from "./components/streak-banner";
 
 function SkillCapsulePage() {
-  const { data: userSession } = useSession();
+  const { isLearner, isAdmin } = useCheckRole();
   return (
     <>
       <DashboardHeader title="Skills" />
-      {userSession?.user.role === Roles.LEARNER && <StreakBanner />}
+      {isLearner && <StreakBanner />}
       <section className="mb-6">
         <TopActions
           searchPlaceholder="Search by skills"
           rightActions={
-            userSession?.user.role === Roles.ADMIN && (
+            isAdmin && (
               <SheetWrapper
                 headerTitle="Add a skill"
                 headerDescription="Add a new skill to your learning path"

@@ -6,13 +6,12 @@ import React, { useEffect } from "react";
 import { TabSkillContents } from "./tab-skill-contents";
 import { TabAIContents } from "./tab-ai-contents";
 import { useChangeSearchParams } from "@/lib/hooks/use-change-searchparams";
-import { useSession } from "next-auth/react";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 export const TabsWrapper = () => {
   const [openTab, setOpenTab] = React.useState("details");
   const { searchParams, setSearchParam } = useChangeSearchParams();
-  const { data: userSession } = useSession();
+  const { isLearner } = useCheckRole();
   useEffect(() => {
     const open = searchParams.get("subsection");
     if (open) setOpenTab(open);
@@ -29,7 +28,7 @@ export const TabsWrapper = () => {
       defaultValue={openTab}
       value={openTab}
     >
-      {userSession?.user.role === Roles.LEARNER && (
+      {isLearner && (
         <TabsList className="bg-inherit">
           <TabsTrigger
             value="details"

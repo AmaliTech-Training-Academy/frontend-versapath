@@ -13,12 +13,11 @@ import { useParams } from "next/navigation";
 import { SingleSkillResponse } from "@/lib/types/api";
 import { SkillAtom } from "@/lib/types/skill-atom";
 import { SkillContentProgressBar } from "./components/skill-contents-progress-bar";
-import { useSession } from "next-auth/react";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 function SingleSkillPage() {
   const { skillId } = useParams();
-  const { data: userSession } = useSession();
+  const { isLearner, isAdmin } = useCheckRole();
   const [skill, setSkill] = React.useState<SingleSkillResponse | null>(null);
   const [lessons, setLessons] = React.useState<SkillAtom[] | null>(null);
   const {
@@ -101,10 +100,8 @@ function SingleSkillPage() {
             <h2 className="justify-start text-2xl font-semibold leading-loose">
               {skill?.name}
             </h2>
-            {userSession?.user.role === Roles.LEARNER && (
-              <SkillContentProgressBar />
-            )}
-            {userSession?.user.role === Roles.ADMIN && (
+            {isLearner && <SkillContentProgressBar />}
+            {isAdmin && (
               <SheetWrapper
                 headerDescription="Update skill information"
                 headerTitle="Edit Skill"
@@ -121,9 +118,7 @@ function SingleSkillPage() {
                 <div className="w-full h-96">Form goes here</div>
               </SheetWrapper>
             )}
-            {userSession?.user.role === Roles.LEARNER && (
-              <Button className="max-w-fit px-4">Start</Button>
-            )}
+            {isLearner && <Button className="max-w-fit px-4">Start</Button>}
           </div>
         </article>
         <div className="w-full px-4">
@@ -150,7 +145,7 @@ function SingleSkillPage() {
                 </p>
               </div>
             </div>
-            {userSession?.user.role === Roles.ADMIN && (
+            {isAdmin && (
               <SheetWrapper
                 headerDescription="Add at least one lesson to this skill capsule"
                 headerTitle="Add Lesson"

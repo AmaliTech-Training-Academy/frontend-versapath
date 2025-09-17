@@ -13,13 +13,12 @@ import { SKill } from "@/lib/types/skills";
 import { deleteSkill } from "@/lib/api/skills";
 import { mutate } from "swr";
 import { AddSkillForm } from "./add-skill-form";
-import { useSession } from "next-auth/react";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
-  const { data: userSession } = useSession();
+  const { isLearner, isAdmin } = useCheckRole();
   const handleDeleteSkill = async () => {
     setIsDeleting(true);
     try {
@@ -49,10 +48,8 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
           </Button>
         }
       >
-        {userSession?.user.role === Roles.LEARNER && (
-          <StudentDropDown skillId={skill.id} />
-        )}
-        {userSession?.user.role === Roles.ADMIN && (
+        {isLearner && <StudentDropDown skillId={skill.id} />}
+        {isAdmin && (
           <>
             <DropdownMenuItem asChild>
               <Link

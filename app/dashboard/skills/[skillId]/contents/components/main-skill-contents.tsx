@@ -1,16 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useFetchLesson } from "@/lib/api/skills";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 import { Loader, PenBox, Play } from "lucide-react";
-import { useSession } from "next-auth/react";
+import React from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import React from "react";
 
 export const MainSkillContents = () => {
   const searchParams = useSearchParams();
-  const { data: userSession } = useSession();
+  const { isAdmin } = useCheckRole();
   const lessonId = searchParams.get("activeLesson") as string;
   const {
     lesson: fetchedLesson,
@@ -57,7 +56,7 @@ export const MainSkillContents = () => {
         <h2 className="justify-start text-lg font-semibold leading-relaxed text-start text-gray-text-strong/90">
           {lesson?.name || "N/A"}
         </h2>
-        {userSession?.user.role === Roles.ADMIN && (
+        {isAdmin && (
           <Button variant={"ghost"} className="px-4 bg-gray-stroke-weak/60">
             <PenBox size={16} />
             <span className="ml-2">Edit lesson</span>

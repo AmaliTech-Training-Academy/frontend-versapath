@@ -9,8 +9,7 @@ import { SkillAtomsList } from "./components/skill-atoms-list";
 import { Loader, Plus } from "lucide-react";
 import { useSkillAtoms } from "@/lib/hooks/use-skill-atoms";
 import { Pagination } from "@/components/custom/pagination";
-import { useSession } from "next-auth/react";
-import { Roles } from "@/lib/types";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 export default function SkillAtomListPage() {
   const { skillAtoms, loading, error, refreshLessons, setSkillAtoms } =
@@ -19,7 +18,7 @@ export default function SkillAtomListPage() {
   const [activePage, setActivePage] = React.useState(1);
   const itemsPerPage = 9;
   const totalPages = Math.ceil(skillAtoms.length / itemsPerPage);
-  const { data: userSession } = useSession();
+  const { isAdmin } = useCheckRole();
   const paginatedSkillAtoms = React.useMemo(() => {
     const start = (activePage - 1) * itemsPerPage;
     return skillAtoms.slice(start, start + itemsPerPage);
@@ -37,7 +36,7 @@ export default function SkillAtomListPage() {
         <TopActions
           searchPlaceholder="Search by lesson"
           rightActions={
-            userSession?.user.role === Roles.ADMIN ? (
+            isAdmin ? (
               <SheetWrapper
                 headerTitle="Add New Lesson"
                 headerDescription="Add a new skill category to organize your tags"

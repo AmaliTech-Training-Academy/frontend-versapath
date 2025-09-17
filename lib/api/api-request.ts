@@ -57,6 +57,10 @@ export const apiRequest = async <T>(
     if (refresh.success) {
       return await fetch(url, options).then((res) => res.json());
     } else {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
       await signOut({ redirectTo: "/login" });
     }
   }
