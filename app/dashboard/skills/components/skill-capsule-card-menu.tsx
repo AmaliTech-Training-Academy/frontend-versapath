@@ -3,7 +3,7 @@ import { CustomDropdown } from "@/components/custom/custom-dropdown";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Eye, MoreVertical, PenBox, Trash2 } from "lucide-react";
+import { Eye, MoreVertical, PenBox, SquarePlay, Trash2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { SheetWrapper } from "../../components/sheet-wrapper";
@@ -13,11 +13,12 @@ import { SKill } from "@/lib/types/skills";
 import { deleteSkill } from "@/lib/api/skills";
 import { mutate } from "swr";
 import { AddSkillForm } from "./add-skill-form";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
-
+  const { isLearner, isAdmin } = useCheckRole();
   const handleDeleteSkill = async () => {
     setIsDeleting(true);
     try {
@@ -33,7 +34,6 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
       setDialogOpen(false);
       mutate((key) => typeof key === "string" && key.startsWith("/capsules"));
     } catch (error) {
-      console.error("Failed to delete skill:", error);
       toast.error("An unexpected error occurred. Please try again.");
       setIsDeleting(false);
     }
@@ -48,39 +48,44 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
           </Button>
         }
       >
-        <DropdownMenuItem asChild>
-          <Link
-            href={`/dashboard/skills/${skill.id}`}
-            className="w-full justify-start"
-          >
-            <Eye />
-            View
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <SheetWrapper
-            headerTitle="Edit Skill"
-            headerDescription="Edit the skill details"
-            trigger={
-              <button className="custom-dropdown-item">
-                <PenBox size={20} />
-                Edit
+        {isLearner && <StudentDropDown skillId={skill.id} />}
+        {isAdmin && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/dashboard/skills/${skill.id}`}
+                className="w-full justify-start"
+              >
+                <Eye />
+                View
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <SheetWrapper
+                headerTitle="Edit Skill"
+                headerDescription="Edit the skill details"
+                trigger={
+                  <button className="custom-dropdown-item">
+                    <PenBox size={20} />
+                    Edit
+                  </button>
+                }
+              >
+                <AddSkillForm />
+              </SheetWrapper>
+            </DropdownMenuItem>
+            <Separator className="my-1" />
+            <DropdownMenuItem asChild>
+              <button
+                className="w-full justify-start text-red-text focus:text-red-text"
+                onClick={() => setDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-2 cursor-pointer text-red-text focus:text-red-text " />
+                Delete
               </button>
-            }
-          >
-            <AddSkillForm />
-          </SheetWrapper>
-        </DropdownMenuItem>
-        <Separator className="my-1" />
-        <DropdownMenuItem asChild>
-          <button
-            className="w-full justify-start text-red-text focus:text-red-text"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Trash2 className="h-4 w-4 mr-2 cursor-pointer text-red-text focus:text-red-text " />
-            Delete
-          </button>
-        </DropdownMenuItem>
+            </DropdownMenuItem>
+          </>
+        )}
       </CustomDropdown>
       <ConfirmDialog
         open={dialogOpen}
@@ -92,6 +97,28 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
         preventCloseOnConfirm={true}
         dialogClose={true}
       />
+    </>
+  );
+};
+
+const StudentDropDown = ({ skillId }: { skillId: string }) => {
+  return (
+    <>
+      <DropdownMenuItem asChild>
+        <Link href={`#`} className="w-full justify-start">
+          <SquarePlay />
+          Start
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <Link
+          href={`/dashboard/skills/${skillId}`}
+          className="w-full justify-start"
+        >
+          <Eye />
+          View details
+        </Link>
+      </DropdownMenuItem>
     </>
   );
 };
