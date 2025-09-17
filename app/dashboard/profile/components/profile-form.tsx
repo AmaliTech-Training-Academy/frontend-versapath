@@ -15,10 +15,16 @@ import Image from "next/image";
 import userPlaceholder from "@/public/images/user-placeholder.png";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { toFormData } from "@/lib/hooks/to-form-data";
 import { apiRequest } from "@/lib/api/api-request";
-import { ItemData, User } from "@/lib/types/api";
+import { User } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
+
+type ProfilePayload = {
+    firstName: string;
+    lastName: string;
+    username: string;
+    phoneNumber: string;
+};
 
 export const ProfileForm = () => {
     const { data: session, status, update } = useSession();
@@ -38,12 +44,13 @@ export const ProfileForm = () => {
 
     // When session loads/changes, hydrate the form with user data
     useEffect(() => {
-        if (!session?.user) return;
+        const user = session?.user;
+        if (!user) return;
         form.reset({
-            firstName: session.user.firstName ?? "",
-            lastName: session.user.lastName ?? "",
-            userName: session.user.username ?? "",
-            phoneNumber: session.user.phoneNumber ?? "",
+            firstName: user.firstName ?? "",
+            lastName: user.lastName ?? "",
+            userName: user.username ?? "",
+            phoneNumber: user.phoneNumber ?? "",
             image: undefined
         });
     }, [session?.user, form]);
@@ -68,6 +75,11 @@ export const ProfileForm = () => {
     // decide image src: file preview → session url → placeholder
     const imageSrc = previewUrl || (!removed && existingUrl) || userPlaceholder;
 
+    const clearFileSelection = () => {
+        form.setValue("image", undefined, { shouldDirty: true, shouldTouch: true });
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
     const onSubmit = async (data: ProfileSchema) => {
         const { firstName, lastName, userName, phoneNumber } = await profileFormSchema.parseAsync(data);
 
@@ -79,10 +91,7 @@ export const ProfileForm = () => {
             phoneNumber
         };
 
-        const profileBlob = new Blob([JSON.stringify(profileData)], {
-            type: 'application/json'
-        });
-        formData.append('profile', profileBlob);
+        formData.append('profile', new Blob([JSON.stringify(profileData)], { type: 'application/json' }));
 
         if (selected instanceof File) {
             formData.append('profilePicture', selected);
@@ -95,16 +104,17 @@ export const ProfileForm = () => {
             return;
         }
 
+        const updated = result.data;
         // Push the fresh fields into the NextAuth session (token → session)
         await update({
             user: {
                 // merge only what changed
                 ...session?.user,
-                firstName: result.data?.firstName ?? session?.user.firstName,
-                lastName: result.data?.lastName ?? session?.user.lastName,
-                username: result.data?.username ?? session?.user.username,
-                phoneNumber: result.data?.phoneNumber ?? session?.user.phoneNumber,
-                image: result.data?.profilePictureUrl ?? session?.user.image
+                firstName: updated?.firstName ?? session?.user.firstName,
+                lastName: updated?.lastName ?? session?.user.lastName,
+                username: updated?.username ?? session?.user.username,
+                phoneNumber: updated?.phoneNumber ?? session?.user.phoneNumber,
+                image: updated?.profilePictureUrl ?? session?.user.image
             },
         });
 
@@ -112,25 +122,28 @@ export const ProfileForm = () => {
         setRemoved(false);
         // keep text fields, clear image selection
         form.reset({ ...data, image: undefined });
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        clearFileSelection();
     };
 
     const removePhoto = async () => {
         // If a file is selected, clear it; otherwise mark the existing URL as removed (UI shows placeholder)
         if (selected instanceof File) {
-            form.setValue("image", undefined, { shouldDirty: true, shouldTouch: true });
-            if (fileInputRef.current) fileInputRef.current.value = "";
-        } else if (existingUrl) {
-            // remove user profile picture from backend as well
-            const result = await apiRequest<User>('/users/profile-picture', 'PATCH');
-            if (!result.success) {
-                toast.error(extractErrorMessage(result.errors as string[], result.message));
-                return;
-            }
-            toast.success(result.message || "Profile updated successfully");
-            setRemoved(true);
-            form.trigger();
+            clearFileSelection();
+            return;
         }
+        if (!existingUrl) return;
+
+        // Otherwise, remove the existing profile picture on the backend
+        const result = await apiRequest<User>('/users/profile-picture', 'PATCH');
+        if (!result.success) {
+            toast.error(extractErrorMessage(result.errors as string[], result.message));
+            return;
+        }
+
+        await update({ user: { ...session?.user, image: undefined }});
+        setRemoved(true);
+        toast.success(result.message || "Profile updated successfully");
+        form.trigger();
     };
 
     if (status === "loading") {
@@ -141,6 +154,8 @@ export const ProfileForm = () => {
             </div>
         )
     }
+
+    const canRemove = selected instanceof File || (!!existingUrl && !removed);
 
     return (
         <Form {...form}>
@@ -183,7 +198,7 @@ export const ProfileForm = () => {
                         />
                     </div>
                     {
-                        (selected instanceof File || (!!existingUrl && !removed)) && (
+                        canRemove && (
                             <Button
                                 type="button"
                                 onClick={removePhoto}
