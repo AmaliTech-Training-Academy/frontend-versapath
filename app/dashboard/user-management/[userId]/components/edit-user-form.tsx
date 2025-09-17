@@ -57,7 +57,6 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
             render={({ field }) => (
               <CustomSelect
                 label="Role"
-                placeholder="Select role"
                 selectValues={Object.values(Roles)}
                 {...field}
                 value={field.value || ""}
@@ -71,7 +70,6 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
             render={({ field }) => (
               <CustomSelect
                 label="Status"
-                placeholder="Select status"
                 selectValues={["ACTIVE", "INACTIVE"]}
                 {...field}
                 value={field.value || ""}
@@ -111,8 +109,7 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
             name="mentor"
             render={({ field }) => (
               <CustomSelect
-                label="Assigned Mentor"
-                placeholder="Assign a mentor"
+                label="Mentor"
                 selectValues={["Mentor1", "Mentor2", "Mentor3", "Mentor4"]}
                 {...field}
                 value={field.value || ""}
@@ -125,7 +122,6 @@ export const EditUserForm: React.FC<{ initialData: User }> = ({
             render={({ field }) => (
               <CustomSelect
                 label="Manager"
-                placeholder="Assign a manager"
                 selectValues={["Manager1", "Manager2", "Manager3", "Manager4"]}
                 {...field}
                 value={field.value || ""}

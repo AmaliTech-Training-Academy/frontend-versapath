@@ -35,13 +35,14 @@ export const RegisterForm = () => {
     password,
     confirmPassword,
     username,
-    fullName,
+    firstName,
+    lastName,
   }: RegisterInputs) => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     const inviteToken = searchParams.get("invite") ?? "";
     const registerResponse = await completeUserRegister(inviteToken, {
-      firstName: fullName.split(" ")[0],
-      lastName: fullName.split(" ").slice(1).join(" "),
+      firstName: firstName.trim().split(" ")[0],
+      lastName: lastName.trim().split(" ")[0],
       password,
       confirmPassword,
       username,
@@ -88,6 +89,30 @@ export const RegisterForm = () => {
               />
             )}
           />
+          <div className="w-full flex gap-3 items-start">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <CustomInput
+                  label="First name"
+                  placeholder="e.g: Micheal"
+                  {...field}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <CustomInput
+                  label="Last name"
+                  placeholder="e.g: Yu"
+                  {...field}
+                />
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="username"
@@ -95,17 +120,6 @@ export const RegisterForm = () => {
               <CustomInput
                 label="Username"
                 placeholder="Enter unique username"
-                {...field}
-              />
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <CustomInput
-                label="Full name"
-                placeholder="Enter both names"
                 {...field}
               />
             )}

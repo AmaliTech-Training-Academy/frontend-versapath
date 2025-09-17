@@ -4,7 +4,8 @@ import { Textarea } from "../ui/textarea";
 import { FormItem, FormLabel, FormControl, FormMessage } from "../ui/form";
 import { cn } from "@/lib/utils";
 
-interface CustomTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface CustomTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   placeholder?: string;
 }
@@ -18,8 +19,11 @@ export const CustomTextarea: React.FC<CustomTextareaProps> = ({
   const id = field.name || field.id || `textarea-${label.toLowerCase()}`;
 
   return (
-    <FormItem className="space-y-1">
-      <FormLabel htmlFor={id} className="font-semibold text-sm text-gray-text-strong/90">
+    <FormItem>
+      <FormLabel
+        htmlFor={id}
+        className="font-semibold text-sm text-gray-text-strong/90"
+      >
         {label}
       </FormLabel>
       <FormControl>

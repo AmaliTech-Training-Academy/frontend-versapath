@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -13,14 +12,13 @@ import {
   type CreatePasswordForm,
 } from "@/lib/schemas/new-password";
 import { authApi } from "@/lib/api/reset-password";
-import { PasswordResetSuccess } from "./successs-message";
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
 export const CreateNewPasswordForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const form = useForm<CreatePasswordForm>({
@@ -43,21 +41,23 @@ export const CreateNewPasswordForm = () => {
 
     try {
       const response = await authApi.updatePassword(resetToken, data);
-      if ((response as { success?: boolean })?.success) {
-        setSuccess(true);
+      if (response.success) {
+        toast.success(
+          response.data?.message ||
+            "Password was reset successfully. Redirecting to login..."
+        );
         setTimeout(() => router.push("/login"), 2000);
       } else {
-        setErrorMessage((response as { message?: string })?.message || "Password reset failed.");
+        setErrorMessage(
+          (response as { message?: string })?.message ||
+            "Password reset failed."
+        );
       }
     } catch (error) {
       setErrorMessage("Failed to reset password. Please try again.");
       console.error(error);
     }
   };
-
-  if (success) {
-    return <PasswordResetSuccess />;
-  }
 
   return (
     <Form {...form}>
@@ -73,10 +73,6 @@ export const CreateNewPasswordForm = () => {
             Your new password must be different from previously used ones.
           </p>
         </div>
-
-        {errorMessage && (
-          <p className="text-sm text-red-600 text-center">{errorMessage}</p>
-        )}
 
         <FormField
           control={form.control}
@@ -104,6 +100,9 @@ export const CreateNewPasswordForm = () => {
           )}
         />
 
+        {errorMessage && (
+          <p className="text-sm text-destructive text-center">{errorMessage}</p>
+        )}
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}

@@ -2,7 +2,7 @@ import { signOut } from "next-auth/react";
 import { ApiResponse } from "../types/api";
 
 export type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-type BodyType = FormData | Record<string, unknown>;
+type BodyType = FormData | Record<string, unknown> | Array<unknown>;
 
 const isFormData = (b: unknown): b is FormData =>
   typeof FormData !== "undefined" && b instanceof FormData;

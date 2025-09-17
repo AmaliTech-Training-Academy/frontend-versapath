@@ -1,4 +1,5 @@
-import { Roles } from "./";
+import { ProfficiencyLevels, Roles } from "./";
+import { SkillAtom } from "./skill-atom";
 export enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -66,4 +67,28 @@ export type ApiResponse<TData, TError = ApiErrors> = {
 export interface FetchedRolesProps {
   role: string;
   id: string;
+}
+export interface Tag {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string | null;
+  status: Status;
+}
+export interface SingleSkillResponse {
+  id: string;
+  name: string;
+  description: string;
+  objectives: string;
+  proficiencyLevel: ProfficiencyLevels | null;
+  status: Omit<Status, "PENDING">;
+  difficulty: string;
+  estimatedHours: number;
+  skillAtoms: SkillAtom[];
+  tags: Pick<Tag, "id" | "name">[];
+  clusters: Pick<Cluster, "id" | "name">[];
+  image: string | null;
+  categoryType: string;
+  createdAt: string;
+  updatedAt: string | null;
 }
