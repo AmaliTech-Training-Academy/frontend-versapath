@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api/reset-password";
 import { resetPasswordSchema } from "@/lib/schemas/reset-passord";
-import { useState } from "react";
-import { toast } from "sonner";
 
 type ResetPasswordFormData = {
   email: string;
@@ -33,7 +31,7 @@ export function ResetPasswordForm() {
     setSuccessMessage("");
     setErrorMessage("");
     try {
-      const response = await authApi.resetPassword(data.email);
+      await authApi.resetPassword(data.email);
       router.push("reset-password/verify-email");
     } catch (error) {
       if (error instanceof ApiError) {

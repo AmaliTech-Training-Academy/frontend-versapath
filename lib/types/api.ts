@@ -13,6 +13,9 @@ export interface User {
   role: Roles;
   firstName: string;
   lastName: string;
+  image?: string;
+  profilePictureUrl: string;
+  phoneNumber?: string;
   status: Status;
   createdAt: string;
   updatedAt: string;
