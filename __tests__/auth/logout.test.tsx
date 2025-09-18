@@ -53,7 +53,7 @@ vi.mock("next-auth/react", () => ({
     },
     status: "authenticated",
   }),
-  signOut: (...args: any[]) => signOutMock(...args),
+  signOut: (...args: unknown[]) => signOutMock(...args),
 }));
 
 // Mock the confirm dialog to render simple buttons when open
