@@ -3,10 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { SkillCapsuleCardMenu } from "./skill-capsule-card-menu";
+import { SkillProgressBar } from "./skill-progress-bar";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 export const SkillCapsuleCard: React.FC<{
   skill: SKill;
-}> = ({ skill }) => {
-  const imageUrl = skill.image ? skill.image : "/images/javascript.png";
+  isActive?: boolean;
+}> = ({ skill, isActive = false }) => {
+  const { isLearner } = useCheckRole();
+  const imageUrl = skill?.image ? skill.image : "/images/javascript.png";
   return (
     <section className="flex flex-col gap-0 rounded-bl-lg rounded-br-lg shadow-lg h-fit">
       <div className="relative w-full min-h-[168px] aspect-[330/168]">
@@ -16,6 +20,16 @@ export const SkillCapsuleCard: React.FC<{
           alt="SKill capsule image"
           className="object-cover w-full h-full"
         />
+        {isLearner && !isActive && (
+          <div className="absolute inset-0 bg-[#000]/50 z-20 border flex items-center justify-center">
+            <Image
+              src={"/images/material-symbols_lock.svg"}
+              width={64}
+              height={64}
+              alt="lock"
+            />
+          </div>
+        )}
       </div>
       <article className="w-full p-3 space-y-4">
         <div className="inline-flex items-center justify-between w-full">
@@ -34,6 +48,7 @@ export const SkillCapsuleCard: React.FC<{
             {new Date(skill.createdAt).toLocaleDateString("en-RW", {})}
           </p>
         </div>
+        {isLearner && <SkillProgressBar />}
         <div className="flex justify-between w-full gap-2">
           <div className="space-x-2">
             <p className="inline-block px-2 py-1 text-xs leading-tight uppercase border w-fit bg-gray-text-strong/5 rounded-2xl border-gray-text-weak/10 text-gray-text-strong/70">

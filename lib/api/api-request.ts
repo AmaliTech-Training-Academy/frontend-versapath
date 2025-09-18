@@ -44,7 +44,9 @@ export const apiRequest = async <T>(
   }
 
   const response = await fetch(url, options);
-  if (response.status === 401) {
+  const isAuthEndpoint = endpoint.startsWith("/auth");
+  const isLogoutEndpoint = endpoint === "/auth/logout";
+  if (response.status === 401 && !isAuthEndpoint && !isLogoutEndpoint) {
     const refresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {
@@ -55,6 +57,10 @@ export const apiRequest = async <T>(
     if (refresh.success) {
       return await fetch(url, options).then((res) => res.json());
     } else {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
       await signOut({ redirectTo: "/login" });
     }
   }
