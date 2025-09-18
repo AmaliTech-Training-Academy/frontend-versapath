@@ -295,7 +295,7 @@ export function AppSidebar() {
         </div>
 
         <div className="flex gap-2 py-6 justify-between items-center">
-          <Image src={session?.user.image ?? userPlaceholder} width={400} height={400} alt="user profile" className="w-10 h-10 object-cover rounded-full" />
+          <Image src={session?.user.profilePictureUrl ?? userPlaceholder} width={400} height={400} alt="user profile" className="w-10 h-10 object-cover rounded-full" />
           <div className="space-y-2">
             <p className="font-semibold text-gray-text-strong text-wrap">
               {`${session?.user.firstName} ${session?.user.lastName}`}
