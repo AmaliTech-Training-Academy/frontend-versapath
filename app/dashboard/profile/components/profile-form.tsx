@@ -64,7 +64,7 @@ export const ProfileForm = () => {
         setPreviewUrl(null);
     }, [selected]);
 
-    const existingUrl = typeof session?.user?.profilePictureUrl === "string" ? session.user.profilePictureUrl : undefined;
+    const existingUrl = session?.user?.profilePictureUrl ?? undefined;
     // decide image src: file preview → session url → placeholder
     const imageSrc = previewUrl || (!removed && existingUrl) || userPlaceholder;
 
