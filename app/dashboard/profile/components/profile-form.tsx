@@ -107,7 +107,7 @@ export const ProfileForm = () => {
                 lastName: updated?.lastName ?? session?.user.lastName,
                 username: updated?.username ?? session?.user.username,
                 phoneNumber: updated?.phoneNumber ?? session?.user.phoneNumber,
-                image: updated?.profilePictureUrl ?? session?.user.profilePictureUrl
+                profilePictureUrl: updated?.profilePictureUrl ?? session?.user.profilePictureUrl
             },
         });
 
