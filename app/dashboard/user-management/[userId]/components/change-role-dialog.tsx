@@ -9,7 +9,8 @@ import { CommonUpdateDialog } from "./common-update-dialog";
 export const ChangeRoleDialog: React.FC<{
   userRole: string;
   userId: string;
-}> = ({ userRole, userId }) => {
+  mutateKey?: string;
+}> = ({ userRole, userId, mutateKey = `/users/${userId}` }) => {
   return (
     <CommonUpdateDialog
       title="Edit Role"
@@ -18,6 +19,7 @@ export const ChangeRoleDialog: React.FC<{
       options={Object.values(Roles)}
       currentValue={userRole}
       userId={userId}
+      mutateKeys={mutateKey}
       updateFunction={({ userId, role }) => updateUserRole({ userId, role })}
       updateKey="role"
       successMessage="Role updated successfully"

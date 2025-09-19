@@ -46,7 +46,10 @@ export const apiRequest = async <T>(
   const response = await fetch(url, options);
   const isAuthEndpoint = endpoint.startsWith("/auth");
   const isLogoutEndpoint = endpoint === "/auth/logout";
-  if (response.status === 401 && !isAuthEndpoint && !isLogoutEndpoint) {
+  if (isLogoutEndpoint && response.status === 401) {
+    return { success: true, message: "Logged out" } as ApiResponse<T>;
+  }
+  if (response.status === 401 && !isAuthEndpoint) {
     const refresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
       {

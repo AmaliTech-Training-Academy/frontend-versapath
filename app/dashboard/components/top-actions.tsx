@@ -18,8 +18,10 @@ export interface TopActionsProps {
 }
 
 const ROLE_OPTIONS = [
+  { value: "all", label: "All" },
   { value: "admin", label: "Admin" },
   { value: "manager", label: "Manager" },
+  { value: "mentor", label: "Mentor" },
   { value: "learner", label: "Learner" },
 ];
 

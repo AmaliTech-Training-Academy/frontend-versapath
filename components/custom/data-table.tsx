@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Status, type User } from "@/lib/types/api";
 import clsx from "clsx";
+import { UserTableMenu } from "@/app/dashboard/user-management/components/user-table-menu";
 
 const columns: ColumnDef<User>[] = [
   {
@@ -84,7 +85,6 @@ const columns: ColumnDef<User>[] = [
       <span className="capitalize">{row.original.role.toLowerCase()}</span>
     ),
   },
-
   {
     accessorKey: "status",
     header: "Status",
@@ -93,9 +93,12 @@ const columns: ColumnDef<User>[] = [
         className={clsx(
           "text-xs border rounded-lg py-1 px-3 w-fit capitalize",
           {
-            "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text": row.original.status === Status.ACTIVE,
-            "bg-gray-fill border-gray-text-strong text-gray-text-strong": row.original.status === Status.PENDING,
-            "bg-red-fill border-red-text text-red-text": row.original.status === Status.INACTIVE
+            "bg-brand-primary-fill border-brand-primary-text text-brand-primary-text":
+              row.original.status === Status.ACTIVE,
+            "bg-gray-fill border-gray-text-strong text-gray-text-strong":
+              row.original.status === Status.PENDING,
+            "bg-red-fill border-red-text text-red-text":
+              row.original.status === Status.INACTIVE,
           }
         )}
       >
@@ -112,19 +115,33 @@ const columns: ColumnDef<User>[] = [
       </div>
     ),
   },
+  {
+    accessorKey: "action",
+    header: "",
+    cell: ({ row }) => (
+      <div className="w-fit text-sm text-center justify-self-end">
+        <UserTableMenu user={row.original} />
+      </div>
+    ),
+  },
 ];
+
 interface DataTableProps {
   readonly data: User[];
   readonly pagination: { pageIndex: number; pageSize: number };
-  readonly setPaginationAction: React.Dispatch<
-    React.SetStateAction<{ pageIndex: number; pageSize: number }>
-  >;
+  readonly setPaginationAction: (newPagination: {
+    pageIndex: number;
+    pageSize: number;
+  }) => void;
   readonly pageMeta: {
-    page: number; // zero-based page index from API
-    size: number; // page size from API
-    totalPages: number; // total pages from API
-    totalItems?: number; // optional total items from API
+    page: number;
+    size: number;
+    totalPages: number;
+    totalItems?: number;
   };
+  readonly allItemsCount?: number;
+  readonly filteredItemsCount?: number;
+  readonly hasFilters?: boolean;
 }
 
 export function DataTable({
@@ -132,6 +149,9 @@ export function DataTable({
   pagination,
   setPaginationAction: setPagination,
   pageMeta,
+  allItemsCount = 0,
+  filteredItemsCount = 0,
+  hasFilters = false,
 }: DataTableProps) {
   const data = initialData;
   const [rowSelection, setRowSelection] = React.useState({});
@@ -149,7 +169,15 @@ export function DataTable({
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      // Handle both function and object updates
+      if (typeof updater === "function") {
+        const newPagination = updater(pagination);
+        setPagination(newPagination);
+      } else {
+        setPagination(updater);
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -157,7 +185,7 @@ export function DataTable({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
 
-    // Server-side pagination
+    // Client-side pagination for filtered results
     manualPagination: true,
     pageCount: Math.max(pageMeta.totalPages ?? 1, 1),
   });
@@ -165,7 +193,7 @@ export function DataTable({
   const currentPageZeroBased = pageMeta.page ?? 0;
   const pageSize = pageMeta.size ?? pagination.pageSize;
   const totalPages = Math.max(pageMeta.totalPages ?? 1, 1);
-  const totalItems = pageMeta.totalItems;
+  const totalItems = pageMeta.totalItems ?? filteredItemsCount;
   const start = data.length ? currentPageZeroBased * pageSize + 1 : 0;
   const end = currentPageZeroBased * pageSize + data.length;
 
@@ -230,33 +258,34 @@ export function DataTable({
       {/* Pagination */}
       <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing {start} to {end}
-          {typeof totalItems === "number" ? <> of {totalItems}</> : null}{" "}
-          resources.
+          Showing {start} to {end} of {totalItems} resources
+          {hasFilters && allItemsCount > 0 && (
+            <> (filtered from {allItemsCount} total)</>
+          )}
+          .
         </div>
         <Pagination
           nextDisabled={currentPageZeroBased + 1 >= totalPages}
           prevDisabled={currentPageZeroBased <= 0}
           handleNext={() =>
-            setPagination((prev) => ({
-              ...prev,
-              pageIndex: prev.pageIndex + 1,
-            }))
+            setPagination({
+              ...pagination,
+              pageIndex: pagination.pageIndex + 1,
+            })
           }
           handlePrev={() =>
-            setPagination((prev) => ({
-              ...prev,
-              pageIndex: Math.max(prev.pageIndex - 1, 0),
-            }))
+            setPagination({
+              ...pagination,
+              pageIndex: Math.max(pagination.pageIndex - 1, 0),
+            })
           }
           activePage={currentPageZeroBased + 1}
           totalPages={totalPages}
           handlePaginationBtnClick={(val) =>
-            // val is 1-based from the pager; convert to 0-based
-            setPagination((prev) => ({
-              ...prev,
+            setPagination({
+              ...pagination,
               pageIndex: Math.max(val - 1, 0),
-            }))
+            })
           }
         />
       </div>
