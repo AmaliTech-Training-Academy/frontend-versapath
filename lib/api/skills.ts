@@ -15,7 +15,7 @@ const fetcher = (url: string) => apiRequest<ListData<SKill>>(url, "GET");
 const singleSKillFetcher = (url: string) =>
   apiRequest<ItemData<SingleSkillResponse>>(url, "GET");
 export function useFetchSkills(pageIndex: number = 0) {
-  const endpoint = `/capsules?page=${pageIndex}`;
+  const endpoint = `/capsules?page=${pageIndex}&size=10`;
   const { data, error, isLoading } = useSWR(endpoint, fetcher);
   return {
     skills: data,

@@ -34,7 +34,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   } = useFetchUsers(pagination.pageIndex);
 
   const allItems: User[] = fetchedUsers?.data?.items ?? [];
-
+  const totalUsers = fetchedUsers?.data?.pagination.totalElements;
   // Filter and search logic
   const filteredItems = useMemo(() => {
     let filtered = allItems;
@@ -75,16 +75,13 @@ export const UsersList: React.FC<UsersListProps> = ({
     return filtered;
   }, [allItems, searchQuery, statusFilter, roleFilter]);
 
-  // Paginate the filtered results
-  const paginatedItems = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredItems.slice(start, end);
-  }, [filteredItems, pagination]);
 
   // Calculate pagination info for filtered results
   const customPageMeta = useMemo(() => {
-    const totalElements = filteredItems.length;
+    const totalElements =
+      (totalUsers ?? 0) > pagination.pageSize
+        ? totalUsers ?? filteredItems.length
+        : filteredItems.length;
     const size = pagination.pageSize;
     const page = pagination.pageIndex;
     const totalPages = Math.ceil(totalElements / size);
@@ -182,7 +179,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   } else {
     content = (
       <DataTable
-        data={paginatedItems}
+        data={filteredItems}
         pagination={pagination}
         setPaginationAction={handlePaginationChange}
         pageMeta={customPageMeta}

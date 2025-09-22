@@ -26,11 +26,10 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
   );
 
   const allItems = skills?.data?.items ?? [];
-
+  const apiTotalElements = skills?.data?.pagination.totalElements;
   // Filter and search logic
   const filteredItems = useMemo(() => {
     let filtered = allItems;
-
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -56,16 +55,12 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
     return filtered;
   }, [allItems, searchQuery, statusFilter]);
 
-  // Paginate the filtered results
-  const paginatedItems = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredItems.slice(start, end);
-  }, [filteredItems, pagination]);
-
   // Calculate pagination info for filtered results
   const customPageInfo = useMemo(() => {
-    const totalElements = filteredItems.length;
+    const totalElements =
+      (apiTotalElements ?? 0) > pagination.pageSize
+        ? apiTotalElements ?? filteredItems.length
+        : filteredItems.length;
     const size = pagination.pageSize;
     const page = pagination.pageIndex;
     const totalPages = Math.ceil(totalElements / size);
@@ -90,7 +85,7 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
     totalItems,
     totalPages,
   } = paginationCalculator({
-    items: paginatedItems,
+    items: filteredItems,
     pageInfo: customPageInfo,
     pagination,
   });
@@ -104,7 +99,7 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
   }, [searchQuery, statusFilter]);
 
   const handleNext = () => {
-    if (!nextDisabled) {
+    if (nextDisabled) {
       setPagination((prev) => ({
         ...prev,
         pageIndex: prev.pageIndex + 1,
@@ -113,7 +108,7 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
   };
 
   const handlePrev = () => {
-    if (!prevDisabled) {
+    if (prevDisabled) {
       setPagination((prev) => ({
         ...prev,
         pageIndex: prev.pageIndex - 1,
@@ -170,7 +165,7 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
     content = (
       <>
         <article className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 min-h-[60vh]">
-          {paginatedItems.map((skill) => (
+          {filteredItems.map((skill) => (
             <SkillCapsuleCard key={skill.id} skill={skill} />
           ))}
         </article>
@@ -185,8 +180,8 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
             handleNext={handleNext}
             handlePaginationBtnClick={handlePaginationBtnClick}
             handlePrev={handlePrev}
-            nextDisabled={nextDisabled}
-            prevDisabled={prevDisabled}
+            nextDisabled={!nextDisabled}
+            prevDisabled={!prevDisabled}
             totalPages={totalPages}
             activePage={currentPage + 1}
           />
