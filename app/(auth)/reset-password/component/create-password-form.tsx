@@ -63,6 +63,7 @@ export const CreateNewPasswordForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        data-testid="create-new-password-form"
         className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm p-8 space-y-8"
       >
         <div className="text-center">

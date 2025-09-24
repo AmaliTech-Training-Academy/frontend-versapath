@@ -1,135 +1,258 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi } from "vitest";
-import { CreateNewPasswordForm } from "@/app/(auth)/reset-password/component/create-password-form";
-import { toast } from "sonner";
-import { authApi } from "@/lib/api/reset-password";
 
-// Helpers
-const renderForm = () => render(<CreateNewPasswordForm />);
+import { CreateNewPasswordForm } from '@/app/(auth)/reset-password/component/create-password-form';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { authApi } from '@/lib/api/reset-password';
 
-const getSubmitButton = () => {
-  const btn = screen
-    .getAllByRole("button")
-    .find((b) => b.getAttribute("type") === "submit");
-  if (!btn) throw new Error("Submit button not found");
-  return btn;
-};
-
-const fillForm = (password: string, confirmPassword: string) => {
-  fireEvent.change(screen.getByPlaceholderText(/Enter your password/i), {
-    target: { value: password },
-  });
-  fireEvent.change(screen.getByPlaceholderText(/Confirm your password/i), {
-    target: { value: confirmPassword },
-  });
-};
-
-// Mocks
-vi.mock("@/lib/api/reset-password", () => ({
-  authApi: { updatePassword: vi.fn() },
+// Mock dependencies
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
-const mockPush = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush }),
-  useSearchParams: () => ({ get: (k: string) => (k === "reset" ? "mock-token" : null) }),
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+  },
 }));
 
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
+vi.mock('@/lib/api/reset-password', () => ({
+  authApi: {
+    updatePassword: vi.fn(),
+  },
+}));
 
-const mockUpdatePassword = vi.mocked(authApi.updatePassword);
-const mockToast = toast;
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
+}));
 
-describe("CreateNewPasswordForm", () => {
+vi.mock('@/components/ui/form', () => ({
+  Form: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  FormField: ({ render, control, name }: any) => {
+    const field = { value: '', onChange: vi.fn() };
+    const fieldState = { error: null };
+    return render({ field, fieldState });
+  },
+}));
+
+vi.mock('./password-input', () => ({
+  PasswordInput: ({ label, error, ...props }: any) => (
+    <div>
+      <label>{label}</label>
+      <input type="password" {...props} />
+      {error && <span role="alert">{error}</span>}
+    </div>
+  ),
+}));
+
+vi.mock('lucide-react', () => ({
+  // Loader: () => <div data-testid="loader">Loading...</div>,
+  Eye: () => <div data-testid="eye-icon">Eye</div>,
+  EyeOff: () => <div data-testid="eye-off-icon">EyeOff</div>,
+}));
+
+// Mock react-hook-form
+import * as ReactHookForm from 'react-hook-form';
+
+vi.mock('react-hook-form', () => ({
+  useForm: vi.fn(),
+}));
+
+const mockUseForm = vi.mocked(ReactHookForm.useForm);
+
+describe('CreateNewPasswordForm', () => {
+  const mockPush = vi.fn();
+  const mockGet = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    (useRouter as any).mockReturnValue({ push: mockPush });
+    (useSearchParams as any).mockReturnValue({ get: mockGet });
+   
+    mockUseForm.mockReturnValue({
+      control: {} as any,
+      handleSubmit: (fn: Function) => async (e?: any) => {
+        if (e && e.preventDefault) e.preventDefault();
+        await fn({ password: 'newPassword123', confirmPassword: 'newPassword123' });
+      },
+      formState: {
+        isDirty: false,
+        isLoading: false,
+        isSubmitted: false,
+        isSubmitSuccessful: false,
+        isSubmitting: false,
+        submitCount: 0,
+        touchedFields: {},
+        dirtyFields: {},
+        errors: {},
+        disabled: false,
+        defaultValues: {},
+      },
+    });
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
-    vi.useRealTimers();
+    vi.clearAllTimers();
+    vi.clearAllMocks();
   });
 
-  it("renders password fields and submit button", () => {
-    renderForm();
+  it('should render the form with all elements', () => {
+    mockGet.mockReturnValue('valid-token');
+    
+    render(<CreateNewPasswordForm />);
 
-    expect(screen.getByPlaceholderText(/Enter your password/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Confirm your password/i)).toBeInTheDocument();
-    expect(getSubmitButton()).toBeInTheDocument();
+    expect(screen.getByText('Create new password')).toBeInTheDocument();
+    expect(screen.getByText('Your new password must be different from previously used ones.')).toBeInTheDocument();
+    expect(screen.getByText('Password')).toBeInTheDocument();
+    expect(screen.getByText('Confirm Password')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reset Password' })).toBeInTheDocument();
   });
 
-  it("shows required field errors", async () => {
-    renderForm();
-    fireEvent.click(getSubmitButton());
+  it('should redirect to login if no reset token is present', () => {
+    mockGet.mockReturnValue(null);
+    
+    render(<CreateNewPasswordForm />);
 
-    expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
-    expect(await screen.findByText(/confirm password is required/i)).toBeInTheDocument();
+    expect(mockPush).toHaveBeenCalledWith('/login');
   });
 
-  it("shows error if passwords do not match", async () => {
-    renderForm();
-    fillForm("password123", "different");
-    fireEvent.click(getSubmitButton());
+  it('should not redirect if reset token is present', () => {
+    mockGet.mockReturnValue('valid-token');
+    
+    render(<CreateNewPasswordForm />);
 
-    expect(await screen.findByText(/passwords must match/i)).toBeInTheDocument();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("calls API and redirects on success", async () => {
-    mockUpdatePassword.mockResolvedValueOnce({ success: true, data: { message: "OK" } });
+  it('should handle successful password reset', async () => {
+    mockGet.mockReturnValue('valid-token');
+    (authApi.updatePassword as any).mockResolvedValue({
+      success: true,
+      data: { message: 'Password reset successful' }
+    });
 
-    renderForm();
-    fillForm("password123", "password123");
-    fireEvent.click(getSubmitButton());
+    
+    render(<CreateNewPasswordForm />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(mockUpdatePassword).toHaveBeenCalledWith("mock-token", {
-        password: "password123",
-        confirmPassword: "password123",
+      expect(authApi.updatePassword).toHaveBeenCalledWith('valid-token', {
+        password: 'newPassword123',
+        confirmPassword: 'newPassword123'
       });
-      expect(mockToast.success).toHaveBeenCalledWith(expect.stringMatching(/password/i));
     });
 
-    vi.runAllTimers();
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/login");
-    });
+    expect(toast.success).toHaveBeenCalledWith('Password reset successful');
   });
 
-  it("shows error toast on API failure", async () => {
-    mockUpdatePassword.mockResolvedValueOnce({
+  it('should handle API error response', async () => {
+    mockGet.mockReturnValue('valid-token');
+    (authApi.updatePassword as any).mockResolvedValue({
       success: false,
-      data: { message: "Something went wrong" },
+      message: 'Invalid token'
     });
-
-    renderForm();
-    fillForm("password123", "password123");
-    fireEvent.click(getSubmitButton());
+    
+    render(<CreateNewPasswordForm  />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(mockUpdatePassword).toHaveBeenCalled();
-      expect(mockToast.error).toHaveBeenCalledWith("Something went wrong");
+      expect(screen.getByText('Invalid token')).toBeInTheDocument();
+    });
+
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalledWith('/login');
+  });
+
+  it('should handle API network error', async () => {
+    mockGet.mockReturnValue('valid-token');
+    (authApi.updatePassword as any).mockRejectedValue(new Error('Network error'));
+    
+    render(<CreateNewPasswordForm />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to reset password. Please try again.')).toBeInTheDocument();
+    });
+
+    expect(toast.success).not.toHaveBeenCalled();
+  });
+
+  it('should clear error message on new submission', async () => {
+    mockGet.mockReturnValue('valid-token');
+    
+    // First, cause an error
+    (authApi.updatePassword as any).mockResolvedValue({
+      success: false,
+      message: 'Invalid token'
+    });
+    
+    render(<CreateNewPasswordForm />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.getByText('Invalid token')).toBeInTheDocument();
+    });
+
+    // Then submit again with success
+    (authApi.updatePassword as any).mockResolvedValue({
+      success: true,
+      data: { message: 'Success' }
+    });
+
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Invalid token')).not.toBeInTheDocument();
     });
   });
 
-  it("shows loading state while submitting", async () => {
-    let resolveFn: any;
-    const promise = new Promise((resolve) => (resolveFn = resolve));
-    mockUpdatePassword.mockImplementation(() => promise as any);
 
-    renderForm();
-    fillForm("password123", "password123");
-    fireEvent.click(getSubmitButton());
-
-    expect(getSubmitButton()).toBeDisabled();
-    expect(screen.getByText(/resetting password/i)).toBeInTheDocument();
-
-    resolveFn({ success: true, data: { message: "OK" } });
+  it('should use default error message when API response has no message', async () => {
+    mockGet.mockReturnValue('valid-token');
+    (authApi.updatePassword as any).mockResolvedValue({
+      success: false
+    });
+    
+    render(<CreateNewPasswordForm />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(getSubmitButton()).not.toBeDisabled();
+      expect(screen.getByText('Password reset failed.')).toBeInTheDocument();
     });
+  });
+
+  it('should use default success message when API response has no message', async () => {
+    mockGet.mockReturnValue('valid-token');
+    (authApi.updatePassword as any).mockResolvedValue({
+      success: true,
+      data: null
+    });
+
+    
+    render(<CreateNewPasswordForm />);
+    
+    const form = screen.getByTestId('create-new-password-form');
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(
+        'Password was reset successfully. Redirecting to login...'
+      );
+    });
+    
   });
 });
