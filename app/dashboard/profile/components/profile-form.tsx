@@ -19,13 +19,6 @@ import { apiRequest } from "@/lib/api/api-request";
 import { User } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
 
-type ProfilePayload = {
-    firstName: string;
-    lastName: string;
-    username: string;
-    phoneNumber: string;
-};
-
 export const ProfileForm = () => {
     const { data: session, status, update } = useSession();
     const inputId = "profile-image-input";
@@ -71,7 +64,7 @@ export const ProfileForm = () => {
         setPreviewUrl(null);
     }, [selected]);
 
-    const existingUrl = typeof session?.user?.image === "string" ? session.user.image : undefined;
+    const existingUrl = session?.user?.profilePictureUrl ?? undefined;
     // decide image src: file preview → session url → placeholder
     const imageSrc = previewUrl || (!removed && existingUrl) || userPlaceholder;
 
@@ -114,7 +107,7 @@ export const ProfileForm = () => {
                 lastName: updated?.lastName ?? session?.user.lastName,
                 username: updated?.username ?? session?.user.username,
                 phoneNumber: updated?.phoneNumber ?? session?.user.phoneNumber,
-                image: updated?.profilePictureUrl ?? session?.user.image
+                profilePictureUrl: updated?.profilePictureUrl ?? session?.user.profilePictureUrl
             },
         });
 
