@@ -65,7 +65,6 @@ vi.mock("@/components/custom/file-upload", () => ({
         type="file"
         onChange={(e) => onChangeAction?.(e.target.files?.[0])}
       />
-      {/* reflect controlled value name (if any) for reset assertions */}
       <div data-testid="file-name">{value?.name ?? ""}</div>
     </label>
   ),
@@ -109,23 +108,18 @@ vi.mock("lucide-react", () => ({
 vi.mock("@hookform/resolvers/zod", () => ({
   zodResolver:
     (schema: any) =>
-    async (values: any): Promise<any> => {
-      try {
-        const parsed = schema.parse(values);
-        return { values: parsed, errors: {} };
-      } catch (e: any) {
-        const errMap: any = {};
-        e?.errors?.forEach((zErr: any) => {
-          errMap[zErr.path?.[0] ?? "name"] = { message: zErr.message, type: "zod" };
-        });
-        return { values: {}, errors: errMap };
-      }
-    },
-}));
-
-const refetchSpy = vi.fn();
-vi.mock("@/lib/hooks/use-clusters", () => ({
-  useClusters: () => ({ refetch: refetchSpy }),
+      async (values: any): Promise<any> => {
+        try {
+          const parsed = schema.parse(values);
+          return { values: parsed, errors: {} };
+        } catch (e: any) {
+          const errMap: any = {};
+          e?.errors?.forEach((zErr: any) => {
+            errMap[zErr.path?.[0] ?? "name"] = { message: zErr.message, type: "zod" };
+          });
+          return { values: {}, errors: errMap };
+        }
+      },
 }));
 
 let resolveApi!: (val: any) => void;
@@ -146,15 +140,17 @@ const typeInto = async (label: string, text: string) => {
   return input;
 };
 
-describe("<AddCategoryForm />", () => {
+const revalidateSpy = vi.fn();
+
+describe("AddCategoryForm", () => {
   beforeEach(() => {
     toastSuccess.mockClear();
     sheetCloseClickSpy.mockClear();
-    refetchSpy.mockClear();
+    revalidateSpy.mockClear();
   });
 
   it("renders required fields", () => {
-    render(<AddCategoryForm />);
+    render(<AddCategoryForm revalidateAction={revalidateSpy} />);
     expect(screen.getByLabelText("Category Name *")).toBeInTheDocument();
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
     expect(screen.getByLabelText("Cover")).toBeInTheDocument();
@@ -162,15 +158,16 @@ describe("<AddCategoryForm />", () => {
   });
 
   it("does not submit when name is empty (zod validation) and does not toast", async () => {
-    render(<AddCategoryForm />);
+    render(<AddCategoryForm revalidateAction={revalidateSpy} />);
     await userEvent.click(screen.getByRole("button", { name: /add category/i }));
     expect(toastSuccess).not.toHaveBeenCalled();
+    expect(revalidateSpy).not.toHaveBeenCalled();
   });
 
-  it("shows loader while submitting, then toasts, resets, refetches, and triggers SheetClose programmatically", async () => {
+  it("shows loader while submitting, then toasts, resets, calls revalidateAction, and triggers SheetClose programmatically", async () => {
     const clickSpy = vi.spyOn(HTMLButtonElement.prototype, "click");
 
-    render(<AddCategoryForm />);
+    render(<AddCategoryForm revalidateAction={revalidateSpy} />);
 
     await typeInto("Category Name *", "Data Science");
 
@@ -185,6 +182,7 @@ describe("<AddCategoryForm />", () => {
     expect(screen.getByLabelText("loader")).toBeInTheDocument();
     expect(submitBtn).toBeDisabled();
 
+    // resolve the API request
     resolveApi({
       success: true,
       message: "OK",
@@ -201,18 +199,20 @@ describe("<AddCategoryForm />", () => {
       expect(submitBtn).not.toBeDisabled();
     });
 
+    // inputs are reset
     expect(screen.getByLabelText("Category Name *")).toHaveValue("");
     expect(screen.getByTestId("file-name").textContent).toBe("");
 
-    expect(refetchSpy).toHaveBeenCalled();
+    expect(revalidateSpy).toHaveBeenCalled();
 
+    // SheetClose hidden button was programmatically clicked
     expect(clickSpy).toHaveBeenCalled();
 
     clickSpy.mockRestore();
   });
 
   it("Cancel button is present and clickable (delegates to SheetClose)", async () => {
-    render(<AddCategoryForm />);
+    render(<AddCategoryForm revalidateAction={revalidateSpy} />);
     const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await userEvent.click(cancelBtn);
     expect(sheetCloseClickSpy).toHaveBeenCalledTimes(1);
