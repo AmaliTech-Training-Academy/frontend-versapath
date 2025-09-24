@@ -18,7 +18,6 @@ export const CategoryList = () => {
         name: query.name,
     });
 
-    // Optional: one small normalization to server truth (no extra bells/whistles)
     useEffect(() => {
         if (!pageInfo) return;
         const serverPage = Math.max(0, pageInfo.page ?? query.page);
@@ -73,7 +72,7 @@ export const CategoryList = () => {
             {
                 hasData ? (
                     <>
-                        <div className="w-full grid grid-cols-4 gap-6">
+                        <div className="w-full grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                             {
                                 items.map((category) => (
                                     <CategoryCard key={category.id} category={category} />

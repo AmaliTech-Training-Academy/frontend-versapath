@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
 import { useRef, useState } from "react";
@@ -71,7 +71,16 @@ export const AddCategoryForm = ({ revalidateAction }: { revalidateAction: () => 
           control={form.control}
           name="image"
           render={({ field }) => (
-            <FileUpload label="Cover" value={field.value} onChangeAction={field.onChange} />
+            <FormItem>
+              <FormControl>
+                <FileUpload
+                  label="Cover"
+                  value={field.value}
+                  onChangeAction={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         {error && <p className="text-red-text text-sm mt-2">{error}</p>}

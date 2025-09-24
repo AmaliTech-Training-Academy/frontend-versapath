@@ -327,7 +327,7 @@ export const FileUpload = ({
         ref={inputRef}
         type="file"
         className="hidden"
-        accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+        accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png"
         multiple={false}
         onChange={(e) => selectFile(e.target.files?.[0])}
       />
