@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         hostname: "versapath-images.s3.eu-west-1.amazonaws.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**", // Matches any hostname
+        port: "",
+        pathname: "**", // Matches any path
+      },
     ],
   },
 };

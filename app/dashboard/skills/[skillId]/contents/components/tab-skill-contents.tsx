@@ -14,9 +14,10 @@ export const TabSkillContents = () => {
     skillId as string
   );
 
-  const handleActivateSkill = (key: string) => {
+  const handleActivateSkill = (key: string, moodlePageId: string) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set("activeLesson", key);
+    params.set("moodleId", moodlePageId);
     router.push(`?${params.toString()}`, { scroll: true });
   };
   const skillAtoms = skill?.data?.item.skillAtoms || [];
@@ -37,7 +38,7 @@ export const TabSkillContents = () => {
         </div>
       )}
       {removeLessonDuplicates(skillAtoms).map(
-        ({ id, name, estimatedHours }, index) => (
+        ({ id, name, estimatedHours, moodlePageId }, index) => (
           <div
             className={cn(
               "flex items-center gap-4 p-3 rounded-sm ",
@@ -51,7 +52,9 @@ export const TabSkillContents = () => {
             </p>
             <Label
               className="inline-flex flex-col items-start justify-center cursor-pointer"
-              onClick={() => handleActivateSkill(String(id))}
+              onClick={() =>
+                handleActivateSkill(String(id), String(moodlePageId))
+              }
             >
               <h3 className="text-base leading-normal text-start text-gray-text-strong/90 line-clamp-1">
                 {name}

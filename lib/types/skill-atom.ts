@@ -1,13 +1,14 @@
 
 export type SkillAtom = {
-  id: string
-  name: string
-  description: string
-  objectives: string
-  estimatedHours: number
-  status: "ACTIVE" | "INACTIVE" 
-  createdAt: string
-}
+  id: string;
+  name: string;
+  description: string;
+  objectives: string;
+  estimatedHours: number;
+  status: "ACTIVE" | "INACTIVE";
+  createdAt: string;
+  moodlePageId: number;
+};
 
 export type apiResponse = {
   status: boolean
@@ -23,4 +24,11 @@ export type apiResponse = {
   }
   errors: unknown
 }
-
+export type LessonContentsResponse = {
+  id: string;
+  course: number;
+  name: string;
+  intro: string;
+  courseModule: number;
+  content: string;
+}

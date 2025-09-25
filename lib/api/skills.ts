@@ -9,7 +9,7 @@ import {
 import { SKill } from "../types/skills";
 import { apiRequest } from "./api-request";
 import { AddSkillSchemaProps } from "../schemas/add-skill";
-import { SkillAtom } from "../types/skill-atom";
+import { LessonContentsResponse, SkillAtom } from "../types/skill-atom";
 
 const fetcher = (url: string) => apiRequest<ListData<SKill>>(url, "GET");
 const singleSKillFetcher = (url: string) =>
@@ -216,5 +216,17 @@ export const useFetchLesson = (lessonId: string) => {
     lesson: data,
     isFetchingLesson: isLoading,
     fetchLessonError: error,
+  };
+};
+
+export const useFetchLessonContents = (moodlePageId: string) => {
+  const endpoint = `/moodle/fetch-single-content?pageId=${moodlePageId}`;
+  const { data, error, isLoading } = useSWR(endpoint, (url) =>
+    apiRequest<ItemData<LessonContentsResponse>>(url, "GET")
+  );
+  return {
+    lessonContents: data,
+    isFetchingLessonContents: isLoading,
+    fetchLessonContentsError: error,
   };
 };
