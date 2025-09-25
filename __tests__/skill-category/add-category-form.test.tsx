@@ -180,14 +180,23 @@ vi.mock("@/lib/api/api-request", () => ({
 
 import { AddCategoryForm } from "@/app/dashboard/skill-categories/components/add-category-form";
 
+import { findByLabelText, screen } from "@testing-library/react";
+import { JSX } from "react";
+import { render as rtlRender } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
 const typeInto = async (label: string, text: string) => {
-  const input = await screen.findByLabelText(label);
+  const input = await findByLabelText(document.body, label);
   await userEvent.clear(input);
   await userEvent.type(input, text);
   return input;
 };
 
 const revalidateSpy = vi.fn();
+
+function render(ui: JSX.Element) {
+  return rtlRender(ui);
+}
 
 describe("AddCategoryForm", () => {
   beforeEach(() => {
@@ -283,4 +292,49 @@ describe("AddCategoryForm", () => {
     expect(sheetCloseClickSpy).toHaveBeenCalledTimes(1);
   });
 });
+<<<<<<< HEAD
 
+=======
+let apiResolve: ((value: unknown) => void) | null = null;
+
+// Mock the API call inside AddCategoryForm
+vi.mock("@/app/dashboard/skill-categories/actions", () => ({
+  addCategoryAction: vi.fn(
+    () =>
+      new Promise((resolve) => {
+        apiResolve = resolve;
+      })
+  ),
+}));
+
+function resolveApi(response: {
+  success: boolean;
+  message: string;
+  data: { item: { id: string; name: string } };
+}) {
+  if (apiResolve) {
+    apiResolve(response);
+    apiResolve = null;
+  } else {
+    throw new Error("No pending API call to resolve.");
+  }
+// }
+// function resolveApi(arg0: { success: boolean; message: string; data: { item: { id: string; name: string; }; }; }) {
+//   throw new Error("Function not implemented.");
+// }
+async function waitFor(assertion: () => void, timeout = 1000, interval = 50) {
+  const start = Date.now();
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      assertion();
+      return;
+    } catch (err) {
+      if (Date.now() - start > timeout) {
+        throw err;
+      }
+      await new Promise((res) => setTimeout(res, interval));
+    }
+  }
+}
+>>>>>>> 8e19138 ( Add RecentSubmissions, SubmissionCard, and UpcomingAssessments components)
