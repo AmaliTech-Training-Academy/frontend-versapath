@@ -8,7 +8,8 @@ import { CommonUpdateDialog } from "./common-update-dialog";
 export const ChangeStatusDialog: React.FC<{
   userStatus: string;
   userId: string;
-}> = ({ userStatus, userId }) => {
+  mutateKey?: string;
+}> = ({ userStatus, userId, mutateKey = `/users/${userId}` }) => {
   return (
     <CommonUpdateDialog
       title="Update user's status"
@@ -21,7 +22,7 @@ export const ChangeStatusDialog: React.FC<{
         updateUserStatus({ userId, status })
       }
       updateKey="status"
-      mutateKeys={`/users/${userId}`}
+      mutateKeys={mutateKey}
       successMessage="Status updated successfully"
       errorMessage="Unable to change status. Please try again"
       triggerButton={

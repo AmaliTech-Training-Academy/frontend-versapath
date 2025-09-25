@@ -10,8 +10,9 @@ import React from "react";
 export const Select: React.FC<{
   placeholder: string;
   options: { value: string; label: string }[];
+  defaultValue?: string;
   handlevalueChange?: (value: string) => void;
-}> = ({ placeholder, options, handlevalueChange }) => {
+}> = ({ placeholder, options, handlevalueChange, defaultValue }) => {
   return (
     <SelectComponent onValueChange={handlevalueChange}>
       <SelectTrigger className="max-w-[180px] w-fit">
@@ -19,7 +20,7 @@ export const Select: React.FC<{
       </SelectTrigger>
       <SelectContent>
         {options.map(({ value, label }) => (
-          <SelectItem key={value} value={value}>
+          <SelectItem key={value} value={value} defaultValue={defaultValue}>
             {label}
           </SelectItem>
         ))}

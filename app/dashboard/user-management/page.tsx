@@ -6,8 +6,89 @@ import { UsersList } from "./components/users-list";
 import { Plus } from "lucide-react";
 import { InviteUserForm } from "./components/invite-user-form";
 import { SheetWrapper } from "../components/sheet-wrapper";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useCallback, useState, useEffect } from "react";
 
-export default function UserManagementPage() {
+function UserManagementPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || ""
+  );
+  const [roleFilter, setRoleFilter] = useState(searchParams.get("role") || "");
+
+  // Update URL params when search or filter changes
+  const updateUrlParams = useCallback(
+    (search: string, status: string, role: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (search) {
+        params.set("search", search);
+      } else {
+        params.delete("search");
+      }
+
+      if (status && status !== "all") {
+        params.set("status", status);
+      } else {
+        params.delete("status");
+      }
+
+      if (role && role !== "all") {
+        params.set("role", role);
+      } else {
+        params.delete("role");
+      }
+
+      // Remove page when filters change
+      params.delete("page");
+
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router, pathname]
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      updateUrlParams(value, statusFilter, roleFilter);
+    },
+    [statusFilter, roleFilter, updateUrlParams]
+  );
+
+  const handleStatusFilter = useCallback(
+    (value: string) => {
+      const normalizedValue = value === "all" ? "" : value;
+      setStatusFilter(normalizedValue);
+      updateUrlParams(searchQuery, normalizedValue, roleFilter);
+    },
+    [searchQuery, roleFilter, updateUrlParams]
+  );
+
+  const handleRoleFilter = useCallback(
+    (value: string) => {
+      const normalizedValue = value === "all" ? "" : value;
+      setRoleFilter(normalizedValue);
+      updateUrlParams(searchQuery, statusFilter, normalizedValue);
+    },
+    [searchQuery, statusFilter, updateUrlParams]
+  );
+
+  // Initialize state from URL params on mount
+  useEffect(() => {
+    const urlSearch = searchParams.get("search") || "";
+    const urlStatus = searchParams.get("status") || "";
+    const urlRole = searchParams.get("role") || "";
+    setSearchQuery(urlSearch);
+    setStatusFilter(urlStatus);
+    setRoleFilter(urlRole);
+  }, [searchParams]);
+
   return (
     <>
       <DashboardHeader title="User Management" />
@@ -27,9 +108,22 @@ export default function UserManagementPage() {
               <InviteUserForm />
             </SheetWrapper>
           }
+          isRoleFilterable={true}
+          isStatusFilterable={true}
+          onSearch={handleSearch}
+          onStatusFilter={handleStatusFilter}
+          onRoleFilter={handleRoleFilter}
+          searchValue={searchQuery}
+          statusValue={statusFilter || "all"}
         />
-        <UsersList />
+        <UsersList
+          searchQuery={searchQuery}
+          statusFilter={statusFilter}
+          roleFilter={roleFilter}
+        />
       </section>
     </>
   );
 }
+
+export default UserManagementPage;
