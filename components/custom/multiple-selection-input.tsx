@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { ChevronsUpDown, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -25,6 +25,12 @@ interface MultipleSelectChipProps {
   placeholder?: string;
   label?: string;
   addNewAllowed?: boolean;
+  onSearch?: (query: string) => Promise<{
+    results: string[];
+    resultIds?: { name: string; id: string }[];
+  }>;
+  searchPlaceholder?: string;
+  onNewInput?: (newInputs: string[]) => void;
 }
 
 export function MultipleSelectChip({
@@ -34,21 +40,100 @@ export function MultipleSelectChip({
   placeholder = "Select tags",
   label = "Tags",
   addNewAllowed = true,
+  onSearch,
+  searchPlaceholder,
+  onNewInput,
 }: Readonly<MultipleSelectChipProps>) {
   const [open, setOpen] = React.useState(false);
   const [names, setNames] = React.useState<string[]>(defaultTags);
   const [search, setSearch] = React.useState("");
+  const [apiResults, setApiResults] = React.useState<string[]>([]);
+  const [apiResultsMapping, setApiResultsMapping] = React.useState<
+    Record<string, string>
+  >({});
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [newApiSelections, setNewApiSelections] = React.useState<string[]>([]);
+
+  // Debounced search effect
+  React.useEffect(() => {
+    if (!onSearch || !search.trim()) {
+      setApiResults([]);
+      setApiResultsMapping({});
+      setIsSearching(false);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const searchResult = await onSearch(search);
+        if (typeof searchResult === "object" && "results" in searchResult) {
+          // New format with IDs
+          setApiResults(searchResult.results);
+          if (searchResult.resultIds) {
+            const mapping: Record<string, string> = {};
+            searchResult.resultIds.forEach((item) => {
+              mapping[item.name] = item.id;
+            });
+            setApiResultsMapping(mapping);
+          }
+        } else {
+          // Legacy format (array of strings)
+          setApiResults(searchResult as string[]);
+        }
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [search, onSearch]);
+
+  // Combine default tags with API results and filter out duplicates
+  const allAvailableOptions = React.useMemo(() => {
+    const combined = [...names, ...apiResults];
+    console.log("Combined options:", combined);
+    return Array.from(new Set(combined));
+  }, [names, apiResults]);
+
+  // Filter options based on search query
+  const filteredOptions = React.useMemo(() => {
+    if (!search.trim()) return allAvailableOptions;
+
+    return allAvailableOptions.filter((option) =>
+      option.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [allAvailableOptions, search]);
 
   const toggleValue = (tagValue: string) => {
     const newSelected = value.includes(tagValue)
       ? value.filter((v) => v !== tagValue)
       : [...value, tagValue];
 
+    // Check if this is a new selection from API results
+    const isFromApiResults =
+      apiResults.includes(tagValue) && !names.includes(tagValue);
+    const apiResultId = apiResultsMapping[tagValue];
+
+    if (isFromApiResults && apiResultId && !value.includes(tagValue)) {
+      // Adding a new API result
+      const updatedNewSelections = [...newApiSelections, apiResultId];
+      setNewApiSelections(updatedNewSelections);
+      onNewInput?.(updatedNewSelections);
+    } else if (isFromApiResults && value.includes(tagValue) && apiResultId) {
+      // Removing an API result
+      const updatedNewSelections = newApiSelections.filter(
+        (id) => id !== apiResultId
+      );
+      setNewApiSelections(updatedNewSelections);
+      onNewInput?.(updatedNewSelections);
+    }
+
     onChange?.(newSelected);
   };
 
   const addNewValue = () => {
-    if (search.trim() && !names.includes(search)) {
+    if (search.trim() && !allAvailableOptions.includes(search)) {
       const newTag = search.trim();
       setNames((prev) => [...prev, newTag]);
       const newSelected = [...value, newTag];
@@ -56,6 +141,12 @@ export function MultipleSelectChip({
       setSearch("");
       setOpen(false);
     }
+  };
+  const getInputPlaceholder = () => {
+    if (searchPlaceholder) return searchPlaceholder;
+    if (onSearch && addNewAllowed) return "Search API or type to add...";
+    if (onSearch) return "Search API...";
+    return addNewAllowed ? "Search or type to add..." : "Type to search...";
   };
 
   return (
@@ -94,32 +185,68 @@ export function MultipleSelectChip({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[350px] p-0 border-none tabs_scrollbar">
-          <Command className="bg-base-light-white p-1 border-none tabs_scrollbar">
+          <Command
+            className="bg-base-light-white p-1 border-none tabs_scrollbar"
+            // shouldFilter={!onSearch}
+            key={apiResults.join(",")}
+          >
             <CommandInput
-              placeholder={
-                addNewAllowed ? "Search or type to add..." : "Type to search..."
-              }
+              placeholder={getInputPlaceholder()}
               value={search}
               onValueChange={setSearch}
             />
             <CommandList>
-              {addNewAllowed && search && !names.includes(search) && (
-                <CommandItem onSelect={addNewValue}>
-                  <Plus className="mr-2 h-4 w-4" /> Add "{search}"
+              {isSearching && (
+                <CommandItem disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Searching...
                 </CommandItem>
               )}
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                {names.map((name) => (
-                  <CommandItem key={name} onSelect={() => toggleValue(name)}>
-                    <Checkbox
-                      checked={value.includes(name)}
-                      className="dark:data-[state=checked]:text-base-light-white data-[state=checked]:text-base-light-white bg-base-light-white mr-2"
-                    />
-                    {name}
+
+              {addNewAllowed &&
+                search &&
+                !allAvailableOptions.includes(search) && (
+                  <CommandItem onSelect={addNewValue}>
+                    <Plus className="mr-2 h-4 w-4" /> Add "{search}"
                   </CommandItem>
-                ))}
-              </CommandGroup>
+                )}
+
+              {!isSearching &&
+                filteredOptions.length === 0 &&
+                search.trim() && <CommandEmpty>No results found.</CommandEmpty>}
+
+              {!isSearching && filteredOptions.length > 0 && (
+                <>
+                  {filteredOptions.map((name) => (
+                    <CommandItem key={name} onSelect={() => toggleValue(name)}>
+                      <Checkbox
+                        checked={value.includes(name)}
+                        className="dark:data-[state=checked]:text-base-light-white data-[state=checked]:text-base-light-white bg-base-light-white mr-2"
+                      />
+                      {name}
+                    </CommandItem>
+                  ))}
+                </>
+              )}
+
+              {/* {!isSearching &&
+                !search.trim() &&
+                allAvailableOptions.length > 0 && (
+                  <CommandGroup>
+                    {allAvailableOptions.map((name) => (
+                      <CommandItem
+                        key={name}
+                        onSelect={() => toggleValue(name)}
+                      >
+                        <Checkbox
+                          checked={value.includes(name)}
+                          className="dark:data-[state=checked]:text-base-light-white data-[state=checked]:text-base-light-white bg-base-light-white mr-2"
+                        />
+                        {name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )} */}
             </CommandList>
           </Command>
         </PopoverContent>

@@ -119,7 +119,12 @@ export const handleSkillSubmission = async (
   {
     existingTags,
     existingCategories,
-  }: { existingTags: Tag[]; existingCategories: Cluster[] }
+    newCategoriesIds,
+  }: {
+    existingTags: Tag[];
+    existingCategories: Cluster[];
+    newCategoriesIds?: string[];
+  }
 ) => {
   const {
     tags,
@@ -135,7 +140,8 @@ export const handleSkillSubmission = async (
 
   const clusterIds = existingCategories
     .filter((category) => categories?.includes(category.name || category.id))
-    .map((cat) => cat.id);
+    .map((cat) => cat.id)
+    .concat(newCategoriesIds || []);
 
   const newTags = tags?.filter(
     (tag) => !existingTags.some((existingTag) => existingTag.name === tag)
@@ -229,4 +235,38 @@ export const useFetchLessonContents = (moodlePageId: string) => {
     isFetchingLessonContents: isLoading,
     fetchLessonContentsError: error,
   };
+};
+
+export const searchCategories = async (query: string): Promise<string[]> => {
+  try {
+    const response = await apiRequest<ListData<{ id: string; name: string }>>(
+      `/clusters/filter?name=${query}`,
+      "GET"
+    );
+    return response.data?.items.map((category) => category.name) || [];
+  } catch (error) {
+    console.error("Error searching categories:", error);
+    return [];
+  }
+};
+
+// Add a new function that returns both names and IDs
+export const searchCategoriesWithIds = async (
+  query: string
+): Promise<{ name: string; id: string }[]> => {
+  try {
+    const response = await apiRequest<ListData<{ id: string; name: string }>>(
+      `/clusters/filter?name=${query}`,
+      "GET"
+    );
+    return (
+      response.data?.items.map((category) => ({
+        name: category.name,
+        id: category.id,
+      })) || []
+    );
+  } catch (error) {
+    console.error("Error searching categories:", error);
+    return [];
+  }
 };
