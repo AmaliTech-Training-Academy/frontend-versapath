@@ -120,10 +120,12 @@ export const handleSkillSubmission = async (
     existingTags,
     existingCategories,
     newCategoriesIds,
+    newTagsIds,
   }: {
     existingTags: Tag[];
     existingCategories: Cluster[];
     newCategoriesIds?: string[];
+    newTagsIds?: string[];
   }
 ) => {
   const {
@@ -143,16 +145,30 @@ export const handleSkillSubmission = async (
     .map((cat) => cat.id)
     .concat(newCategoriesIds || []);
 
-  const newTags = tags?.filter(
-    (tag) => !existingTags.some((existingTag) => existingTag.name === tag)
+  // Get existing tag IDs from selected tags
+  const existingTagIds = existingTags
+    .filter((tag) => tags?.includes(tag.name))
+    .map((tag) => tag.id);
+
+  // Get new tags that need to be created (not in existing tags and not from API search)
+  const newTagsToCreate = tags?.filter(
+    (tag) =>
+      !existingTags.some((existingTag) => existingTag.name === tag) &&
+      !(newTagsIds && newTagsIds.length > 0) // Only create if no API results were selected
   );
 
-  let tagIds: string[] = [];
+  let tagIds: string[] = [...existingTagIds];
 
-  if (newTags && newTags.length > 0) {
+  // Add new tag IDs from API search results
+  if (newTagsIds && newTagsIds.length > 0) {
+    tagIds = [...tagIds, ...newTagsIds];
+  }
+
+  // Create new tags if any
+  if (newTagsToCreate && newTagsToCreate.length > 0) {
     const newlyAddedTagsResponse = await apiRequest<
       ItemData<{ id: string; name: string }[]>
-    >("/tags/addMultipleTags", "POST", newTags);
+    >("/tags/addMultipleTags", "POST", newTagsToCreate);
 
     if (!newlyAddedTagsResponse.success) {
       return {
@@ -161,18 +177,10 @@ export const handleSkillSubmission = async (
       };
     }
 
-    tagIds =
-      newlyAddedTagsResponse.data?.item
-        .map((tag) => tag.id)
-        .concat(
-          existingTags
-            .filter((tag) => tags?.includes(tag.name))
-            .map((tag) => tag.id)
-        ) || [];
-  } else {
-    tagIds = existingTags
-      .filter((tag) => tags?.includes(tag.name))
-      .map((tag) => tag.id);
+    const newlyCreatedTagIds =
+      newlyAddedTagsResponse.data?.item.map((tag) => tag.id) || [];
+
+    tagIds = [...tagIds, ...newlyCreatedTagIds];
   }
 
   // Create FormData for file upload
@@ -199,12 +207,12 @@ export const handleSkillSubmission = async (
   if (cover) {
     formData.append("image", cover);
   }
-  const reponse = await apiRequest<ItemData<SKill>>(
+  const response = await apiRequest<ItemData<SKill>>(
     `/capsules`,
     "POST",
     formData
   );
-  return reponse;
+  return response;
 };
 export const removeLessonDuplicates = (lessons: SkillAtom[]) => {
   const uniqueLessons: SkillAtom[] = [
@@ -237,36 +245,34 @@ export const useFetchLessonContents = (moodlePageId: string) => {
   };
 };
 
-export const searchCategories = async (query: string): Promise<string[]> => {
-  try {
-    const response = await apiRequest<ListData<{ id: string; name: string }>>(
-      `/clusters/filter?name=${query}`,
-      "GET"
-    );
-    return response.data?.items.map((category) => category.name) || [];
-  } catch (error) {
-    console.error("Error searching categories:", error);
-    return [];
-  }
-};
-
-// Add a new function that returns both names and IDs
-export const searchCategoriesWithIds = async (
+export const searchCategories = async (
   query: string
 ): Promise<{ name: string; id: string }[]> => {
-  try {
-    const response = await apiRequest<ListData<{ id: string; name: string }>>(
-      `/clusters/filter?name=${query}`,
-      "GET"
-    );
-    return (
-      response.data?.items.map((category) => ({
-        name: category.name,
-        id: category.id,
-      })) || []
-    );
-  } catch (error) {
-    console.error("Error searching categories:", error);
-    return [];
-  }
+  const response = await apiRequest<ListData<{ id: string; name: string }>>(
+    `/clusters/filter?name=${query}`,
+    "GET"
+  );
+
+  return (
+    response?.data?.items.map((category) => ({
+      name: category.name,
+      id: category.id,
+    })) || []
+  );
+};
+
+export const searchTags = async (
+  query: string
+): Promise<{ name: string; id: string }[]> => {
+  const response = await apiRequest<ListData<{ id: string; name: string }>>(
+    `/tags/filter?name=${query}`,
+    "GET"
+  );
+
+  return (
+    response?.data?.items.map((tag) => ({
+      name: tag.name,
+      id: tag.id,
+    })) || []
+  );
 };

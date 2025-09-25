@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -54,7 +53,6 @@ export function MultipleSelectChip({
   const [isSearching, setIsSearching] = React.useState(false);
   const [newApiSelections, setNewApiSelections] = React.useState<string[]>([]);
 
-  // Debounced search effect
   React.useEffect(() => {
     if (!onSearch || !search.trim()) {
       setApiResults([]);
@@ -68,7 +66,6 @@ export function MultipleSelectChip({
       try {
         const searchResult = await onSearch(search);
         if (typeof searchResult === "object" && "results" in searchResult) {
-          // New format with IDs
           setApiResults(searchResult.results);
           if (searchResult.resultIds) {
             const mapping: Record<string, string> = {};
@@ -78,7 +75,6 @@ export function MultipleSelectChip({
             setApiResultsMapping(mapping);
           }
         } else {
-          // Legacy format (array of strings)
           setApiResults(searchResult as string[]);
         }
       } finally {
@@ -89,17 +85,13 @@ export function MultipleSelectChip({
     return () => clearTimeout(timeoutId);
   }, [search, onSearch]);
 
-  // Combine default tags with API results and filter out duplicates
+ 
   const allAvailableOptions = React.useMemo(() => {
     const combined = [...names, ...apiResults];
-    console.log("Combined options:", combined);
     return Array.from(new Set(combined));
   }, [names, apiResults]);
-
-  // Filter options based on search query
   const filteredOptions = React.useMemo(() => {
     if (!search.trim()) return allAvailableOptions;
-
     return allAvailableOptions.filter((option) =>
       option.toLowerCase().includes(search.toLowerCase())
     );
@@ -110,18 +102,15 @@ export function MultipleSelectChip({
       ? value.filter((v) => v !== tagValue)
       : [...value, tagValue];
 
-    // Check if this is a new selection from API results
     const isFromApiResults =
       apiResults.includes(tagValue) && !names.includes(tagValue);
     const apiResultId = apiResultsMapping[tagValue];
 
     if (isFromApiResults && apiResultId && !value.includes(tagValue)) {
-      // Adding a new API result
       const updatedNewSelections = [...newApiSelections, apiResultId];
       setNewApiSelections(updatedNewSelections);
       onNewInput?.(updatedNewSelections);
     } else if (isFromApiResults && value.includes(tagValue) && apiResultId) {
-      // Removing an API result
       const updatedNewSelections = newApiSelections.filter(
         (id) => id !== apiResultId
       );
@@ -187,7 +176,6 @@ export function MultipleSelectChip({
         <PopoverContent className="w-[350px] p-0 border-none tabs_scrollbar">
           <Command
             className="bg-base-light-white p-1 border-none tabs_scrollbar"
-            // shouldFilter={!onSearch}
             key={apiResults.join(",")}
           >
             <CommandInput
@@ -229,24 +217,6 @@ export function MultipleSelectChip({
                 </>
               )}
 
-              {/* {!isSearching &&
-                !search.trim() &&
-                allAvailableOptions.length > 0 && (
-                  <CommandGroup>
-                    {allAvailableOptions.map((name) => (
-                      <CommandItem
-                        key={name}
-                        onSelect={() => toggleValue(name)}
-                      >
-                        <Checkbox
-                          checked={value.includes(name)}
-                          className="dark:data-[state=checked]:text-base-light-white data-[state=checked]:text-base-light-white bg-base-light-white mr-2"
-                        />
-                        {name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )} */}
             </CommandList>
           </Command>
         </PopoverContent>

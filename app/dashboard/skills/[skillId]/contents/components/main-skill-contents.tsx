@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useFetchLessonContents } from "@/lib/api/skills";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
-import { Loader, PenBox, Play, Section } from "lucide-react";
+import { Loader, PenBox } from "lucide-react";
 import React from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -84,7 +84,8 @@ export const MainSkillContents = () => {
           )
         )}
       </div>
-      <div className="flex justify-end gap-4">
+      {/* This is currently set to invisible, because these functionalities are yet to be implemented from the bakcend */}
+      <div className="flex justify-end gap-4 invisible">
         <Button variant={"ghost"} className="px-4">
           Previous
         </Button>

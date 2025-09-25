@@ -20,7 +20,8 @@ import { fetchTags } from "@/lib/redux/slices/tags-slice";
 import { DifficultyLevels, ProfficiencyLevels } from "@/lib/types";
 import {
   handleSkillSubmission,
-  searchCategoriesWithIds,
+  searchCategories,
+  searchTags,
 } from "@/lib/api/skills";
 import { mutate } from "swr";
 import { FilePicker } from "./file-picker";
@@ -39,6 +40,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
     (state) => state.categoriesReducer
   );
   const [newCategoriesIds, setNewCategoriesIds] = useState<string[]>([]);
+  const [newTagsIds, setNewTagsIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<AddSkillSchemaProps>({
     resolver: zodResolver(addSkillSchema),
@@ -64,6 +66,7 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
       existingTags: tags,
       existingCategories: categories,
       newCategoriesIds,
+      newTagsIds,
     });
 
     if (!response.success) {
@@ -81,7 +84,15 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
   };
 
   const searchCategoriesForComponent = async (query: string) => {
-    const resultIds = await searchCategoriesWithIds(query);
+    const resultIds = await searchCategories(query);
+    return {
+      results: resultIds.map((item) => item.name),
+      resultIds: resultIds,
+    };
+  };
+
+  const searchTagsForComponent = async (query: string) => {
+    const resultIds = await searchTags(query);
     return {
       results: resultIds.map((item) => item.name),
       resultIds: resultIds,
@@ -204,6 +215,10 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
                 onChange={field.onChange}
                 placeholder="Select tags"
                 label="Tags *"
+                addNewAllowed={true}
+                onSearch={searchTagsForComponent}
+                searchPlaceholder="Search tags..."
+                onNewInput={setNewTagsIds}
               />
               <FormMessage className="-mt-1 text-xs" />
             </FormItem>
