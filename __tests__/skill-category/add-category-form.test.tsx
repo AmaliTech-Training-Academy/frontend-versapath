@@ -1,21 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: vi.fn().mockImplementation((q) => ({
-    matches: false,
-    media: q,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+
 
 vi.mock("@/lib/schemas/add-category", () => {
   return {
@@ -218,3 +202,4 @@ describe("AddCategoryForm", () => {
     expect(sheetCloseClickSpy).toHaveBeenCalledTimes(1);
   });
 });
+
