@@ -134,16 +134,16 @@ export const handleSkillSubmission = async (
   } = data;
 
   const clusterIds = existingCategories
-    .filter((category) => categories.includes(category.name || category.id))
+    .filter((category) => categories?.includes(category.name || category.id))
     .map((cat) => cat.id);
 
-  const newTags = tags.filter(
+  const newTags = tags?.filter(
     (tag) => !existingTags.some((existingTag) => existingTag.name === tag)
   );
 
   let tagIds: string[] = [];
 
-  if (newTags.length > 0) {
+  if (newTags && newTags.length > 0) {
     const newlyAddedTagsResponse = await apiRequest<
       ItemData<{ id: string; name: string }[]>
     >("/tags/addMultipleTags", "POST", newTags);
@@ -160,12 +160,12 @@ export const handleSkillSubmission = async (
         .map((tag) => tag.id)
         .concat(
           existingTags
-            .filter((tag) => tags.includes(tag.name))
+            .filter((tag) => tags?.includes(tag.name))
             .map((tag) => tag.id)
         ) || [];
   } else {
     tagIds = existingTags
-      .filter((tag) => tags.includes(tag.name))
+      .filter((tag) => tags?.includes(tag.name))
       .map((tag) => tag.id);
   }
 

@@ -20,15 +20,11 @@ export const addSkillSchema = z.object({
     })
     .optional(),
   estimatedHours: z
-    .string({ error: "Estimated hours is required" })
-    .regex(/^\d+(\.\d+)?$/, "Estimated hours must be a number")
-    .transform((val) => parseFloat(val))
-    .refine((val) => val >= 1, {
-      error: "Estimated hours must be at least 1",
+    .number({
+      error: "Estimated hours must be a number",
     })
-    .refine((val) => val <= 1000, {
-      error: "Estimated hours must not exceed 1000",
-    }),
+    .min(1, "Estimated hours must be at least 1")
+    .max(1000, "Estimated hours must not exceed 1000"),
   tags: z.array(z.string()).optional(),
   cover: z
     .file()
@@ -36,4 +32,5 @@ export const addSkillSchema = z.object({
     .mime(["image/png", "image/jpeg", "image/webp"])
     .optional(),
 });
+
 export type AddSkillSchemaProps = z.infer<typeof addSkillSchema>;

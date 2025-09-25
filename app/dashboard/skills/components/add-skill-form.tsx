@@ -9,6 +9,7 @@ import { SheetClose } from "@/components/ui/sheet";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { addSkillSchema, AddSkillSchemaProps } from "@/lib/schemas/add-skill";
+// Ensure estimatedHours is typed as number in addSkillSchema in "@/lib/schemas/add-skill"
 import { CustomSelect } from "@/components/custom/custom-select";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
 import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
@@ -42,13 +43,9 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
       name: initialData?.name ?? "",
       objectives: initialData?.objectives || "",
       categories: initialData?.categories || [],
-      difficulty: isEditing
-        ? DifficultyLevels[initialData?.difficulty || "BEGINNER"]
-        : undefined,
-      proficiencyLevel: isEditing
-        ? ProfficiencyLevels[initialData?.proficiencyLevel || "L1"]
-        : undefined,
-      estimatedHours: initialData?.estimatedHours || "",
+      difficulty: initialData?.difficulty,
+      proficiencyLevel: initialData?.proficiencyLevel,
+      estimatedHours: initialData?.estimatedHours ?? 0,
       description: initialData?.description || "",
       tags: initialData?.tags || [],
       cover: undefined,
@@ -165,7 +162,18 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
           control={form.control}
           name="estimatedHours"
           render={({ field }) => (
-            <CustomInput label="Estimated hours" type="text" {...field} />
+            <CustomInput
+              label="Estimated Hours"
+              type="number"
+              min={1}
+              max={1000}
+              {...field}
+              value={field.value?.toString() || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                field.onChange(value === "" ? 0 : parseFloat(value) || 0);
+              }}
+            />
           )}
         />
         <FormField
