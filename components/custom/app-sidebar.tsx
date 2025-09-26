@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search, LogOut } from "lucide-react";
+import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search, LogOut, FileText, FileCheck } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
 import { handleLogOut } from "@/lib/api/logout";
@@ -85,16 +85,33 @@ const sidebarItems: SidebarItem[] = [
     allowedRoles: [Roles.ADMIN]
   },
   {
+    title: "Submissions",
+    url: "/dashboard/submissions",
+    icon: FileText,
+    allowedRoles: [Roles.MENTOR]
+  },
+  {
+    title: "Assessments",
+    url: "/dashboard/assessments",
+    icon: FileCheck,
+    allowedRoles: [Roles.MENTOR]
+  },
+  {
+    title: "Learners",
+    url: "/dashboard/learners",
+    icon: UsersIcon,
+    allowedRoles: [Roles.MENTOR]
+  },
+  {
     title: "Skills & Learning",
     url: "#",
     icon: BookOpenIcon,
-    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
     items: [
       { title: "Skill Categories", url: "/dashboard/skill-categories?page=1&size=12", allowedRoles: [Roles.ADMIN] },
-      { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
-      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
-      { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },
-      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER] },
+      { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
+      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
+      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
       { title: "Badges", url: "/dashboard/badges", allowedRoles: [Roles.LEARNER] },
     ],
   },
@@ -102,7 +119,7 @@ const sidebarItems: SidebarItem[] = [
     title: "Growth Track",
     url: "#",
     icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER]
+    allowedRoles: [Roles.ADMIN, Roles.LEARNER]
   },
 
 ];
