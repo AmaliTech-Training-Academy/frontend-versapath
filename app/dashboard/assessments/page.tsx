@@ -1,6 +1,7 @@
 "Use client";
 import { Metrics } from "../components/metrics";
 import { TopActions } from "../components/top-actions";
+import { AssessmentList } from "./components/assessment-list";
 
 export default function AssessmentsPage() {
     return (
@@ -12,6 +13,7 @@ export default function AssessmentsPage() {
                 isStatusFilterable={false}
                 isAssessmentFilterable={true}
             />
+            <AssessmentList />
         </>
     );
 }
