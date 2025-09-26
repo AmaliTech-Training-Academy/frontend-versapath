@@ -18,7 +18,11 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchCategories } from "@/lib/redux/slices/category-slice";
 import { fetchTags } from "@/lib/redux/slices/tags-slice";
 import { DifficultyLevels, ProfficiencyLevels } from "@/lib/types";
-import { handleSkillSubmission } from "@/lib/api/skills";
+import {
+  handleSkillSubmission,
+  searchCategories,
+  searchTags,
+} from "@/lib/api/skills";
 import { mutate } from "swr";
 import { FilePicker } from "./file-picker";
 
@@ -35,7 +39,8 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
   const { categories, isFetchingCategories } = useAppSelector(
     (state) => state.categoriesReducer
   );
-
+  const [newCategoriesIds, setNewCategoriesIds] = useState<string[]>([]);
+  const [newTagsIds, setNewTagsIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<AddSkillSchemaProps>({
     resolver: zodResolver(addSkillSchema),
@@ -60,6 +65,8 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
     const response = await handleSkillSubmission(data, {
       existingTags: tags,
       existingCategories: categories,
+      newCategoriesIds,
+      newTagsIds,
     });
 
     if (!response.success) {
@@ -74,6 +81,22 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
     toast.success("Skill added successfully");
     form.reset();
     closeRef.current?.click();
+  };
+
+  const searchCategoriesForComponent = async (query: string) => {
+    const resultIds = await searchCategories(query);
+    return {
+      results: resultIds.map((item) => item.name),
+      resultIds: resultIds,
+    };
+  };
+
+  const searchTagsForComponent = async (query: string) => {
+    const resultIds = await searchTags(query);
+    return {
+      results: resultIds.map((item) => item.name),
+      resultIds: resultIds,
+    };
   };
 
   useEffect(() => {
@@ -131,6 +154,9 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
                 placeholder="Select categories"
                 label="Categories *"
                 addNewAllowed={false}
+                onSearch={searchCategoriesForComponent}
+                searchPlaceholder="Search categories..."
+                onNewInput={setNewCategoriesIds}
               />
               <FormMessage className="-mt-1 text-xs" />
             </FormItem>
@@ -189,6 +215,10 @@ export const AddSkillForm: React.FC<AddSkillFormProps> = ({
                 onChange={field.onChange}
                 placeholder="Select tags"
                 label="Tags *"
+                addNewAllowed={true}
+                onSearch={searchTagsForComponent}
+                searchPlaceholder="Search tags..."
+                onNewInput={setNewTagsIds}
               />
               <FormMessage className="-mt-1 text-xs" />
             </FormItem>
