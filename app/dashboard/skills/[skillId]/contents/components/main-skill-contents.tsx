@@ -1,23 +1,21 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useFetchLesson } from "@/lib/api/skills";
+import { useFetchLessonContents } from "@/lib/api/skills";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
-import { Loader, PenBox, Play } from "lucide-react";
+import { Loader, PenBox } from "lucide-react";
 import React from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { renderLink } from "./render-link";
 
 export const MainSkillContents = () => {
   const searchParams = useSearchParams();
   const { isAdmin } = useCheckRole();
   const lessonId = searchParams.get("activeLesson") as string;
-  const {
-    lesson: fetchedLesson,
-    isFetchingLesson,
-    fetchLessonError,
-  } = useFetchLesson(lessonId);
-
-  if (fetchLessonError) {
+  const moodleId = searchParams.get("moodleId") as string;
+  const { lessonContents, isFetchingLessonContents, fetchLessonContentsError } =
+    useFetchLessonContents(moodleId);
+  if (fetchLessonContentsError) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-4 text-center border-s-2 border-gray-stroke-weak/70">
         <Image
@@ -27,13 +25,13 @@ export const MainSkillContents = () => {
           width={100}
         />
         <p>
-          {fetchLessonError.message ||
+          {fetchLessonContentsError.message ||
             "There was an error loading lesson data. Please try again"}
         </p>
       </div>
     );
   }
-  if (isFetchingLesson) {
+  if (isFetchingLessonContents) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full py-5 border-s-2 border-gray-stroke-weak/70">
         <Loader className="animate-spin" size={18} />
@@ -41,14 +39,28 @@ export const MainSkillContents = () => {
       </div>
     );
   }
-  const lesson = fetchedLesson?.data?.item;
+  const lesson = lessonContents?.data?.item;
+  const urlRegex = /(https?:\/\/[^\s<]+)/g;
+  const lessonContentsParts =
+    lesson?.content
+      .split(urlRegex)
+      .map((val) => ({ id: crypto.randomUUID(), content: val })) || [];
   if (!lessonId || !lesson)
     return (
-      <div className="w-full h-full py-10 border-s-2 border-gray-stroke-weak/70">
-        {!lessonId &&
-          "No lesson selected. Please select a lesson to view its details."}
-        {lessonId && !lesson && "Lesson data not found."}
-      </div>
+      <section className="border-s-2 border-gray-stroke-weak/70 flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
+        <Image
+          src={"/not-found.png"}
+          alt="Error loading users"
+          height={100}
+          width={100}
+        />
+        <p className="mt-2">
+          {" "}
+          {lessonId && !lesson && "Lesson data cannot be found."}
+          {!lessonId &&
+            "No lesson selected. Please select a lesson to view its content."}
+        </p>
+      </section>
     );
   return (
     <section className="w-full p-4 pt-0 space-y-6 overflow-y-auto tabs_scrollbar border-s-2 border-gray-stroke-weak/70">
@@ -63,23 +75,17 @@ export const MainSkillContents = () => {
           </Button>
         )}
       </article>
-      <div className="w-full aspect-video max-h-[500px] relative top-0 left-0">
-        <Image
-          src={"/images/javascript.png"}
-          alt="Player image"
-          fill
-          priority={false}
-          className=" blur-[3px]"
-        />
-        <div className="absolute top-0 left-0 z-10 w-full h-full bg-base-dark-overlay/30 " />
-        <div className="absolute z-20 inline-flex items-center justify-center p-3 -translate-x-1/2 -translate-y-1/2 rounded-full top-1/2 left-1/2 bg-base-light-white/40">
-          <Play size={30} className="text-base-light-white" />
-        </div>
+      <div className="min-h-[calc(100vh-250px)] space-y-4 text-start">
+        {lessonContentsParts?.map(({ content, id }) =>
+          urlRegex.test(content) ? (
+            <div key={id}>{renderLink(content)}</div>
+          ) : (
+            <div key={id} dangerouslySetInnerHTML={{ __html: content }} />
+          )
+        )}
       </div>
-      <article className=" text-start text-gray-text-weak">
-        {lesson?.description || "No description available for this lesson."}
-      </article>
-      <div className="flex justify-end gap-4">
+      {/* This is currently set to invisible, because these functionalities are yet to be implemented from the bakcend */}
+      <div className="flex justify-end gap-4 invisible">
         <Button variant={"ghost"} className="px-4">
           Previous
         </Button>
