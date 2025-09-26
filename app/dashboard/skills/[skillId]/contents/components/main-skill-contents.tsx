@@ -41,7 +41,7 @@ export const MainSkillContents = () => {
   }
   const lesson = lessonContents?.data?.item;
   const urlRegex = /(https?:\/\/[^\s<]+)/g;
-  const parts =
+  const lessonContentsParts =
     lesson?.content
       .split(urlRegex)
       .map((val) => ({ id: crypto.randomUUID(), content: val })) || [];
@@ -76,11 +76,11 @@ export const MainSkillContents = () => {
         )}
       </article>
       <div className="min-h-[calc(100vh-250px)] space-y-4 text-start">
-        {parts?.map(({ content: part, id }) =>
-          urlRegex.test(part) ? (
-            <div key={id}>{renderLink(part)}</div>
+        {lessonContentsParts?.map(({ content, id }) =>
+          urlRegex.test(content) ? (
+            <div key={id}>{renderLink(content)}</div>
           ) : (
-            <div key={id} dangerouslySetInnerHTML={{ __html: part }} />
+            <div key={id} dangerouslySetInnerHTML={{ __html: content }} />
           )
         )}
       </div>

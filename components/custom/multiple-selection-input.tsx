@@ -85,7 +85,6 @@ export function MultipleSelectChip({
     return () => clearTimeout(timeoutId);
   }, [search, onSearch]);
 
- 
   const allAvailableOptions = React.useMemo(() => {
     const combined = [...names, ...apiResults];
     return Array.from(new Set(combined));
@@ -96,27 +95,31 @@ export function MultipleSelectChip({
       option.toLowerCase().includes(search.toLowerCase())
     );
   }, [allAvailableOptions, search]);
-
-  const toggleValue = (tagValue: string) => {
-    const newSelected = value.includes(tagValue)
-      ? value.filter((v) => v !== tagValue)
-      : [...value, tagValue];
-
+  const handleApiSelection = (tagValue: string, isSelected: boolean) => {
     const isFromApiResults =
       apiResults.includes(tagValue) && !names.includes(tagValue);
     const apiResultId = apiResultsMapping[tagValue];
 
-    if (isFromApiResults && apiResultId && !value.includes(tagValue)) {
+    if (!isFromApiResults || !apiResultId) return;
+
+    if (isSelected) {
       const updatedNewSelections = [...newApiSelections, apiResultId];
       setNewApiSelections(updatedNewSelections);
       onNewInput?.(updatedNewSelections);
-    } else if (isFromApiResults && value.includes(tagValue) && apiResultId) {
+    } else {
       const updatedNewSelections = newApiSelections.filter(
         (id) => id !== apiResultId
       );
       setNewApiSelections(updatedNewSelections);
       onNewInput?.(updatedNewSelections);
     }
+  };
+  const toggleValue = (tagValue: string) => {
+    const isCurrentlySelected = value.includes(tagValue);
+    const newSelected = isCurrentlySelected
+      ? value.filter((v) => v !== tagValue)
+      : [...value, tagValue];
+    handleApiSelection(tagValue, !isCurrentlySelected);
 
     onChange?.(newSelected);
   };
@@ -216,7 +219,6 @@ export function MultipleSelectChip({
                   ))}
                 </>
               )}
-
             </CommandList>
           </Command>
         </PopoverContent>
