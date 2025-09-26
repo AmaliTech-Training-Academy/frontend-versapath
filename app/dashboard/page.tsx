@@ -11,8 +11,8 @@ export default async function DashboardPage() {
   return (
     <>
       <DashboardHeader title="Dashboard" />
-      {session?.user.role === Roles.ADMIN && <Metrics />}
-      {session?.user.role === Roles.LEARNER && (
+      <Metrics />
+      {(session?.user.role === Roles.LEARNER || session?.user.role === Roles.MENTOR) && (
         <>
           <QuickActions />
           <section className="grid grid-cols-3 gap-6">

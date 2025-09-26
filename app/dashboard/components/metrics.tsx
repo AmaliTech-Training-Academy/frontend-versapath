@@ -5,14 +5,12 @@ import { MetricsCard } from "./metrics-card";
 import { useMetrics } from "@/lib/hooks/use-metrics";
 import { Roles } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { canSee } from "@/components/custom/app-sidebar";
 
 export const Metrics = () => {
     const { metrics, isLoading, error } = useMetrics();
     const { data: session } = useSession();
     const userRole = session?.user?.role as Roles;
-
-    const canSee = (userRole: Roles, allowed?: Roles[]) =>
-        !allowed || allowed.length === 0 || allowed.includes(userRole);
 
     if (isLoading || error) {
         return (
@@ -36,7 +34,7 @@ export const Metrics = () => {
     }
 
     const filteredMetrics = metrics
-        .filter((item) => canSee(userRole, item.allowedRoles) ? item : null);
+        .filter((item) => canSee(userRole, item.allowedRoles));
 
     return (
         <section className="w-full grid grid-cols-4 gap-6">

@@ -130,7 +130,7 @@ const sidebarFooterItems: FooterItem[] = [
   { title: "Settings", url: "#", icon: Settings, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
 ];
 
-const canSee = (userRole: Roles, allowed?: Roles[]) =>
+export const canSee = (userRole: Roles, allowed?: Roles[]) =>
   !allowed || allowed.length === 0 || allowed.includes(userRole);
 
 const isParent = (i: SidebarItem): i is ParentItem =>
