@@ -1,6 +1,7 @@
 import { MentorAssessment } from "@/lib/api/assesments";
 import { AssessmentStatus } from "@/lib/types";
 import { clsx } from "clsx";
+import Image from "next/image";
 
 export const AssessmentCard = ({
     assessment
@@ -8,7 +9,7 @@ export const AssessmentCard = ({
     assessment: MentorAssessment
 }) => {
     return (
-        <article className="space-y-3 p-4 rounded-xl border border-gray-stroke-weak">
+        <article className="space-y-3 p-4 rounded-xl border border-gray-stroke-weak cursor-pointer hover:bg-brand-primary-fill hover:border-brand-primary-text-weak">
             <div className="flex justify-between">
                 <div className="flex gap-2">
                     <span className="font-semibold text-gray-text-strong">{assessment.title}</span>
@@ -32,8 +33,25 @@ export const AssessmentCard = ({
                 <span>Created:</span>
                 <span>{assessment.createdAt}</span>
             </div>
-            <div className="space-x-1">
-                
+            <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-text-weak">Assigned:</span>
+                <div className="flex -space-x-2">
+                    {
+                        assessment.assigned.slice(0, 4).map((assignee) => (
+                            <Image src={assignee.profilePictureUrl} alt={assignee.firstName} key={assignee.id} width={400} height={400} className="w-6 h-6 rounded-full border-[0.6px] border-[#dcdcdc]" />
+                        ))
+                    }
+                </div>
+            </div>
+            <p className="text-sm text-gray-text-weak">{assessment.description}</p>
+            <div className="flex flex-wrap gap-1">
+                {
+                    assessment.tags.map((tag) => (
+                        <div key={tag} className="rounded-2xl border border-gray-stroke-weak bg-gray-stroke-weaker text-gray-text-weak px-2 flex items-center justify-center text-xs">
+                            {tag}
+                        </div>
+                    ))
+                }
             </div>
         </article>
     )
