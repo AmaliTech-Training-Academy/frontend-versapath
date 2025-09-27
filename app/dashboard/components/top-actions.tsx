@@ -1,3 +1,5 @@
+"use client";
+
 import { Select } from "@/components/custom/custom-selector";
 import { Input } from "@/components/ui/input";
 import { Roles } from "@/lib/types";
@@ -13,6 +15,7 @@ export interface TopActionsProps {
   debounceMs?: number;
   isRoleFilterable?: boolean;
   isStatusFilterable?: boolean;
+  isAssessmentFilterable?: boolean;
   searchValue?: string; // Add this prop
   statusValue?: string; // Add this prop for status filter
 }
@@ -31,6 +34,13 @@ const STATUS_OPTIONS = [
   { value: "inactive", label: "Inactive" },
 ];
 
+const ASSESSMENT_OPTIONS = [
+  { value: "all", label: "All" },
+  { value: "quizzes", label: "Quizzes" },
+  { value: "code_labs", label: "Code Labs" },
+  { value: "assessments", label: "Assessments" }
+];
+
 export const TopActions: React.FC<TopActionsProps> = ({
   searchPlaceholder = "Search...",
   onSearch,
@@ -40,12 +50,13 @@ export const TopActions: React.FC<TopActionsProps> = ({
   debounceMs = 500,
   isRoleFilterable = true,
   isStatusFilterable = true,
+  isAssessmentFilterable = false,
   searchValue = "",
   statusValue = "",
 }) => {
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data: session } = useSession();
-  const canView = session?.user.role === Roles.ADMIN;
+  const canView = session?.user.role === Roles.ADMIN || Roles.MENTOR;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -115,6 +126,13 @@ export const TopActions: React.FC<TopActionsProps> = ({
                 options={STATUS_OPTIONS}
                 handlevalueChange={handleStatusChange}
                 defaultValue={statusValue || "all"} // Set default value for status filter
+              />
+            )}
+            {isAssessmentFilterable && (
+              <Select
+                placeholder="All assessments"
+                options={ASSESSMENT_OPTIONS}
+                defaultValue={"all"} // Set default value for assessment filter
               />
             )}
           </div>

@@ -14,3 +14,14 @@ export enum ProfficiencyLevels {
   L2 = "L2",
   L3 = "L3",
 }
+export enum AssessmentStatus {
+  DRAFT = "Draft",
+  ACTIVE = "Active",
+  SCHEDULED = "Scheduled",
+  ARCHIVED = "Archived"
+}
+export enum AssessmentType {
+  CODE_LAB = "Code Lab",
+  PROJECT = "Project",
+  QUIZ = "Quiz"
+}
