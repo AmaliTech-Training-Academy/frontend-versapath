@@ -8,19 +8,22 @@ import { Roles } from "@/lib/types";
 
 export default async function DashboardPage() {
   const session = await auth();
+  const canView = session?.user.role === Roles.LEARNER || session?.user.role === Roles.MENTOR;
   return (
     <>
       <DashboardHeader title="Dashboard" />
       <Metrics />
-      {(session?.user.role === Roles.LEARNER || session?.user.role === Roles.MENTOR) && (
-        <>
-          <QuickActions />
-          <section className="grid grid-cols-3 gap-6">
-            <RoadmapList />
-            <RecentActivityList />
-          </section>
-        </>
-      )}
+      {
+        canView && (
+          <>
+            <QuickActions />
+            <section className="grid grid-cols-3 gap-6">
+              <RoadmapList />
+              <RecentActivityList />
+            </section>
+          </>
+        )
+      }
     </>
   );
 }
