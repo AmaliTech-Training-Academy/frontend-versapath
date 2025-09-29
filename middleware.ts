@@ -10,7 +10,7 @@ function isBoundaryMatch(pathname: string, base: string) {
 }
 
 // Authenticated middleware wrapper
-export default auth(async function middleware(req) {
+export default auth((req) => {
   const { pathname } = req.nextUrl;
 
   const isAuthenticated = req.auth?.user;
@@ -23,7 +23,6 @@ export default auth(async function middleware(req) {
   );
 
   if (isPublic) {
-    // If user is logged in and tries to access login/register, redirect to dashboard
     if (isAuthenticated && ["/login", "/register"].includes(pathname)) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
@@ -37,7 +36,6 @@ export default auth(async function middleware(req) {
 
 
     if (!matchedRoute) {
-      // No specific rule → allow
       return NextResponse.next();
     }
 
