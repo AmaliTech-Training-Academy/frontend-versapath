@@ -110,8 +110,8 @@ const sidebarItems: SidebarItem[] = [
     items: [
       { title: "Skill Categories", url: "/dashboard/skill-categories?page=1&size=12", allowedRoles: [Roles.ADMIN] },
       { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
-      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
-      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
+      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN] },
+      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.LEARNER] },
       { title: "Badges", url: "/dashboard/badges", allowedRoles: [Roles.LEARNER] },
     ],
   },
