@@ -6,11 +6,13 @@ import { persistStore, persistReducer } from "redux-persist";
 import rolesReducer from "./slices/roles-slice";
 import categoriesReducer from "./slices/category-slice";
 import tagsReducer from "./slices/tags-slice";
+import specializationReducer from "./slices/specialization-slice";
 const rootReducer = combineReducers({
   updateUser,
   rolesReducer,
   categoriesReducer,
   tagsReducer,
+  specializationReducer,
 });
 const persistConfig = {
   key: "root",

@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
+import { FormMessage } from "../ui/form";
 
 interface MultipleSelectChipProps {
   defaultTags: string[];
@@ -30,6 +31,7 @@ interface MultipleSelectChipProps {
   }>;
   searchPlaceholder?: string;
   onNewInput?: (newInputs: string[]) => void;
+  disabled?: boolean;
 }
 
 export function MultipleSelectChip({
@@ -42,6 +44,7 @@ export function MultipleSelectChip({
   onSearch,
   searchPlaceholder,
   onNewInput,
+  disabled = false,
 }: Readonly<MultipleSelectChipProps>) {
   const [open, setOpen] = React.useState(false);
   const [names, setNames] = React.useState<string[]>(defaultTags);
@@ -144,13 +147,21 @@ export function MultipleSelectChip({
   return (
     <div className="w-full max-w-xl space-y-2">
       {label && (
-        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <label
+          className={cn(
+            "text-sm font-medium",
+            disabled && "text-gray-stroke-strong"
+          )}
+        >
+          {label}
+        </label>
       )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild className="bg-background">
           <Button
             variant="ghost"
             role="combobox"
+            disabled={disabled}
             aria-expanded={open}
             className={cn(
               "w-full grid grid-cols-[1fr_auto] justify-between shadow-xs min-h-[42px] h-auto py-2 px-3 flex-wrap border border-gray-stroke-weak hover:text-gray-text-strong hover:bg-base-light-white",
@@ -223,6 +234,7 @@ export function MultipleSelectChip({
           </Command>
         </PopoverContent>
       </Popover>
+      <FormMessage className="transition-all -mt-1 text-xs" />
     </div>
   );
 }
