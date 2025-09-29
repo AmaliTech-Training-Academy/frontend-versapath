@@ -32,7 +32,7 @@ export default auth((req) => {
   // 2. Protected routes
   if (isAuthenticated) {
     const matches = protectedPaths.filter(({ url }) => isBoundaryMatch(pathname, url));
-    const matchedRoute = matches.toSorted((a, b) => b.url.length - a.url.length)[0];
+    const matchedRoute = [...matches].sort((a, b) => b.url.length - a.url.length)[0];
 
 
     if (!matchedRoute) {
