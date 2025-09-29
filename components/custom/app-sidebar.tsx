@@ -1,8 +1,9 @@
 "use client";
 import {
   BookOpenIcon,
-  Squares2X2Icon,
   UsersIcon,
+  DocumentTextIcon,
+  HomeIcon
 } from "@heroicons/react/24/outline";
 import {
   Sidebar,
@@ -89,9 +90,9 @@ type PopoverItem = {
 // Static
 const sidebarItems: SidebarItem[] = [
   {
-    title: "Dashboard",
+    title: "Overview",
     url: "/dashboard",
-    icon: Squares2X2Icon,
+    icon: HomeIcon,
     allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
   },
   {
@@ -99,6 +100,12 @@ const sidebarItems: SidebarItem[] = [
     url: "/dashboard/user-management",
     icon: UsersIcon,
     allowedRoles: [Roles.ADMIN],
+  },
+    {
+    title: "Submissions",
+    url: "/dashboard/submissions",
+    icon:  DocumentTextIcon,
+    allowedRoles: [Roles.MENTOR],
   },
   {
     title: "Submissions",
@@ -150,18 +157,18 @@ const sidebarItems: SidebarItem[] = [
       {
         title: "Skills",
         url: "/dashboard/skills",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
       },
       {
         title: "Lessons",
         url: "/dashboard/lessons",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
       },
       { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },
       {
         title: "Roadmap",
         url: "/dashboard/roadmap",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
       },
       {
         title: "Badges",
@@ -174,7 +181,7 @@ const sidebarItems: SidebarItem[] = [
     title: "Growth Track",
     url: "#",
     icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
   },
 ];
 

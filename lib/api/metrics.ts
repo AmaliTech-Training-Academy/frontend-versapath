@@ -1,9 +1,4 @@
-import {
-  Activity,
-  CheckCircle,
-  LucideIcon,
-  UsersIcon,
-} from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, CheckCircle, CircleCheckBig, FileText, Flame, UsersIcon, LucideIcon } from "lucide-react";
 import { apiRequest } from "./api-request";
 import { Roles } from "@/lib/types";
 
@@ -12,10 +7,7 @@ export const apiGetMetrics = async (userRole: Roles) => {
     apiRequest<number>("/users/count", "GET"),
     apiRequest<number>("/users/learners/count", "GET"),
   ]);
-  const metricConfigs: Record<
-    Roles,
-    { title: string; value: number; icon: LucideIcon }[]
-  > = {
+  const metricConfigs: Record<Roles, {title: string, value: number, icon:LucideIcon}[]> = {
     [Roles.ADMIN]: [
       { title: "Total Users", value: userCount.data ?? 0, icon: UsersIcon },
       {
@@ -34,7 +26,7 @@ export const apiGetMetrics = async (userRole: Roles) => {
       },
       { title: "Completed Skills", value: 0, icon: CheckCircle },
       { title: "Badges Earned", value: 0, icon: UsersIcon },
-      { title: "Learning Streaks", value: 0, icon: Activity },
+      { title: "Learning Streaks              ", value: 0, icon: Activity },
     ],
     [Roles.MENTOR]: [
       {
