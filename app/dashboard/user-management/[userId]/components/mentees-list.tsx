@@ -1,3 +1,4 @@
+import { dummyMentees } from "@/lib/mocks/lessons";
 import { MenteesListProps } from "@/lib/types/mentees";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -84,24 +85,8 @@ export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
   );
 };
 
-const dummyMentees = [
-  {
-    id: "1",
-    name: "Alexander Agyemang",
-    avatarUrl: "/images/category-placeholder.jpg",
-    date: "23 hours ago",
-    lastFeedback: "Provided feedback on React components",
-    lastActivity: "23 hours ago",
-  },
-  {
-    id: "2",
-    name: "Linda Boateng",
-    avatarUrl: "/images/profile.png",
-    date: "2 days ago",
-    lastFeedback: "Reviewed JavaScript assignment",
-    lastActivity: "2 days ago",
-  },
-];
+
+
 
 export default function DemoMenteesList() {
   return <MenteesList mentees={dummyMentees} />;
