@@ -1,17 +1,7 @@
+import { MenteesListProps } from "@/lib/types/mentees";
 import React, { useState } from "react";
 
-interface Mentee {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-  date?: string;
-  lastFeedback?: string;
-  lastActivity?: string;
-}
 
-interface MenteesListProps {
-  mentees: Mentee[];
-}
 
 export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
   const [selectedMenteeId, setSelectedMenteeId] = useState<string | null>(null);
