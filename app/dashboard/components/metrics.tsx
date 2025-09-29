@@ -5,11 +5,20 @@ import { MetricsCard } from "./metrics-card";
 import { useMetrics } from "@/lib/hooks/use-metrics";
 import { Roles } from "@/lib/types";
 import { useSession } from "next-auth/react";
+<<<<<<< HEAD
 
 export const Metrics = () => {
     const { data: session } = useSession();
     const userRole = session?.user?.role as Roles;
   const { metrics, isLoading, error } = useMetrics(userRole);
+=======
+
+
+export const Metrics = () => {
+  const { metrics, isLoading, error } = useMetrics();
+  const { data: session } = useSession();
+  const userRole = session?.user?.role as Roles;
+>>>>>>> 7aef696 (Fix lint errors)
 
   if (isLoading || error) {
     return (
@@ -31,7 +40,11 @@ export const Metrics = () => {
       {metrics.map((metric) => (
         <MetricsCard
           key={metric.title}
+<<<<<<< HEAD
          title={metric.title}
+=======
+          title={metric.title}
+>>>>>>> 7aef696 (Fix lint errors)
           value={metric.value}
           icon={metric.icon}
         />

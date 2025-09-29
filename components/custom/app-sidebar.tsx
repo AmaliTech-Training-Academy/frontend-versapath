@@ -108,15 +108,9 @@ const sidebarItems: SidebarItem[] = [
     allowedRoles: [Roles.MENTOR],
   },
   {
-    title: "Submissions",
-    url: "/dashboard/submissions",
-    icon: FileText,
-    allowedRoles: [Roles.MENTOR]
-  },
-  {
     title: "Assessments",
     url: "/dashboard/assessments",
-    icon: FileCheck,
+    icon: FileText,
     allowedRoles: [Roles.MENTOR]
   },
   {
@@ -125,64 +119,7 @@ const sidebarItems: SidebarItem[] = [
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
   },
-  {
-    title: "Submissions",
-    url: "/dashboard/submissions",
-    icon: FileText,
-    allowedRoles: [Roles.MENTOR]
-  },
-  {
-    title: "Assessments",
-    url: "/dashboard/assessments",
-    icon: FileCheck,
-    allowedRoles: [Roles.MENTOR]
-  },
-  {
-    title: "Learners",
-    url: "/dashboard/learners",
-    icon: UsersIcon,
-    allowedRoles: [Roles.MENTOR]
-  },
-  {
-    title: "Skills & Learning",
-    url: "#",
-    icon: BookOpenIcon,
-    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-    items: [
-      {
-        title: "Skill Categories",
-        url: "/dashboard/skill-categories?page=1&size=12",
-        allowedRoles: [Roles.ADMIN],
-      },
-      {
-        title: "Skills",
-        url: "/dashboard/skills",
-        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-      },
-      {
-        title: "Lessons",
-        url: "/dashboard/lessons",
-        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-      },
-      { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },
-      {
-        title: "Roadmap",
-        url: "/dashboard/roadmap",
-        allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-      },
-      {
-        title: "Badges",
-        url: "/dashboard/badges",
-        allowedRoles: [Roles.LEARNER],
-      },
-    ],
-  },
-  {
-    title: "Growth Track",
-    url: "#",
-    icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-  },
+  
 ];
 
 const sidebarFooterItems: FooterItem[] = [
