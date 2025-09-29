@@ -1,4 +1,9 @@
-import { Activity, BadgeCheck, BookOpen, CheckCircle, CircleCheckBig, FileText, Flame, UsersIcon } from "lucide-react";
+import {
+  Activity,
+  CheckCircle,
+  LucideIcon,
+  UsersIcon,
+} from "lucide-react";
 import { apiRequest } from "./api-request";
 import { Roles } from "@/lib/types";
 
@@ -7,7 +12,10 @@ export const apiGetMetrics = async (userRole: Roles) => {
     apiRequest<number>("/users/count", "GET"),
     apiRequest<number>("/users/learners/count", "GET"),
   ]);
-  const metricConfigs: Record<Roles, any[]> = {
+  const metricConfigs: Record<
+    Roles,
+    { title: string; value: number; icon: LucideIcon }[]
+  > = {
     [Roles.ADMIN]: [
       { title: "Total Users", value: userCount.data ?? 0, icon: UsersIcon },
       {
@@ -29,7 +37,11 @@ export const apiGetMetrics = async (userRole: Roles) => {
       { title: "Learning Streaks", value: 0, icon: Activity },
     ],
     [Roles.MENTOR]: [
-      { title: "Assigned Learners", value: learnerCount.data ?? 0, icon: UsersIcon },
+      {
+        title: "Assigned Learners",
+        value: learnerCount.data ?? 0,
+        icon: UsersIcon,
+      },
       { title: "Pending Reviews", value: 8, icon: Activity },
       { title: "Completed Reviews", value: 200, icon: CheckCircle },
       { title: "Active Assessments", value: 30, icon: Activity },
@@ -43,6 +55,6 @@ export const apiGetMetrics = async (userRole: Roles) => {
   };
   // Default to LEARNER if role not found
   const metrics =
-    metricConfigs[userRole as Roles] || metricConfigs[Roles.MENTOR];
+    metricConfigs[userRole];
   return metrics;
 };

@@ -6,7 +6,11 @@ import { RecentActivityList } from "./components/recent-activity-list";
 import { RoadmapList } from "./components/roadmap-list";
 import { Roles } from "@/lib/types";
 import { RecentSubmissions } from "./components/recent-submittions";
-import { dummySubmissions, sampleAssessments, sampleDays } from "@/lib/api/dummy-submissions";
+import {
+  dummySubmissions,
+  sampleAssessments,
+  sampleDays,
+} from "@/lib/api/dummy-submissions";
 import { UpcomingAssessments } from "./components/upcoming-assessments";
 
 export default async function DashboardPage() {
@@ -14,8 +18,7 @@ export default async function DashboardPage() {
   return (
     <>
       <DashboardHeader title="Dashboard" />
-      {session?.user.role === Roles.ADMIN && <Metrics />}
-      {session?.user.role === Roles.MENTOR && <Metrics />}
+      <Metrics />
       {session?.user.role === Roles.LEARNER && (
         <>
           <QuickActions role={Roles.LEARNER} />
@@ -30,7 +33,7 @@ export default async function DashboardPage() {
           <QuickActions role={Roles.MENTOR} />
           <section className="grid grid-cols-2 gap-6">
             <RecentSubmissions submissions={dummySubmissions} />
-              <UpcomingAssessments 
+            <UpcomingAssessments
               assessments={sampleAssessments}
               days={sampleDays}
             />

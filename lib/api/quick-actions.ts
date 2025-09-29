@@ -1,10 +1,10 @@
-import { BookOpen, CirclePlay, Map, MessageCircle,  Users } from "lucide-react";
+import { BookOpen, CirclePlay, LucideIcon, Map, MessageCircle,  Users } from "lucide-react";
 import { Roles } from "@/lib/types";
 
 type QuickAction = {
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
 };
 
 const quickActionsConfig: Record<Roles, QuickAction[]> = {
