@@ -3,15 +3,26 @@ import { auth } from "./auth";
 import { protectedPaths, publicPaths } from "./lib/constants/routes";
 import { Roles } from "./lib/types";
 
+function isBoundaryMatch(pathname: string, base: string) {
+  if (!pathname.startsWith(base)) return false;
+  if (pathname.length === base.length) return true;
+  return pathname.charAt(base.length) === "/";
+}
+
 // Authenticated middleware wrapper
 export default auth(async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  const isAuthenticated = req.auth && req.auth.user;
-  const authenticatedRole = req.auth?.user?.role as Roles
+  const isAuthenticated = req.auth?.user;
+  const rawRole = req.auth?.user?.role;
+  const authenticatedRole = typeof rawRole === "string" ? rawRole.toUpperCase() : undefined;
 
   // 1. Allow public routes
-  if (publicPaths.includes(pathname)) {
+  const isPublic = publicPaths.some((pub) =>
+    pathname === pub || pathname.startsWith(pub + "/")
+  );
+
+  if (isPublic) {
     // If user is logged in and tries to access login/register, redirect to dashboard
     if (isAuthenticated && ["/login", "/register"].includes(pathname)) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
@@ -21,16 +32,27 @@ export default auth(async function middleware(req) {
 
   // 2. Protected routes
   if (isAuthenticated) {
-    const matchedRoute = protectedPaths.find(({ url }) => pathname.startsWith(url));
-    if (matchedRoute) {
-      if (matchedRoute.role.includes(authenticatedRole)) {
-        return NextResponse.next();
-      } else {
-        const errorMessage = encodeURIComponent("You don't have permission to access this page");
-        return NextResponse.redirect(new URL(`/unauthorized?error=${errorMessage}`, req.url));
-      }
+    const matches = protectedPaths.filter(({ url }) => isBoundaryMatch(pathname, url));
+    const matchedRoute = matches.toSorted((a, b) => b.url.length - a.url.length)[0];
+
+
+    if (!matchedRoute) {
+      // No specific rule → allow
+      return NextResponse.next();
     }
-    return NextResponse.next(); // Allow access for paths that are not matched in protectedPaths
+
+    // Guard if role missing
+    if (!authenticatedRole) {
+      const msg = encodeURIComponent("Your account role is missing.");
+      return NextResponse.redirect(new URL(`/unauthorized?error=${msg}`, req.url));
+    }
+
+    if (matchedRoute.role.includes(authenticatedRole as Roles)) {
+      return NextResponse.next();
+    } else {
+      const msg = encodeURIComponent("You don't have permission to access this page");
+      return NextResponse.redirect(new URL(`/unauthorized?error=${msg}`, req.url));
+    }
   }
 
   // 3. User is not authenticated
@@ -38,5 +60,7 @@ export default auth(async function middleware(req) {
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|map|woff|woff2|ttf)$).*)',
+  ],
 };
