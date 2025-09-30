@@ -4,9 +4,7 @@
 vi.mock("@/lib/schemas/add-category", () => {
   return {
     addCategorySchema: {
-      // react-hook-form + zodResolver will just call this
-      // We emulate a minimal parse() shape like zod would do.
-      // If name is empty-ish, throw; else succeed.
+      
       parse: (data: Record<string, unknown>) => {
         if (!data?.name || String(data.name).trim() === "") {
           const err = new Error("Invalid") as Error & {
@@ -140,27 +138,7 @@ vi.mock("@/components/ui/sheet", async () => {
   >(({ asChild, children, onClick, ...rest }, ref) => {
     const handleClick = (e: unknown) => {
       sheetCloseClickSpy();
-    //   if (typeof onClick === "function") {
-    //     onClick(e);
-    //   }
-    };
-
-    // If asChild, inject our click handler into the child instead of wrapping it
-    // if (asChild && React.isValidElement(children)) {
-    //   const child = children as React.ReactElement<unknown>;
-    //   return React.cloneElement(child, {
-    //     ...rest,
-    //     onClick: (...args: unknown[]) => {
-    //       if (typeof child.props?.onClick === "function") {
-    //         child.props.onClick(...args);
-    //       }
-    //       handleClick(args[0]);
-    //     },
-    //     ref,
-    //   });
-    // }
-
-    // Non-asChild (e.g., the hidden programmatic close button)
+   
     return <button ref={ref} onClick={handleClick} {...rest} />;
   });
 
