@@ -21,6 +21,7 @@ import { apiRequest } from "@/lib/api/api-request";
 import { User } from "@/lib/types/api";
 import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
 import { fetchSpecializations } from "@/lib/redux/slices/specialization-slice";
+import { Roles } from "@/lib/types";
 export const InviteUserForm = () => {
   const { mutate } = useSWRConfig();
   const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ export const InviteUserForm = () => {
   const isMentorSelected = useWatch({
     control: form.control,
     name: "role",
-    compute: (role) => roles.find((r) => r.id === role)?.role === "MENTOR",
+    compute: (role) => roles.find((r) => r.id === role)?.role === Roles.MENTOR,
   });
   const onSubmit = async (data: InviteUserInputs) => {
     if (
