@@ -5,9 +5,8 @@ import type {
   FeedbackForm as FeedbackFormType,
   SubmissionStatus,
 } from "@/lib/types/submissions";
-import { CodeViewer } from "./code-viewer";
+import CodeViewer from "./code-viewer";
 import { PageHeader } from "./page-head";
-
 interface SubmissionDetailPageProps {
   submission: DetailedSubmission;
 }
@@ -68,7 +67,6 @@ export function SubmissionDetailPage({
             </div>
           </div>
 
-          {/* Code Viewer */}
           <div className="mb-6">
             <CodeViewer
               code={submission.code}
@@ -77,7 +75,6 @@ export function SubmissionDetailPage({
             />
           </div>
 
-          {/* Feedback Section */}
           <div className="bg-[#FFFF] rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-text-strong mb-4">
               Provide Feedback

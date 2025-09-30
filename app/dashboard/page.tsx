@@ -5,7 +5,7 @@ import { QuickActions } from "./components/quick-actions";
 import { RecentActivityList } from "./components/recent-activity-list";
 import { RoadmapList } from "./components/roadmap-list";
 import { Roles } from "@/lib/types";
-import { RecentSubmissions } from "./components/recent-submittions";
+import { RecentSubmissions } from "./components/recent-submissions";
 import {
   dummySubmissions,
   sampleAssessments,

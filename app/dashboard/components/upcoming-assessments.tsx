@@ -34,10 +34,8 @@ export function UpcomingAssessments({assessments = [],days = [],}: UpcomingAsses
       </section>
     );
   }
-
-const safeAssessments = Array.isArray(assessments) ? assessments : [];
   
-  const filtered = safeAssessments.filter((a) => a.date === selectedDay);
+  const filtered = assessments.filter((a) => a.date === selectedDay);
 
   return (
     <section className="bg-[#ffffff] rounded-xl p-5 space-y-4">
