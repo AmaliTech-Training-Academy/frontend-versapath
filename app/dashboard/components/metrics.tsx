@@ -14,7 +14,7 @@ export const Metrics = () => {
 
     if (isLoading || error) {
         return (
-            <section className="w-full items-center gap-2 text-muted-foreground">
+            <section className="w-full flex items-center gap-2 text-muted-foreground">
                 {
                     isLoading && (
                         <>
