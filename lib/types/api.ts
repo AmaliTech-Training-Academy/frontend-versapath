@@ -18,6 +18,7 @@ export interface User {
   status: Status;
   createdAt: string;
   updatedAt: string;
+  requiresOnboarding?: boolean;
 }
 
 export interface Cluster {
@@ -30,6 +31,78 @@ export interface Cluster {
   createdAt: string;
   updatedAt: string | null;
 }
+
+export interface Route {
+  id: string;
+  talentRouteId: string;
+  routeName: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  totalTracks: number;
+  tracks?: {
+    id: string;
+    growthTrackId: string;
+    trackName: string;
+    description: string;
+    sequenceOrder: number;
+    totalCapsules: number;
+  }[];
+}
+
+export interface Track {
+  id: string;
+  growthTrackId: string;
+  trackName: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  totalCapsules: number;
+  capsules?: {
+    id: string;
+    skillCapsuleId: string;
+    capsuleName: string;
+    description: string;
+    difficultyLevel: DifficultyLevel;
+    proficiencyLevel: ProficiencyLevel;
+    sequenceOrder: number;
+    totalAtoms: number;
+  }[];
+}
+
+export interface Capsule {
+  id: string;
+  skillCapsuleId: string;
+  capsuleName: string;
+  description: string;
+  difficultyLevel: DifficultyLevel;
+  proficiencyLevel: ProficiencyLevel;
+  moodleCourseId: number;
+  createdAt: string;
+  updatedAt: string;
+  totalAtoms: number;
+  atoms?: {
+    id: string;
+    skillAtomId: string;
+    atomName: string;
+    description: string;
+    sequenceOrder: number;
+  }[];
+}
+
+export interface Atom {
+  id: string;
+  skillAtomId: string;
+  name: string;
+  description: string;
+  moodleModuleId: number;
+  moodlePageId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type DifficultyLevel = "Beginner" | "Intermediate" | "Advanced";
+export type ProficiencyLevel = "L1" | "L2" | "L3" | "L4";
 
 export type ApiErrors = string[] | null;
 export type resWithoutData = Record<string, string>;
@@ -50,13 +123,6 @@ export interface ListData<T> {
 
 export interface ItemData<T> {
   item: T;
-}
-
-export interface LoginData<T> {
-  item: T;
-  tokenType: string;
-  accessToken: string;
-  expiresIn: number;
 }
 
 export type ApiResponse<TData, TError = ApiErrors> = {

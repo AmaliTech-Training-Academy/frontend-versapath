@@ -1,37 +1,57 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { routes } from "@/lib/api/routes";
+import { useRoutes } from "@/lib/api/routes";
 import { clsx } from "clsx";
 import { Check, Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Controller, useForm } from "react-hook-form";
+import placeholder from "@/public/images/category-placeholder.jpg";
+import { apiRequest } from "@/lib/api/api-request";
+import { ItemData, Route } from "@/lib/types/api";
+import { extractErrorMessage } from "@/lib/utils";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type FormValues = {
-    selectedRoutes: string[];
+    selectedRoute: string;
 };
 
-const toggleRoute = (routeId: string, current: string[]) =>
-    current.includes(routeId)
-        ? current.filter((id) => id !== routeId)
-        : [...current, routeId];
-
 export const OnboardingForm = () => {
-    const { data: session } = useSession();
+    const { data: session, update } = useSession();
     const firstName = session?.user.firstName || "";
+    const { routes } = useRoutes();
+    const router = useRouter();
 
     const { handleSubmit, control, watch, formState } = useForm<FormValues>({
-        defaultValues: { selectedRoutes: [] },
+        defaultValues: { selectedRoute: "" },
         mode: "onChange",
     });
 
-    const selectedRoutes = watch("selectedRoutes");
+    const selectedRoute = watch("selectedRoute");
 
     const onSubmit = async (data: FormValues) => {
-        // For demonstration, we log the selected routes. After integration, this will be sent to the backend.
-        await new Promise((r) => setTimeout(r, 2000));
+        const body = {
+            learnerId: session?.user.userId,
+            talentRouteId: data.selectedRoute
+        }
 
-        console.log("Selected Routes:", data.selectedRoutes);
+        const res = await apiRequest<ItemData<Route>>('/roadmap', 'POST', body);
+
+        if (!res.success) {
+            toast.error(extractErrorMessage(res.errors as string[], res.message));
+            return;
+        }
+
+        await update({
+            user: {
+                ...session?.user,
+                requiresOnboarding: false,
+            }
+        });
+
+        toast.success(res.message || "You have been successfully enrolled in a talent route");
+        router.push('/dashboard');
     };
 
     return (
@@ -45,23 +65,23 @@ export const OnboardingForm = () => {
                 </article>
 
                 <Controller
-                    name="selectedRoutes"
+                    name="selectedRoute"
                     control={control}
                     render={({ field }) => (
                         <article className="grid grid-cols-3 gap-4">
                             {
                                 routes.map((route) => {
-                                    const selected = field.value.includes(route.id);
+                                    const selected = field.value === route.talentRouteId;
                                     return (
                                         <div
-                                            key={route.id}
+                                            key={route.talentRouteId}
                                             className="relative w-[230px] h-[150px] rounded-xl overflow-hidden cursor-pointer"
-                                            onClick={() => field.onChange(toggleRoute(route.id, field.value))}
+                                            onClick={() => field.onChange(route.talentRouteId)}
                                             role="checkbox"
                                             aria-checked={selected}
                                             tabIndex={0}
                                         >
-                                            <Image src={route.cover} alt={route.title} width={1000} height={667} className="rounded-xl object-cover" />
+                                            <Image src={placeholder} alt={route.routeName} width={1000} height={667} priority className="rounded-xl object-cover" />
                                             <div className="absolute inset-0 bg-gray-text-weak w-full h-full p-2 flex flex-col justify-between">
                                                 {/* Visual check indicator (no events, no internal state) */}
                                                 <span
@@ -75,7 +95,7 @@ export const OnboardingForm = () => {
                                                 >
                                                     {selected ? <Check className="h-3 w-3 text-base-white" /> : null}
                                                 </span>
-                                                <p className="font-semibold text-sm text-base-white relative bottom-0">{route.title}</p>
+                                                <p className="font-semibold text-sm text-base-white relative bottom-0">{route.routeName}</p>
                                             </div>
                                         </div>
                                     )
@@ -93,7 +113,7 @@ export const OnboardingForm = () => {
                             </p>
                         </div>
                     ) : (
-                        <Button type="submit" className="cursor-pointer" disabled={selectedRoutes.length === 0}>
+                        <Button type="submit" className="cursor-pointer" disabled={!selectedRoute}>
                             Let's Get Started
                         </Button>
                     )
