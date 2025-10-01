@@ -1,18 +1,7 @@
 "use client";
+import { Assessment, Day } from "@/lib/types/assessment";
 import React, { useState } from "react";
 
-type Assessment = {
-  title: string;
-  date: string;
-  dateStr: string;
-  type: string;
-};
-
-type Day = {
-  date: string;
-  short: string;
-  day: string;
-};
 
 interface UpcomingAssessmentsProps {
   assessments?: Assessment[];
@@ -34,10 +23,8 @@ export function UpcomingAssessments({assessments = [],days = [],}: UpcomingAsses
       </section>
     );
   }
-
-const safeAssessments = Array.isArray(assessments) ? assessments : [];
   
-  const filtered = safeAssessments.filter((a) => a.date === selectedDay);
+  const filteredAssessmentsByDay = assessments.filter((a) => a.date === selectedDay);
 
   return (
     <section className="bg-[#ffffff] rounded-xl p-5 space-y-4">
@@ -63,8 +50,8 @@ const safeAssessments = Array.isArray(assessments) ? assessments : [];
 
       {/* Assessment list */}
       <div className="space-y-3">
-        {filtered.length > 0 ? (
-          filtered.map((assessment, idx) => (
+        {filteredAssessmentsByDay.length > 0 ? (
+          filteredAssessmentsByDay.map((assessment, idx) => (
             <div
               key={`${assessment.date}-${idx}`}
               className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"

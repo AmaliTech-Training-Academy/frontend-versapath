@@ -1,6 +1,7 @@
 export type SubmissionStatus = "Submitted" | "In Review" | "Completed";
 
 export interface SubmissionCardProps {
+  id?: string,
   title: string;
   type: string;
   status: SubmissionStatus;

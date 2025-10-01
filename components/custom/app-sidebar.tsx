@@ -1,8 +1,9 @@
 "use client";
 import {
   BookOpenIcon,
-  Squares2X2Icon,
   UsersIcon,
+  DocumentTextIcon,
+  HomeIcon
 } from "@heroicons/react/24/outline";
 import {
   Sidebar,
@@ -24,12 +25,13 @@ import {
   MoreVertical,
   User,
   ChevronDown,
-  TrendingUp,
   Bell,
   LifeBuoy,
   Settings,
   Search,
   LogOut,
+  FileText,
+  FileCheck,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -87,9 +89,9 @@ type PopoverItem = {
 // Static
 const sidebarItems: SidebarItem[] = [
   {
-    title: "Dashboard",
+    title: "Overview",
     url: "/dashboard",
-    icon: Squares2X2Icon,
+    icon: HomeIcon,
     allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
   },
   {
@@ -98,46 +100,25 @@ const sidebarItems: SidebarItem[] = [
     icon: UsersIcon,
     allowedRoles: [Roles.ADMIN],
   },
-  {
-    title: "Skills & Learning",
-    url: "#",
-    icon: BookOpenIcon,
-    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
-    items: [
-      {
-        title: "Skill Categories",
-        url: "/dashboard/skill-categories?page=1&size=12",
-        allowedRoles: [Roles.ADMIN],
-      },
-      {
-        title: "Skills",
-        url: "/dashboard/skills",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
-      },
-      {
-        title: "Lessons",
-        url: "/dashboard/lessons",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
-      },
-      { title: "Skill Tags", url: "#", allowedRoles: [Roles.ADMIN] },
-      {
-        title: "Roadmap",
-        url: "/dashboard/roadmap",
-        allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
-      },
-      {
-        title: "Badges",
-        url: "/dashboard/badges",
-        allowedRoles: [Roles.LEARNER],
-      },
-    ],
+    {
+    title: "Submissions",
+    url: "/dashboard/submissions",
+    icon:  DocumentTextIcon,
+    allowedRoles: [Roles.MENTOR],
   },
   {
-    title: "Growth Track",
-    url: "#",
-    icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.MENTOR, Roles.LEARNER],
+    title: "Assessments",
+    url: "/dashboard/assessments",
+    icon: FileText,
+    allowedRoles: [Roles.MENTOR]
   },
+  {
+    title: "Learners",
+    url: "#",
+    icon: UsersIcon,
+    allowedRoles: [Roles.MENTOR]
+  },
+  
 ];
 
 const sidebarFooterItems: FooterItem[] = [

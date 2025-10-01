@@ -1,8 +1,13 @@
 import {
   Activity,
+  BadgeCheck,
+  BookOpen,
   CheckCircle,
-  LucideIcon,
+  CircleCheckBig,
+  FileText,
+  Flame,
   UsersIcon,
+  LucideIcon,
 } from "lucide-react";
 import { apiRequest } from "./api-request";
 import { Roles } from "@/lib/types";
@@ -54,7 +59,6 @@ export const apiGetMetrics = async (userRole: Roles) => {
     ],
   };
   // Default to LEARNER if role not found
-  const metrics =
-    metricConfigs[userRole];
+  const metrics = metricConfigs[userRole];
   return metrics;
 };
