@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useRoutes } from "@/lib/api/routes";
-import { useTracks } from "@/lib/api/growth-tracks";
 import { clsx } from "clsx";
 import { Check, Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -13,6 +12,7 @@ import { ItemData, Route } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 type FormValues = {
     selectedRoute: string;
@@ -25,7 +25,7 @@ export const OnboardingForm = () => {
     const { routes } = useRoutes(true);
     const router = useRouter();
 
-    const { handleSubmit, control, watch, formState } = useForm<FormValues>({
+    const { handleSubmit, control, watch, formState, setValue } = useForm<FormValues>({
         defaultValues: {
             selectedRoute: "",
             selectedTrack: "",
@@ -33,8 +33,21 @@ export const OnboardingForm = () => {
         mode: "onChange",
     });
 
+    const [step, setStep] = useState<1 | 2>(1);
+
     const selectedRoute = watch("selectedRoute");
-    const relevantTracks = routes.find(route => route.talentRouteId === selectedRoute)?.tracks || [];
+    const selectedTrack = watch("selectedTrack");
+
+    // Derive relevant tracks from the chosen route
+    const relevantTracks = useMemo(
+        () => routes.find((r) => r.talentRouteId === selectedRoute)?.tracks || [],
+        [routes, selectedRoute]
+    );
+
+    // Reset track if user changes route
+    useEffect(() => {
+        setValue("selectedTrack", "");
+    }, [selectedRoute, setValue]);
 
     const onSubmit = async (data: FormValues) => {
         const body = {
@@ -71,8 +84,20 @@ export const OnboardingForm = () => {
                     <p>Select a route and growth track that interest you and we will make recommendations for you</p>
                 </article>
 
+                {/* Step indicators (optional, simple) */}
+                <div className="w-full flex items-center justify-start gap-2 text-xs">
+                    <span className={step === 1 ? "text-brand-primary-text text-white" : ""}>
+                        1. Choose Route
+                    </span>
+                    <span>→</span>
+                    <span className={step === 2 ? "text-brand-primary-text text-white" : ""}>
+                        2. Choose Track
+                    </span>
+                </div>
+
+                {/* STEP 1: Choose Route */}
                 {
-                    selectedRoute === "" && (
+                    step === 1 && (
                         <Controller
                             name="selectedRoute"
                             control={control}
@@ -116,8 +141,9 @@ export const OnboardingForm = () => {
                     )
                 }
 
+                {/* STEP 2: Choose Track */}
                 {
-                    selectedRoute !== "" && relevantTracks.length > 0 && (
+                    step === 2 && (
                         <Controller
                             name="selectedTrack"
                             control={control}
@@ -170,9 +196,41 @@ export const OnboardingForm = () => {
                             </p>
                         </div>
                     ) : (
-                        <Button type="submit" className="cursor-pointer" disabled={!selectedRoute}>
-                            Let's Get Started
-                        </Button>
+                        <div className="w-full flex items-center justify-center gap-2">
+                            {
+                                step === 2 && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setStep(1)}
+                                        className="cursor-pointer"
+                                    >
+                                        Back
+                                    </Button>
+                                )
+                            }
+
+                            {
+                                step === 1 ? (
+                                    <Button
+                                        type="button"
+                                        onClick={() => setStep(2)}
+                                        disabled={!selectedRoute}
+                                        className="cursor-pointer"
+                                    >
+                                        Next
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        type="submit"
+                                        disabled={!selectedTrack}
+                                        className="cursor-pointer"
+                                    >
+                                        Let&apos;s Get Started
+                                    </Button>
+                                )
+                            }
+                        </div>
                     )
                 }
             </section>
