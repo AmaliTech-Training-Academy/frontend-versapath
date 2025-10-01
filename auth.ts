@@ -13,6 +13,7 @@ declare module "next-auth" {
             phoneNumber?: string;
             profilePictureUrl?: string;
             role: Roles;
+            requiresOnboarding?: boolean;
         } & DefaultSession["user"]
     }
 
@@ -25,6 +26,7 @@ declare module "next-auth" {
         phoneNumber?: string;
         profilePictureUrl?: string;
         role: Roles;
+        requiresOnboarding?: boolean;
     }
 
     interface JWT {
@@ -36,6 +38,7 @@ declare module "next-auth" {
         phoneNumber?: string;
         profilePictureUrl?: string;
         role: Roles;
+        requiresOnboarding?: boolean;
     }
 }
 
@@ -79,6 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.lastName = user.lastName;
                 token.phoneNumber = user.phoneNumber;
                 token.profilePictureUrl = user.profilePictureUrl;
+                token.requiresOnboarding = user.requiresOnboarding;
             }
 
             if (trigger === "update") {
@@ -90,7 +94,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     token.firstName = session.user.firstName;
                     token.lastName = session.user.lastName;
                     token.phoneNumber = session.user.phoneNumber;
-                    token.profilePictureUrl = session.user.profilePictureUrl;
+                    token.requiresOnboarding = session.user.requiresOnboarding ?? token.requiresOnboarding;
                 }
             }
 
@@ -109,6 +113,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         role: token.role as Roles,
                         phoneNumber: token.phoneNumber as string ?? undefined,
                         profilePictureUrl: token.profilePictureUrl as string ?? undefined,
+                        requiresOnboarding: token.requiresOnboarding as boolean ?? undefined
                     }
                 }
             }

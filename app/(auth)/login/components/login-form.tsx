@@ -37,7 +37,7 @@ export const LoginForm = () => {
       setError(result.error || "Unable to log in. Please try again.");
     } else {
       toast.success("Login successful! Redirecting...");
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   };
 
