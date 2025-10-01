@@ -31,7 +31,6 @@ import {
   Search,
   LogOut,
   FileText,
-  TrendingUp,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -131,14 +130,7 @@ const sidebarItems: SidebarItem[] = [
       { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.LEARNER] },
       { title: "Badges", url: "/dashboard/badges", allowedRoles: [Roles.LEARNER] },
     ],
-  },
-  {
-    title: "Growth Track",
-    url: "#",
-    icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.LEARNER]
-  },
-
+  }
 ];
 
 const sidebarFooterItems: FooterItem[] = [

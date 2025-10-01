@@ -8,13 +8,25 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/custom/confirm-dialog";
+import { SelectableItemsList } from "@/components/custom/selectable-items-list";
+import { SheetWrapper } from "../../components/sheet-wrapper";
+import { useGrowthTracks } from "@/lib/api/growth-track";
+import { updateRouteTracks, useFetchSingleRoute } from "@/lib/api/talent-route";
 
 export const RouteCard = ({
-  talentRoute: { name, description, imageName, tracks },
+  talentRoute: { id, name, description, imageName, tracks },
 }: {
   talentRoute: TalentRoute;
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { singleRoute } = useFetchSingleRoute(id);
+  const {
+    items: allTracks,
+    loading: tracksLoading,
+    error: tracksError,
+  } = useGrowthTracks();
+  const selectedTrackIds =
+    singleRoute?.data?.item.tracks?.map((track) => track.id) || [];
   return (
     <article className="w-full h-fit">
       <div className="w-full h-full shadow-lg rounded-b-xl ">
@@ -54,10 +66,36 @@ export const RouteCard = ({
                 </button>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <button className="custom-dropdown-item">
-                  <Plus />
-                  Add growth tracks
-                </button>
+                <SheetWrapper
+                  headerTitle={`Add Growth tracks`}
+                  headerDescription=""
+                  trigger={
+                    <button className="custom-dropdown-item">
+                      <Plus />
+                      Add growth tracks
+                    </button>
+                  }
+                >
+                  <SelectableItemsList
+                    items={allTracks || []}
+                    selectedItemIds={selectedTrackIds}
+                    loading={tracksLoading}
+                    error={tracksError}
+                    parentId={id}
+                    itemType="Growth Tracks"
+                    itemTypeSingular="growth track"
+                    onUpdate={({ existingIds, selectedIds }) =>
+                      updateRouteTracks({
+                        existingIds,
+                        selectedIds,
+                        routeId: id,
+                      })
+                    }
+                    mutateKey={`/talent-routes`}
+                    searchPlaceholder="Search growth tracks by name"
+                    showEstimatedHours={false}
+                  />
+                </SheetWrapper>
               </DropdownMenuItem>
               <Separator className="my-1" />
               <DropdownMenuItem asChild>

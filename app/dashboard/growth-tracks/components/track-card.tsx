@@ -8,13 +8,31 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/custom/confirm-dialog";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { SelectableItemsList } from "@/components/custom/selectable-items-list";
+import { useFetchSkills } from "@/lib/api/skills";
+import { SheetWrapper } from "../../components/sheet-wrapper";
+import { useFetchSingleTrack, updateTrackSkills } from "@/lib/api/growth-track";
 
 export const TrackCard = ({
-  growthTrack: { name, description, imageName, capsuleNumber },
+  growthTrack: { id, name, description, imageName, capsuleNumber, skills },
 }: {
-  growthTrack: Omit<GrowthTrack, "capsules"> & { capsuleNumber: number };
+  growthTrack: Omit<GrowthTrack, "capsules"> & {
+    capsuleNumber: number;
+    skills?: Array<{ id: string; name: string; estimatedHours?: number }>;
+  };
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const {
+    skills: fetchedSkills,
+    isFetchingSkills,
+    fetchSkillsError: skillsError,
+  } = useFetchSkills();
+  const { singleTrack } = useFetchSingleTrack(id);
+  const selectedSkillsIds = singleTrack?.data?.item.capsules.map(
+    (skill) => skill.id
+  );
+  const allSkills = fetchedSkills?.data?.items;
+
   return (
     <article aria-label={`Category: ${name}`} className="w-full h-fit">
       <div className="w-full h-full shadow-lg rounded-b-xl">
@@ -57,10 +75,40 @@ export const TrackCard = ({
                 </button>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <button className="custom-dropdown-item">
-                  <Plus />
-                  Add growth tracks
-                </button>
+                <SheetWrapper
+                  headerTitle={`Add Skills to ${name}`}
+                  headerDescription=""
+                  trigger={
+                    <button className="custom-dropdown-item">
+                      <Plus />
+                      Add skills
+                    </button>
+                  }
+                >
+                  <SelectableItemsList
+                    items={(allSkills || []).map((skill) => ({
+                      id: skill.id,
+                      name: skill.name,
+                      estimatedHours: skill.estimatedHours,
+                    }))}
+                    selectedItemIds={selectedSkillsIds || []}
+                    loading={isFetchingSkills}
+                    error={skillsError}
+                    parentId={id}
+                    itemType="Skills"
+                    itemTypeSingular="skill"
+                    onUpdate={({ existingIds, selectedIds }) =>
+                      updateTrackSkills({
+                        existingIds,
+                        selectedIds,
+                        trackId: id,
+                      })
+                    }
+                    mutateKey={`/growth-tracks`}
+                    searchPlaceholder="Search skills by name"
+                    showEstimatedHours={true}
+                  />
+                </SheetWrapper>
               </DropdownMenuItem>
               <Separator className="my-1" />
               <DropdownMenuItem asChild>
