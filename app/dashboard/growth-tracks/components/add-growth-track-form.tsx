@@ -28,10 +28,16 @@ import {
 import { GrowthTrack } from "@/lib/types/growth-track";
 import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
+import {
+  addGrowthTrack,
+  revalidateAllGrowthTracks,
+  searchGrowthTracks,
+} from "@/lib/api/growth-track";
+import { useFetchSkills } from "@/lib/api/skills";
 
 export const AddGrowthTrackForm = () => {
   const closeRef = useRef<HTMLButtonElement>(null);
-
+  const { skills } = useFetchSkills();
   const form = useForm<AddGrowthTracksProps>({
     resolver: zodResolver(addGrowthTracksSchema),
     defaultValues: {
@@ -44,18 +50,10 @@ export const AddGrowthTrackForm = () => {
   });
 
   const onSubmit = async (data: AddGrowthTracksProps) => {
-    const formData = toFormData({
-      name: data.name,
-      estimatedMonths: data.estimatedMonths,
-      description: data.description ?? "",
-      image: data.image,
-    });
-
-    const res = await apiRequest<ItemData<GrowthTrack>>(
-      "/talent-routes",
-      "POST",
-      formData
-    );
+    const ids = skills?.data?.items
+      .map((item) => (data.capsuleIds?.includes(item.name) ? item.id : null))
+      .filter((val) => val !== null);
+    const res = await addGrowthTrack({ ...data, capsuleIds: ids });
 
     if (!res.success) {
       form.setError("root", {
@@ -64,9 +62,9 @@ export const AddGrowthTrackForm = () => {
       });
       return;
     }
-    toast.success("Talent route added successfully!");
+    toast.success("Growth track added successfully!");
     form.reset();
-    revalidateAllTalentRoutes();
+    revalidateAllGrowthTracks();
     closeRef.current?.click();
   };
   return (
@@ -77,7 +75,7 @@ export const AddGrowthTrackForm = () => {
           name="name"
           render={({ field }) => (
             <CustomInput
-              label="Track Name *"
+              label="Growth Track Name *"
               type="text"
               {...field}
               placeholder="e.g: UI/UX design"
@@ -115,13 +113,13 @@ export const AddGrowthTrackForm = () => {
           render={({ field }) => (
             <FormItem>
               <MultipleSelectChip
-                defaultTags={[]}
+                defaultTags={skills?.data?.items.map((val) => val.name) || []}
                 value={field.value}
                 onChange={field.onChange}
                 placeholder="Select Skills"
                 label="Skills *"
                 addNewAllowed={false}
-                // onSearch={searchCategoriesForComponent}
+                onSearch={async (query) => searchGrowthTracks(query)}
                 searchPlaceholder="Search categories..."
                 // onNewInput={setNewCategoriesIds}
               />
@@ -146,7 +144,7 @@ export const AddGrowthTrackForm = () => {
           )}
         />
         {form.formState.errors.root && (
-          <p className="text-red-text text-sm mt-2">
+          <p className="mt-2 text-sm text-red-text">
             {form.formState.errors.root.message}
           </p>
         )}

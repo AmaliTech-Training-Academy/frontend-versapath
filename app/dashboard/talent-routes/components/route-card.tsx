@@ -11,14 +11,21 @@ import { ConfirmDialog } from "@/components/custom/confirm-dialog";
 import { SelectableItemsList } from "@/components/custom/selectable-items-list";
 import { SheetWrapper } from "../../components/sheet-wrapper";
 import { useGrowthTracks } from "@/lib/api/growth-track";
-import { updateRouteTracks, useFetchSingleRoute } from "@/lib/api/talent-route";
+import {
+  deleteRoute,
+  updateRouteTracks,
+  useFetchSingleRoute,
+} from "@/lib/api/talent-route";
+import { toast } from "sonner";
+import { mutate } from "swr";
 
 export const RouteCard = ({
-  talentRoute: { id, name, description, imageName, tracks },
+  talentRoute: { id, name, description, image: imageName, tracks },
 }: {
   talentRoute: TalentRoute;
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { singleRoute } = useFetchSingleRoute(id);
   const {
     items: allTracks,
@@ -27,6 +34,28 @@ export const RouteCard = ({
   } = useGrowthTracks();
   const selectedTrackIds =
     singleRoute?.data?.item.tracks?.map((track) => track.id) || [];
+  const handleDeleteRoute = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await deleteRoute(id);
+      if (!response.success) {
+        toast.error(
+          response.message || "Failed to delete talent route. Please try again."
+        );
+        setIsDeleting(false);
+        return;
+      }
+      toast.success(response.message || "Talent route deleted successfully");
+      setDialogOpen(false);
+      mutate(
+        (key) => typeof key === "string" && key.startsWith("/talent-routes")
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred. Please try again.");
+      setIsDeleting(false);
+    }
+  };
   return (
     <article className="w-full h-fit">
       <div className="w-full h-full shadow-lg rounded-b-xl ">
@@ -42,8 +71,12 @@ export const RouteCard = ({
             <p className="w-full text-lg font-semibold text-gray-text-strong line-clamp-1">
               {name}
             </p>
-            <p className="text-sm text-gray-text-weak line-clamp-2">
-              {description}
+            <p className="text-sm text-gray-text-weak line-clamp-2 min-h-10">
+              {!description ? (
+                <span className="text-xs italic">No description</span>
+              ) : (
+                description
+              )}
             </p>
           </div>
           <div className="flex items-center justify-between w-full">
@@ -60,7 +93,10 @@ export const RouteCard = ({
               }
             >
               <DropdownMenuItem asChild>
-                <button className="custom-dropdown-item">
+                <button
+                  className="custom-dropdown-item"
+                  onClick={() => toast.info("Feature coming soon!")}
+                >
                   <PenBox size={20} />
                   Edit
                 </button>
@@ -116,8 +152,8 @@ export const RouteCard = ({
         title="Delete route?"
         description="Are you sure you want to delete this talent route? This action is irreversible."
         onClose={() => setDialogOpen(false)}
-        onConfirm={() => {}}
-        loading={false}
+        onConfirm={handleDeleteRoute}
+        loading={isDeleting}
         preventCloseOnConfirm={true}
         dialogClose={true}
       />

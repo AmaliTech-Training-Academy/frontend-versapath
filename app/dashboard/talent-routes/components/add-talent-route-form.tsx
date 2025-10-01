@@ -16,22 +16,23 @@ import { SheetClose } from "@/components/ui/sheet";
 import { Loader } from "lucide-react";
 import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
-import { apiRequest } from "@/lib/api/api-request";
-import { ItemData } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
-import { toFormData } from "@/lib/hooks/to-form-data";
 import {
   type AddTalentRouteProps,
   addTalentRouteSchema,
 } from "@/lib/schemas/add-talent-route";
-import { TalentRoute } from "@/lib/types/talent-route";
-import { revalidateAllTalentRoutes } from "@/lib/api/talent-route";
+import {
+  addTalentRoute,
+  revalidateAllTalentRoutes,
+  searchRoute,
+} from "@/lib/api/talent-route";
 import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
+import { useGrowthTracks } from "@/lib/api/growth-track";
 
 export const AddTalentRouteForm = () => {
   const closeRef = useRef<HTMLButtonElement>(null);
-
+  const { items: tracksItems } = useGrowthTracks();
   const form = useForm<AddTalentRouteProps>({
     resolver: zodResolver(addTalentRouteSchema),
     defaultValues: {
@@ -44,17 +45,10 @@ export const AddTalentRouteForm = () => {
   });
 
   const onSubmit = async (data: AddTalentRouteProps) => {
-    const formData = toFormData({
-      name: data.name,
-      description: data.description ?? "",
-      image: data.image,
-    });
-
-    const res = await apiRequest<ItemData<TalentRoute>>(
-      "/talent-routes",
-      "POST",
-      formData
-    );
+    const ids = tracksItems
+      .map((item) => (data.trackIds?.includes(item.name) ? item.id : null))
+      .filter((val) => val !== null);
+    const res = await addTalentRoute({ ...data, trackIds: ids });
 
     if (!res.success) {
       form.setError("root", {
@@ -108,13 +102,13 @@ export const AddTalentRouteForm = () => {
           render={({ field }) => (
             <FormItem>
               <MultipleSelectChip
-                defaultTags={[]}
+                defaultTags={tracksItems.map((item) => item.name)}
                 value={field.value}
                 onChange={field.onChange}
                 placeholder="Select growth tracks"
                 label="Growth Tracks *"
                 addNewAllowed={false}
-                // onSearch={searchCategoriesForComponent}
+                onSearch={async (query) => searchRoute(query)}
                 searchPlaceholder="Search categories..."
                 // onNewInput={setNewCategoriesIds}
               />
@@ -139,7 +133,7 @@ export const AddTalentRouteForm = () => {
           )}
         />
         {form.formState.errors.root && (
-          <p className="text-red-text text-sm mt-2">
+          <p className="mt-2 text-sm text-red-text">
             {form.formState.errors.root.message}
           </p>
         )}

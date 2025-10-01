@@ -5,7 +5,7 @@ export interface TalentRoute {
   name: string;
   roleName: string;
   description: string;
-  imageName: string;
+  image: string;
   status: Status;
   tracks: {
     id: string;

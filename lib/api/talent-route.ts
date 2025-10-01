@@ -4,6 +4,7 @@ import useSWR, { mutate } from "swr";
 import type { ItemData, ListData } from "@/lib/types/api";
 import { TalentRoute } from "../types/talent-route";
 import { apiRequest } from "./api-request";
+import { AddTalentRouteProps } from "../schemas/add-talent-route";
 
 type Params = { pageIndex?: number; pageSize?: number; name?: string };
 
@@ -36,10 +37,38 @@ export function useTalentRoutes(params?: Params) {
   };
 }
 
-// Refresh all cluster caches (both list and filter)
 export function revalidateAllTalentRoutes() {
   mutate((key) => typeof key === "string" && key.startsWith("/talent-routes"));
 }
+export const addTalentRoute = async ({
+  name,
+  roleName,
+  description,
+  image,
+  trackIds,
+}: AddTalentRouteProps) => {
+  const formData = new FormData();
+  formData.append(
+    "talentRoute",
+    new Blob(
+      [
+        JSON.stringify({
+          name,
+          roleName,
+          description: description || "",
+          trackIds: trackIds || [],
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  if (image) {
+    formData.append("image", image);
+  }
+  const res = await apiRequest<TalentRoute>("/talent-routes", "POST", formData);
+  return res;
+};
+
 export const useFetchSingleRoute = (id: string) => {
   const res = useSWR(`/talent-routes/${id}`, singleRouteFetcher);
   return {
@@ -116,4 +145,17 @@ export const updateRouteTracks = async ({
       errors: [error instanceof Error ? error.message : "Unknown error"],
     };
   }
+};
+export const searchRoute = async (query: string) => {
+  const { data } = await apiRequest<ListData<{ id: string; name: string }>>(
+    `/talent-routes/filter?name=${query}`,
+    "GET"
+  );
+  return {
+    results: data?.items.map(({ name }) => name) || [],
+    resultsIds: data?.items.map(({ id }) => id) || [],
+  };
+};
+export const deleteRoute = async (id: string) => {
+  return apiRequest(`/talent-routes/${id}`, "DELETE");
 };

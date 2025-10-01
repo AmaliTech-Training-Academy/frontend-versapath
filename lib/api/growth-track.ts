@@ -4,6 +4,7 @@ import useSWR, { mutate } from "swr";
 import { ItemData, type ListData } from "@/lib/types/api";
 import { apiRequest } from "./api-request";
 import { GrowthTrack } from "../types/growth-track";
+import { AddGrowthTracksProps } from "../schemas/add-growth-track";
 
 type Params = { pageIndex?: number; pageSize?: number; name?: string };
 type GrowthTrackResponse = Omit<GrowthTrack, "capsules"> & {
@@ -41,8 +42,41 @@ export function useGrowthTracks(params?: Params) {
 
 // Refresh all cluster caches (both list and filter)
 export function revalidateAllGrowthTracks() {
-  mutate((key) => typeof key === "string" && key.startsWith("/talent-routes"));
+  mutate((key) => typeof key === "string" && key.startsWith("/growth-tracks"));
 }
+export const addGrowthTrack = async ({
+  name,
+  estimatedMonths,
+  description,
+  image,
+  capsuleIds,
+}: AddGrowthTracksProps) => {
+  const formData = new FormData();
+  formData.append(
+    "growthTrack",
+    new Blob(
+      [
+        JSON.stringify({
+          name,
+          estimatedMonths,
+          description: description || "",
+          capsuleIds: capsuleIds || [],
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+  if (image) {
+    formData.append("image", image);
+  }
+  const res = await apiRequest<ItemData<GrowthTrack>>(
+    "/growth-tracks",
+    "POST",
+    formData
+  );
+  return res;
+};
+
 export const useFetchSingleTrack = (id: string) => {
   const { data, isLoading, error } = useSWR(
     `/growth-tracks/${id}`,
@@ -114,11 +148,25 @@ export const updateTrackSkills = async ({
       data: results,
     };
   } catch (error) {
-    console.error("Error updating track skills:", error);
     return {
       success: false,
       message: "An unexpected error occurred while updating skill atoms",
       errors: [error instanceof Error ? error.message : "Unknown error"],
     };
   }
+};
+export const searchGrowthTracks = async (query: string) => {
+  const { data } = await apiRequest<ListData<{ id: string; name: string }>>(
+    `/growth-tracks/filter?name=${query}`,
+    "GET"
+  );
+
+  return {
+    results: data?.items.map(({ name }) => name) || [],
+    resultsIds: data?.items.map(({ id }) => id) || [],
+  };
+};
+
+export const deleteGrowthTrack = async (id: string) => {
+  return apiRequest(`/growth-tracks/${id}`, "DELETE");
 };

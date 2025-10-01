@@ -11,17 +11,23 @@ import { useState } from "react";
 import { SelectableItemsList } from "@/components/custom/selectable-items-list";
 import { useFetchSkills } from "@/lib/api/skills";
 import { SheetWrapper } from "../../components/sheet-wrapper";
-import { useFetchSingleTrack, updateTrackSkills } from "@/lib/api/growth-track";
+import {
+  useFetchSingleTrack,
+  updateTrackSkills,
+  deleteGrowthTrack,
+} from "@/lib/api/growth-track";
+import { toast } from "sonner";
+import { mutate } from "swr";
 
 export const TrackCard = ({
-  growthTrack: { id, name, description, imageName, capsuleNumber, skills },
+  growthTrack: { id, name, description, image: imageName, capsuleNumber },
 }: {
   growthTrack: Omit<GrowthTrack, "capsules"> & {
     capsuleNumber: number;
-    skills?: Array<{ id: string; name: string; estimatedHours?: number }>;
   };
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {
     skills: fetchedSkills,
     isFetchingSkills,
@@ -32,6 +38,29 @@ export const TrackCard = ({
     (skill) => skill.id
   );
   const allSkills = fetchedSkills?.data?.items;
+  const handleDeleteTrack = async () => {
+    // Implement delete functionality here
+    setIsDeleting(true);
+    try {
+      const response = await deleteGrowthTrack(id);
+      if (!response.success) {
+        toast.error(
+          response.message || "Failed to delete growth track. Please try again."
+        );
+        setIsDeleting(false);
+        return;
+      }
+      toast.success(response.message || "Growth track deleted successfully");
+      setDialogOpen(false);
+      mutate(
+        (key) => typeof key === "string" && key.startsWith("/growth-tracks")
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred. Please try again.");
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <article aria-label={`Category: ${name}`} className="w-full h-fit">
@@ -69,7 +98,10 @@ export const TrackCard = ({
               }
             >
               <DropdownMenuItem asChild>
-                <button className="custom-dropdown-item">
+                <button
+                  className="custom-dropdown-item"
+                  onClick={() => toast.info("Feature coming soon!")}
+                >
                   <PenBox size={20} />
                   Edit
                 </button>
@@ -129,8 +161,8 @@ export const TrackCard = ({
         title="Delete growth track?"
         description="Are you sure you want to delete this growth track? This action is irreversible."
         onClose={() => setDialogOpen(false)}
-        onConfirm={() => {}}
-        loading={false}
+        onConfirm={handleDeleteTrack}
+        loading={isDeleting}
         preventCloseOnConfirm={true}
         dialogClose={true}
       />

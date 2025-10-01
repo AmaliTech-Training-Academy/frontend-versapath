@@ -5,7 +5,7 @@ export interface GrowthTrack {
   id: string;
   name: string;
   description: string;
-imageName: string;
+  image: string;
   estimatedMonths: string;
   status: Status;
   capsules: Pick<SKill, "id" | "name" | "difficulty" | "proficiencyLevel">[];
