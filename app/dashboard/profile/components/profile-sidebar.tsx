@@ -17,15 +17,11 @@ const sidebarItems = [
         url: "/dashboard/profile"
     },
     {
-        title: "Account Settings",
-        url: "#"
+        title: "Manage Categories",
+        url: "/dashboard/category"
     },
     {
-        title: "Archive",
-        url: "#"
-    },
-    {
-        title: "Badges",
+        title: "General",
         url: "#"
     },
 
@@ -35,7 +31,7 @@ export const ProfileSidebar = () => {
     const pathname = usePathname();
 
     return (
-        <article className="rounded-xl p-2.5 space-y-2.5 h-fit">
+        <article className="rounded-xl p-2 border bg-base-light-white space-y-2.5 h-fit">
             <SidebarContent></SidebarContent>
             <SidebarContent>
                 <SidebarGroup>
