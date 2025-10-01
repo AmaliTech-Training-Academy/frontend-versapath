@@ -31,7 +31,7 @@ import {
   Search,
   LogOut,
   FileText,
-  FileCheck,
+  TrendingUp,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -118,7 +118,27 @@ const sidebarItems: SidebarItem[] = [
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
   },
-  
+  {
+    title: "Skills & Learning",
+    url: "#",
+    icon: BookOpenIcon,
+    allowedRoles: [Roles.ADMIN, Roles.LEARNER],
+    items: [
+      { title: "Talent routes", url: "/dashboard/talent-routes?page=1&size=12", allowedRoles: [Roles.ADMIN] },
+      { title: "Growth tracks", url: "/dashboard/growth-tracks?page=1&size=12", allowedRoles: [Roles.ADMIN] },
+      { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
+      { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN] },
+      { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.LEARNER] },
+      { title: "Badges", url: "/dashboard/badges", allowedRoles: [Roles.LEARNER] },
+    ],
+  },
+  {
+    title: "Growth Track",
+    url: "#",
+    icon: TrendingUp,
+    allowedRoles: [Roles.ADMIN, Roles.LEARNER]
+  },
+
 ];
 
 const sidebarFooterItems: FooterItem[] = [
@@ -187,9 +207,7 @@ export function AppSidebar() {
     }
   });
 
-  const filteredFooterItems = sidebarFooterItems.filter((f) =>
-    canSee(userRole, f.allowedRoles)
-  );
+  const filteredFooterItems = sidebarFooterItems.filter((f) => canSee(userRole, f.allowedRoles));
 
   return (
     <Sidebar className="border-none ">
@@ -224,118 +242,107 @@ export function AppSidebar() {
                   type="search"
                   placeholder="Search"
                   aria-label="Search sidebar"
-                  className="border p-4 pl-10 w-full"
+                  className="w-full p-4 pl-10 border"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
-              {filteredSidebarItems.map((item) => {
-                if (!item) return null;
-                return isParent(item) ? (
-                  // Only render group if parent visible or any child exists
-                  (item.items.length > 0 ||
-                    canSee(userRole, item.allowedRoles)) && (
-                    <Collapsible key={item.title} asChild>
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            tooltip={item.title}
-                            className="p-4 text-gray-text-weak font-semibold"
-                          >
-                            <item.icon />
-                            <span>{item.title}</span>
-                            <ChevronDown className="ml-auto" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
+              {
+                filteredSidebarItems.map((item) => {
+                  if (!item) return null;
+                  return isParent(item) ? (
+                    // Only render group if parent visible or any child exists
+                    (item.items.length > 0 ||
+                      canSee(userRole, item.allowedRoles)) && (
+                      <Collapsible key={item.title} asChild>
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              tooltip={item.title}
+                              className="p-4 font-semibold text-gray-text-weak"
+                            >
+                              <item.icon />
+                              <span>{item.title}</span>
+                              <ChevronDown className="ml-auto" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
 
-                        {item.items.length > 0 && (
-                          <CollapsibleContent>
-                            <SidebarMenu className="pl-8">
-                              {item.items.map((subItem) => (
-                                <SidebarMenuItem key={subItem.title}>
-                                  <SidebarMenuButton
-                                    asChild
-                                    className="text-gray-text-weak font-semibold"
-                                    isActive={pathname === subItem.url}
-                                  >
-                                    <Link
-                                      href={subItem.url}
-                                      aria-label={`${subItem.title} page`}
+                          {item.items.length > 0 && (
+                            <CollapsibleContent>
+                              <SidebarMenu className="pl-8">
+                                {item.items.map((subItem) => (
+                                  <SidebarMenuItem key={subItem.title}>
+                                    <SidebarMenuButton
+                                      asChild
+                                      className="font-semibold text-gray-text-weak"
+                                      isActive={pathname ===subItem.url || pathname  === subItem.url.slice(0,subItem.url.indexOf("?"))}
                                     >
-                                      {item.icon ? (
-                                        <item.icon
-                                          strokeWidth={2}
-                                          aria-hidden="true"
-                                        />
-                                      ) : null}
-                                      <span>{subItem.title}</span>
-                                    </Link>
-                                  </SidebarMenuButton>
-                                </SidebarMenuItem>
-                              ))}
-                            </SidebarMenu>
-                          </CollapsibleContent>
-                        )}
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  )
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className="p-4 text-gray-text-weak"
-                    >
-                      <Link href={item.url} aria-label={`${item.title} page`}>
-                        {item.icon ? (
-                          <item.icon strokeWidth={2} aria-hidden="true" />
-                        ) : null}
-                        <span className="font-semibold">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+                                      <Link
+                                        href={subItem.url}
+                                        aria-label={`${subItem.title} page`}
+                                      >
+                                        <span>{subItem.title}</span>
+                                      </Link>
+                                    </SidebarMenuButton>
+                                  </SidebarMenuItem>
+                                ))}
+                              </SidebarMenu>
+                            </CollapsibleContent>
+                          )}
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    )
+                  ) : (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.url}
+                        className="p-4 text-gray-text-weak"
+                      >
+                        <Link href={item.url} aria-label={`${item.title} page`}>
+                          {item.icon ? <item.icon strokeWidth={2} /> : null}
+                          <span className="font-semibold">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                }
+                )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="pb-10 px-4 space-y-4">
+      <SidebarFooter className="px-4 pb-10 space-y-4">
         <div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredFooterItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className=" text-gray-text-weak"
-                  >
-                    <Link href={item.url} aria-label={`${item.title} page`}>
-                      <item.icon strokeWidth={2} aria-hidden="true" />
-                      <span className="font-semibold">{item.title}</span>
-                      {item.count !== undefined && (
-                        <span className="rounded-xs ml-auto py-1 px-2 bg-brand-primary-text text-base-light-white text-xs font-semibold">
-                          {item.count}
-                        </span>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {
+                filteredFooterItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className=" text-gray-text-weak"
+                    >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
+                        <item.icon strokeWidth={2} />
+                        <span className="font-semibold">{item.title}</span>
+                        {item.count !== undefined && (
+                          <span className="px-2 py-1 ml-auto text-xs font-semibold rounded-xs bg-brand-primary-text text-base-light-white">
+                            {item.count}
+                          </span>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
 
-        <div className="flex gap-2 py-6 justify-between items-center">
-          <Image
-            src={session?.user.image ?? userPlaceholder}
-            width={400}
-            height={400}
-            alt="user profile"
-            className="w-10 h-10 object-cover rounded-full"
-          />
+        <div className="flex items-center justify-between gap-2 py-6">
+          <Image src={session?.user.profilePictureUrl ?? userPlaceholder} width={400} height={400} alt="user profile" className="object-cover w-10 h-10 rounded-full" />
           <div className="space-y-2">
             <p className="font-semibold text-gray-text-strong text-wrap">
               {`${session?.user.firstName} ${session?.user.lastName}`}
@@ -354,21 +361,23 @@ export function AppSidebar() {
             classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
           >
             <div className="text-gray-text-weak">
-              {popoverItems.map((popover) => {
-                const { label, icon: Icon, handleClick } = popover;
-                return (
-                  <Button
-                    key={label}
-                    variant="ghost"
-                    className="cursor-pointer w-full flex items-center justify-start"
-                    aria-label={label}
-                    onClick={handleClick ?? undefined}
-                  >
-                    <Icon />
-                    <span>{label}</span>
-                  </Button>
-                );
-              })}
+              {
+                popoverItems.map(popover => {
+                  const { label, icon: Icon, handleClick } = popover;
+                  return (
+                    <Button
+                      key={label}
+                      variant="ghost"
+                      className="flex items-center justify-start w-full cursor-pointer"
+                      aria-label={label}
+                      onClick={handleClick ?? undefined}
+                    >
+                      <Icon />
+                      <span>{label}</span>
+                    </Button>
+                  )
+                })
+              }
             </div>
           </CustomPopover>
         </div>
