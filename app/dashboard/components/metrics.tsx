@@ -31,7 +31,7 @@ export const Metrics = () => {
       {metrics.map((metric) => (
         <MetricsCard
           key={metric.title}
-          title={metric.title}
+         title={metric.title}
           value={metric.value}
           icon={metric.icon}
         />
