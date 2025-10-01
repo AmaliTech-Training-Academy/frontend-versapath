@@ -1,15 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import { SubmissionStatus, SubmissionCardProps } from "@/lib/types/submission-card";
-
 const statusColor: Record<SubmissionStatus, string> = {
   Submitted: "bg-gray-stroke-strong/40 text-gray-text-weak border-2",
   "In Review":
-    "bg-brand-secondary-stroke-strong/20 border-2 border-brand-secondary-stroke-strong",
+    "bg-brand-secondary-stroke-strong/20 border-2 text-md border-brand-secondary-stroke-strong",
   Completed:
     "bg-brand-primary-stroke-strong/30 text-brand-primary-stroke-strong border-2 border-brand-primary-stroke-strong",
 };
 export const SubmissionCard: React.FC<SubmissionCardProps> = ({
+  id,
   title,
   type,
   status,
@@ -17,12 +17,10 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({
   date,
   description,
   tags,
- 
 }) => (
   <Link
-    href="#"
+    href={`/dashboard/submissions/${id}`}
     className="block w-full text-left rounded-lg p-4 shadow border cursor-pointer hover:bg-brand-primary-stroke-strong/10 transition focus:outline-none"
-  
   >
     <div className="flex justify-between items-center">
       <div>

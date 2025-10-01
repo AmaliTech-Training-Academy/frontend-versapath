@@ -1,4 +1,5 @@
-export interface Submission  {
+export interface Submission {
+  id: number;
   title: string;
   type: string;
   status: string;
@@ -7,11 +8,12 @@ export interface Submission  {
   date: string;
   description: string;
   tags: string[];
-};
+}
 
 export type SubmissionStatus = "Submitted" | "In Review" | "Completed";
 
 export interface SubmissionCard {
+  id: number;
   title: string;
   type: string;
   status: SubmissionStatus;
@@ -28,3 +30,27 @@ export const statusColor: Record<SubmissionStatus, string> = {
   Completed:
     "bg-brand-primary-stroke-strong/30 text-brand-primary-stroke-strong border-2 border-brand-primary-stroke-strong",
 };
+
+export interface FeedbackForm {
+  score: number;
+  finalStatus: "Passed" | "Needs Improvement";
+  comments: string;
+}
+
+export interface DetailedSubmission extends SubmissionCard {
+  id: number;
+  code: string;
+  language: string;
+  githubUrl?: string;
+  score?: number;
+  feedback?: string;
+  finalStatus?: "Passed" | "Needs Improvement";
+  submittedAt: string;
+  reviewerNotes?: string;
+  timeline: {
+    date: string;
+    action: string;
+    description: string;
+    user: string;
+  }[];
+}
