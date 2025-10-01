@@ -25,7 +25,6 @@ import {
   MoreVertical,
   User,
   ChevronDown,
-  TrendingUp,
   Bell,
   LifeBuoy,
   Settings,
@@ -115,7 +114,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     title: "Learners",
-    url: "/dashboard/learners",
+    url: "#",
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
   },

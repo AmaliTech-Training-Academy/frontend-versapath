@@ -24,7 +24,8 @@ export default function CodeViewer({ code, githubUrl }: CodeViewerProps) {
 
   const lines = code.split("\n");
 
-  const handleAddFeedback = (line: number) => {
+  // Unified handler for both add and edit feedback
+  const handleShowFeedbackDialog = (line: number) => {
     setEditingLine(line);
     setEditValue(inlineFeedback[line] || "");
     setShowDialog(true);
@@ -45,11 +46,7 @@ export default function CodeViewer({ code, githubUrl }: CodeViewerProps) {
     setInlineFeedback(updated);
   };
 
-  const handleEditFeedback = (line: number) => {
-    setEditingLine(line);
-    setEditValue(inlineFeedback[line] || "");
-    setShowDialog(true);
-  };
+  // handleEditFeedback removed, use handleShowFeedbackDialog
 
   return (
     <div className="bg-[#FFFFFF] p-3 rounded-lg overflow-hidden">
@@ -82,8 +79,8 @@ export default function CodeViewer({ code, githubUrl }: CodeViewerProps) {
             selectedLine={selectedLine}
             setSelectedLine={setSelectedLine}
             inlineFeedback={inlineFeedback}
-            onAddFeedback={handleAddFeedback}
-            onEditFeedback={handleEditFeedback}
+            onAddFeedback={handleShowFeedbackDialog}
+            onEditFeedback={handleShowFeedbackDialog}
             onRemoveFeedback={handleRemoveFeedback}
           />
         </div>

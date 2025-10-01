@@ -24,44 +24,45 @@ export const CodeWithFeedback: React.FC<CodeWithFeedbackProps> = ({
     <pre className="text-sm leading-6">
       <code>
         {lines.map((line, index) => {
-          const isSelected = selectedLine === index + 1;
+          const lineNumber = index + 1;
+          const isSelected = selectedLine === lineNumber;
           return (
-            <div key={`code-row-${index + 1}`} className="flex flex-col">
+            <div key={`code-row-${lineNumber}`} className="flex flex-col">
               <button
                 type="button"
                 className={
                   `whitespace-pre flex items-start group relative w-full text-left ` +
                   (isSelected ? " bg-[#006FFF1A]" : "")
                 }
-                onClick={() => setSelectedLine(isSelected ? null : index + 1)}
-                aria-label={`Select line ${index + 1}`}
+                onClick={() => setSelectedLine(isSelected ? null : lineNumber)}
+                aria-label={`Select line ${lineNumber}`}
                 tabIndex={0}
                 style={{ cursor: "pointer" }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    setSelectedLine(isSelected ? null : index + 1);
+                    setSelectedLine(isSelected ? null : lineNumber);
                   }
                 }}
               >
                 <span className="font-mono text-xs text-gray-400 mr-2">
-                  {index + 1}
+                  {lineNumber}
                 </span>
                 <span className="flex-1">{line || " "}</span>
-                {isSelected && !inlineFeedback[index + 1] && (
+                {isSelected && !inlineFeedback[lineNumber] && (
                   <Button
                     className="ml-4 text-xs bg-base-light-background text-white px-2 py-1 rounded hover:bg-blue-700"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onAddFeedback(index + 1);
+                      onAddFeedback(lineNumber);
                     }}
                     tabIndex={0}
-                    aria-label={`Add feedback for line ${index + 1}`}
+                    aria-label={`Add feedback for line ${lineNumber}`}
                   >
                     Add Feedback
                   </Button>
                 )}
               </button>
-              {inlineFeedback[index + 1] && (
+              {inlineFeedback[lineNumber] && (
                 <div
                   className="w-full flex"
                   onClick={(e) => e.stopPropagation()}
@@ -74,25 +75,25 @@ export const CodeWithFeedback: React.FC<CodeWithFeedbackProps> = ({
                       <div className="flex items-center gap-2">
                         <Button
                           className="text-[#006FFF] bg-transparent hover:underline p-0 h-auto min-w-0"
-                          onClick={() => onEditFeedback(index + 1)}
+                          onClick={() => onEditFeedback(lineNumber)}
                           tabIndex={0}
-                          aria-label={`Edit feedback for line ${index + 1}`}
+                          aria-label={`Edit feedback for line ${lineNumber}`}
                         >
                           Edit
                         </Button>
                         <Button
                           className="text-destructive bg-transparent hover:underline p-2 h-auto min-w-0"
-                          onClick={() => onRemoveFeedback(index + 1)}
+                          onClick={() => onRemoveFeedback(lineNumber)}
                           type="button"
                           tabIndex={0}
-                          aria-label={`Remove feedback for line ${index + 1}`}
+                          aria-label={`Remove feedback for line ${lineNumber}`}
                         >
                           Remove
                         </Button>
                       </div>
                     </div>
                     <div className="text-base-light-white text-[14px] break-words">
-                      {inlineFeedback[index + 1]}
+                      {inlineFeedback[lineNumber]}
                     </div>
                   </div>
                 </div>
