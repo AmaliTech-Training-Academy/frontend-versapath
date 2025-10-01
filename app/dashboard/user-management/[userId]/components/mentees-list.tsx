@@ -1,17 +1,6 @@
+import { MenteesListProps } from "@/lib/types/mentees";
+import Image from "next/image";
 import React, { useState } from "react";
-import {dummyMentees} from "@/lib/mocks/lessons"
-interface Mentee {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-  date?: string;
-  lastFeedback?: string;
-  lastActivity?: string;
-}
-
-interface MenteesListProps {
-  mentees: Mentee[];
-}
 
 export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
   const [selectedMenteeId, setSelectedMenteeId] = useState<string | null>(null);
@@ -29,7 +18,7 @@ export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
             key={mentee.id}
             type="button"
             className={`flex flex-col items-center gap-2 bg-gray-stroke-weak/25 p-3 rounded-lg cursor-pointer min-w-[180px] border transition-all ${
-              selectedMenteeId === mentee.id 
+              selectedMenteeId === mentee.id
                 ? "border-brand-primary-text/20"
                 : "border-transparent"
             }`}
@@ -43,7 +32,9 @@ export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
             aria-pressed={selectedMenteeId === mentee.id}
           >
             {mentee.avatarUrl && (
-              <img
+              <Image
+                height={72}
+                width={72}
                 src={mentee.avatarUrl}
                 alt={mentee.name}
                 className="w-18 h-18 rounded-full object-cover"
@@ -71,7 +62,9 @@ export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
                 className="bg-gray-stroke-weak/25 rounded-md px-4 py-2 text-md font-semibold text-gray-text-strong/90 w-full "
               >
                 {mentee.lastFeedback || (
-                  <span className="text-gray-text-weak">No feedback available.</span>
+                  <span className="text-gray-text-weak">
+                    No feedback available.
+                  </span>
                 )}
                 {mentee.lastActivity && (
                   <div className=" text-gray-text-weak/70 mt-1">
@@ -83,12 +76,32 @@ export const MenteesList: React.FC<MenteesListProps> = ({ mentees }) => {
         </div>
       )}
       {mentees.length === 0 && (
-        <div className="text-gray-stroke-weak text-sm mt-4">No mentees found.</div>
+        <div className="text-gray-stroke-weak text-sm mt-4">
+          No mentees found.
+        </div>
       )}
     </section>
   );
 };
 
+const dummyMentees = [
+  {
+    id: "1",
+    name: "Alexander Agyemang",
+    avatarUrl: "/images/category-placeholder.jpg",
+    date: "23 hours ago",
+    lastFeedback: "Provided feedback on React components",
+    lastActivity: "23 hours ago",
+  },
+  {
+    id: "2",
+    name: "Linda Boateng",
+    avatarUrl: "/images/profile.png",
+    date: "2 days ago",
+    lastFeedback: "Reviewed JavaScript assignment",
+    lastActivity: "2 days ago",
+  },
+];
 
 export default function DemoMenteesList() {
   return <MenteesList mentees={dummyMentees} />;
