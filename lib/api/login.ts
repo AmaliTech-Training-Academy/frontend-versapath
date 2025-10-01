@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/react";
-import { LoginData, User } from "../types/api";
+import { ItemData, User } from "../types/api";
 import { extractErrorMessage } from "../utils";
 import { apiRequest } from "./api-request";
 
@@ -10,7 +10,7 @@ export const apiLogin = async (
     success: boolean,
     error?: string
 }> => {
-    const result = await apiRequest<LoginData<User>>('/auth/login', 'POST', { email, password });
+    const result = await apiRequest<ItemData<User>>('/auth/login', 'POST', { email, password });
 
     if (!result.success) {
         const msg = extractErrorMessage(result.errors as string[], result.message)
