@@ -16,16 +16,11 @@ import { SheetClose } from "@/components/ui/sheet";
 import { Loader } from "lucide-react";
 import { FileUpload } from "@/components/custom/file-upload";
 import { toast } from "sonner";
-import { apiRequest } from "@/lib/api/api-request";
-import { ItemData } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
-import { toFormData } from "@/lib/hooks/to-form-data";
-import { revalidateAllTalentRoutes } from "@/lib/api/talent-route";
 import {
   AddGrowthTracksProps,
   addGrowthTracksSchema,
 } from "@/lib/schemas/add-growth-track";
-import { GrowthTrack } from "@/lib/types/growth-track";
 import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
 import { CustomTextarea } from "@/components/custom/custom-text-area";
 import {

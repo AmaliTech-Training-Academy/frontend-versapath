@@ -239,122 +239,132 @@ export function AppSidebar() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
-              {
-                filteredSidebarItems.map((item) => {
-                  if (!item) return null;
-                  return isParent(item) ? (
-                    // Only render group if parent visible or any child exists
-                    (item.items.length > 0 ||
-                      canSee(userRole, item.allowedRoles)) && (
-                      <Collapsible key={item.title} asChild>
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.title}
-                              className="p-4 font-semibold text-gray-text-weak"
-                            >
-                              <item.icon />
-                              <span>{item.title}</span>
-                              <ChevronDown className="ml-auto" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
+              {filteredSidebarItems.map((item) => {
+                if (!item) return null;
+                return isParent(item) ? (
+                  // Only render group if parent visible or any child exists
+                  (item.items.length > 0 ||
+                    canSee(userRole, item.allowedRoles)) && (
+                    <Collapsible key={item.title} asChild>
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            className="p-4 font-semibold text-gray-text-weak"
+                          >
+                            <item.icon />
+                            <span>{item.title}</span>
+                            <ChevronDown className="ml-auto" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
 
-                          {item.items.length > 0 && (
-                            <CollapsibleContent>
-                              <SidebarMenu className="pl-8">
-                                {item.items.map((subItem) => (
-                                  <SidebarMenuItem key={subItem.title}>
-                                    <SidebarMenuButton
-                                      asChild
-                                      className="font-semibold text-gray-text-weak"
-                                      isActive={pathname ===subItem.url || pathname  === subItem.url.slice(0,subItem.url.indexOf("?"))}
+                        {item.items.length > 0 && (
+                          <CollapsibleContent>
+                            <SidebarMenu className="pl-8">
+                              {item.items.map((subItem) => (
+                                <SidebarMenuItem key={subItem.title}>
+                                  <SidebarMenuButton
+                                    asChild
+                                    className="font-semibold text-gray-text-weak"
+                                    isActive={
+                                      pathname === subItem.url ||
+                                      pathname ===
+                                        subItem.url.slice(
+                                          0,
+                                          subItem.url.indexOf("?")
+                                        )
+                                    }
+                                  >
+                                    <Link
+                                      href={subItem.url}
+                                      aria-label={`${subItem.title} page`}
                                     >
-                                      <Link
-                                        href={subItem.url}
-                                        aria-label={`${subItem.title} page`}
-                                      >
-                                        <span>{subItem.title}</span>
-                                      </Link>
-                                    </SidebarMenuButton>
-                                  </SidebarMenuItem>
-                                ))}
-                              </SidebarMenu>
-                            </CollapsibleContent>
-                          )}
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    )
-                  ) : (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.url}
-                        className="p-4 text-gray-text-weak"
-                      >
-                        <Link href={item.url} aria-label={`${item.title} page`}>
-                          {item.icon ? <item.icon strokeWidth={2} /> : null}
-                          <span className="font-semibold">{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                }
-                )}
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                              ))}
+                            </SidebarMenu>
+                          </CollapsibleContent>
+                        )}
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  )
+                ) : (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="p-4 text-gray-text-weak"
+                    >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
+                        {item.icon ? <item.icon strokeWidth={2} /> : null}
+                        <span className="font-semibold">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-4 pb-10 space-y-4">
+      <SidebarFooter className="w-full px-4 pb-10 space-y-4">
         <div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {
-                filteredFooterItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className=" text-gray-text-weak"
-                    >
-                      <Link href={item.url} aria-label={`${item.title} page`}>
-                        <item.icon strokeWidth={2} />
-                        <span className="font-semibold">{item.title}</span>
-                        {item.count !== undefined && (
-                          <span className="px-2 py-1 ml-auto text-xs font-semibold rounded-xs bg-brand-primary-text text-base-light-white">
-                            {item.count}
-                          </span>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+              {filteredFooterItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    className=" text-gray-text-weak"
+                  >
+                    <Link href={item.url} aria-label={`${item.title} page`}>
+                      <item.icon strokeWidth={2} />
+                      <span className="font-semibold">{item.title}</span>
+                      {item.count !== undefined && (
+                        <span className="px-2 py-1 ml-auto text-xs font-semibold rounded-xs bg-brand-primary-text text-base-light-white">
+                          {item.count}
+                        </span>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
 
-        <div className="flex items-center justify-between gap-2 py-6">
-          <Image src={session?.user.profilePictureUrl ?? userPlaceholder} width={400} height={400} alt="user profile" className="object-cover w-10 h-10 rounded-full" />
-          <div className="space-y-2">
-            <p className="font-semibold text-gray-text-strong text-wrap">
-              {`${session?.user.firstName} ${session?.user.lastName}`}
-            </p>
-            <p className="text-xs text-gray-text-weak text-wrap">
-              {session?.user.email}
-            </p>
-          </div>
-
-          <CustomPopover
-            trigger={
-              <Button size="icon" variant="ghost" aria-label="User options">
-                <MoreVertical className="text-gray-text-weak" />
-              </Button>
-            }
-            classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
-          >
-            <div className="text-gray-text-weak">
-              {
-                popoverItems.map(popover => {
+        <div className="flex items-center justify-between w-full gap-2 py-6">
+          <Image
+            src={session?.user.profilePictureUrl ?? userPlaceholder}
+            width={400}
+            height={400}
+            alt="user profile"
+            className="object-cover w-10 h-10 rounded-full"
+          />
+            <div className="w-full space-y-1 ">
+              <p className="font-semibold text-gray-text-strong text-wrap">
+                {`${session?.user.firstName ?? ""} ${
+                  session?.user.lastName ?? ""
+                }`}
+              </p>
+              <p className="w-full text-xs text-gray-text-weak text-wrap line-clamp-1 text-ellipsis max-w-[132px]">
+                {session?.user.email??""}
+              </p>
+            </div>
+            <CustomPopover
+              trigger={
+                <Button size="icon" variant="ghost" aria-label="User options">
+                  <MoreVertical className="text-gray-text-weak" />
+                </Button>
+              }
+              classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
+            >
+              <div className="text-gray-text-weak">
+                {popoverItems.map((popover) => {
                   const { label, icon: Icon, handleClick } = popover;
                   return (
                     <Button
@@ -362,16 +372,15 @@ export function AppSidebar() {
                       variant="ghost"
                       className="flex items-center justify-start w-full cursor-pointer"
                       aria-label={label}
-                      onClick={handleClick ?? undefined}
+                      onClick={handleClick}
                     >
                       <Icon />
                       <span>{label}</span>
                     </Button>
-                  )
-                })
-              }
-            </div>
-          </CustomPopover>
+                  );
+                })}
+              </div>
+            </CustomPopover>
         </div>
       </SidebarFooter>
 
