@@ -16,7 +16,7 @@ export function SheetWrapper({
 }: PropsWithChildren<{
   trigger: React.ReactNode | React.ReactElement;
   headerTitle: string;
-  headerDescription: string;
+  headerDescription?: string;
 }>) {
   return (
     <Sheet>
@@ -24,7 +24,7 @@ export function SheetWrapper({
       <SheetContent className="h-full overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-2xl">{headerTitle}</SheetTitle>
-          <SheetDescription>{headerDescription}</SheetDescription>
+          {headerDescription && (<SheetDescription>{headerDescription}</SheetDescription>)}
         </SheetHeader>
         <div className="h-full px-3">{children}</div>
       </SheetContent>
