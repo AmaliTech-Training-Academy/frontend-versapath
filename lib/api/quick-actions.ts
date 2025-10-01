@@ -1,53 +1,88 @@
-import { BadgeCheck, BookOpen, CirclePlay, FileText, Map, MessageSquare, UsersIcon } from "lucide-react";
-import { Roles } from "../types";
+import { BookOpen, CirclePlay, LucideIcon, Map, MessageCircle,  Users } from "lucide-react";
+import { Roles } from "@/lib/types";
 
-export const quickActions = [
+type QuickAction = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+const quickActionsConfig: Record<Roles, QuickAction[]> = {
+  [Roles.LEARNER]: [
     {
-        title: 'Continue Learning',
-        description: 'Pick up where you left off.',
-        icon: CirclePlay,
-        allowedRoles: [Roles.LEARNER]
+      title: "Continue Learning",
+      description: "Pick up where you left off.",
+      icon: CirclePlay,
     },
     {
-        title: 'Browse Skills',
-        description: 'Explore skill to learn next.',
-        icon: BookOpen,
-        allowedRoles: [Roles.LEARNER]
+      title: "Browse Skills",
+      description: "Explore skill to learn next.",
+      icon: BookOpen,
     },
     {
-        title: 'Roadmaps',
-        description: 'Track your skill journey.',
-        icon: Map,
-        allowedRoles: [Roles.LEARNER]
+      title: "Roadmaps",
+      description: "Track your skill journey.",
+      icon: Map,
+    },
+  ],
+  [Roles.MENTOR]: [
+    {
+      title: "Review Submissions",
+      description: "Evaluate learner work.",
+      icon: Map,
     },
     {
-        title: 'My Badges',
-        description: 'See your earned achievements',
-        icon: BadgeCheck,
-        allowedRoles: [Roles.LEARNER]
+      title: "Create Assessment",
+      description: "Track learner details.",
+      icon: BookOpen,
     },
     {
-        title: 'Review Submissions',
-        description: 'Evaluate learner work',
-        icon: FileText,
-        allowedRoles: [Roles.MENTOR]
+      title: "Manage Learners",
+      description: "Track learner details.",
+      icon: Users,
     },
     {
-        title: 'Create Assessment',
-        description: 'Build tests or quizzes',
-        icon: BookOpen,
-        allowedRoles: [Roles.MENTOR]
+      title: "Send Feedback",
+      description: "Share comments to help learners grow.",
+      icon: MessageCircle,
+    },
+  ],
+  [Roles.MANAGER]: [
+    {
+      title: "Team Overview",
+      description: "Manage your team’s progress.",
+      icon: Map,
     },
     {
-        title: 'Manage Learners',
-        description: 'Track learner details',
-        icon: UsersIcon,
-        allowedRoles: [Roles.MENTOR]
+      title: "Browse Skills",
+      description: "Assign skills to team members.",
+      icon: BookOpen,
     },
     {
-        title: 'Send Feedback',
-        description: 'Share comments to help learners grow',
-        icon: MessageSquare,
-        allowedRoles: [Roles.MENTOR]
-    }
-];
+      title: "Continue Learning",
+      description: "Pick up where you left off.",
+      icon: CirclePlay,
+    },
+  ],
+  [Roles.ADMIN]: [
+    {
+      title: "Admin Panel",
+      description: "Manage platform settings.",
+      icon: Map,
+    },
+    {
+      title: "User Management",
+      description: "View and manage all users.",
+      icon: BookOpen,
+    },
+    {
+      title: "Continue Learning",
+      description: "Pick up where you left off.",
+      icon: CirclePlay,
+    },
+  ],
+};
+
+export const getQuickActions = (userRole: Roles): QuickAction[] => {
+  return quickActionsConfig[userRole] || quickActionsConfig[Roles.LEARNER];
+};
