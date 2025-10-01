@@ -1,26 +1,52 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import Image from "next/image";
+import { SheetWrapper } from "../dashboard/components/sheet-wrapper";
+
 
 export const Navbar = () => {
-    return (
-        <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-16">
-            <div className="flex items-center space-x-2">
-                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.9307 21.2165C23.6609 23.1212 23.4228 24.899 22.2164 26.5498C21.0101 28.2006 19.3117 29.026 17.1212 29.026C16.0736 29.026 15.0818 28.7562 14.146 28.2165C13.2088 27.6768 12.518 26.9625 12.0736 26.0736C9.43867 26.4546 7.25645 25.7797 5.52692 24.0489C3.79613 22.3193 3.08946 20.1054 3.40692 17.407C2.45454 16.8673 1.72439 16.1295 1.21645 15.1936C0.708512 14.2565 0.454544 13.1847 0.454544 11.9784C0.454544 10.0419 1.33581 8.47808 3.09835 7.28697C4.85962 6.09713 6.58153 5.85141 8.26406 6.54982L11.2164 7.78792C11.8514 6.80379 12.6926 6.00189 13.7403 5.38221C14.7879 4.76379 15.9149 4.42284 17.1212 4.35935V0.45459H19.9783V4.7403C21.1529 5.08951 22.1212 5.63681 22.8831 6.38221C23.645 7.12887 24.2958 8.16887 24.8355 9.5022H29.026V12.3593H25.1212C25.0577 13.5657 24.7326 14.6927 24.146 15.7403C23.558 16.7879 22.772 17.6292 21.7879 18.2641L22.9307 21.2165ZM11.1212 22.3593C11.1212 21.5022 11.193 20.6692 11.3364 19.8603C11.4787 19.0501 11.6926 18.2641 11.9783 17.5022C11.2482 17.8514 10.4622 18.0971 9.62025 18.2393C8.77962 18.3828 7.9466 18.4228 7.12121 18.3593C7.12121 19.5974 7.47803 20.5739 8.19168 21.2889C8.9066 22.0025 9.88311 22.3593 11.1212 22.3593ZM7.5974 14.5498C8.61327 14.5498 9.51041 14.4228 10.2888 14.1689C11.066 13.9149 12.0736 13.407 13.3117 12.6451L7.5974 10.2641C6.67676 9.88316 5.89137 9.89078 5.24121 10.287C4.58978 10.6844 4.26407 11.3117 4.26407 12.1689C4.26407 12.9943 4.53391 13.5974 5.07359 13.9784C5.61327 14.3593 6.45454 14.5498 7.5974 14.5498ZM17.1212 25.2165C17.9149 25.2165 18.5574 24.9384 19.0488 24.3822C19.5415 23.8273 19.6609 23.2482 19.4069 22.6451L16.8355 16.1689C16.2323 17.1847 15.7644 18.2006 15.4317 19.2165C15.0977 20.2324 14.9307 21.153 14.9307 21.9784C14.9307 23.026 15.1136 23.8273 15.4793 24.3822C15.8437 24.9384 16.391 25.2165 17.1212 25.2165ZM20.2641 14.6451C20.5815 14.3276 20.8355 13.9066 21.026 13.3822C21.2164 12.859 21.3117 12.3117 21.3117 11.7403C21.3117 10.7244 20.9783 9.86728 20.3117 9.16887C19.645 8.47046 18.8196 8.12125 17.8355 8.12125C17.2641 8.12125 16.7244 8.21649 16.2164 8.40697C15.7085 8.59744 15.2799 8.86729 14.9307 9.21649L18.645 10.9308L20.2641 14.6451Z" fill="#00708A" />
-                </svg>
-                <h1 className="font-semibold text-2xl text-gray-text-strong/90">VersaPath</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-                <Link href="/login">
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        className="px-6 cursor-pointer"
-                    >
-                        Log In
-                    </Button>
-                </Link>
-            </div>
-        </nav>
-    );
+  return (
+    <header className="sticky top-0 z-50 w-full overflow-x-hidden bg-base-light-white">
+      <div className="flex h-16 items-center justify-between lg:px-16 md:px-8 px-4 py-4 w-full">
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/images/logo.svg"
+            alt="People learning together"
+            width={52}
+            height={52}
+          />
+          <span className="font-bold text-xl">VersaPath</span>
+        </Link>
+
+        <div className="hidden md:flex items-center ">
+          <Button asChild>
+            <Link href="/login">Log in</Link>
+          </Button>
+        </div>
+
+        <div className="md:hidden">
+          <SheetWrapper
+            trigger={
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            }
+            headerTitle=""
+            headerDescription=""
+          >
+            <nav className="flex flex-col gap-4 mt-8">
+              <div className="flex flex-col gap-3 mt-6 pt-6 ">
+                <Button asChild>
+                  <Link href="/login">Log In</Link>
+                </Button>
+              </div>
+            </nav>
+          </SheetWrapper>
+        </div>
+      </div>
+    </header>
+  );
 };
