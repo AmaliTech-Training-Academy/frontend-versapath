@@ -5,8 +5,8 @@ import Image from "next/image";
 
 export function InstructorCTA() {
   return (
-    <section className="pt-16">
-      <div className="container">
+    <section className="w-full py-16 ">
+      <div className="container mx-auto px-4 flex justify-center">
         <Card className="overflow-hidden p-0">
           <div className="grid lg:grid-cols-2 md:grid-cols-2 gap-0 ">
             <div className="p-8 md:p-12 flex flex-col justify-center">
@@ -19,7 +19,7 @@ export function InstructorCTA() {
               </p>
               <div>
                 <Button size="lg" className="bg-primary hover:bg-primary/90">
-                  Book a Demo 
+                  Book a Demo
                   <ArrowRightCircle className="ml-2 h-5 w-5" />
                 </Button>
               </div>
