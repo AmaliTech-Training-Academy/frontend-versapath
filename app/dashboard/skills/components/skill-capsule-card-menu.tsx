@@ -34,6 +34,7 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
       setDialogOpen(false);
       mutate((key) => typeof key === "string" && key.startsWith("/capsules"));
     } catch (error) {
+      console.error(error);
       toast.error("An unexpected error occurred. Please try again.");
       setIsDeleting(false);
     }
@@ -54,7 +55,7 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
             <DropdownMenuItem asChild>
               <Link
                 href={`/dashboard/skills/${skill.id}`}
-                className="w-full justify-start"
+                className="justify-start w-full"
               >
                 <Eye />
                 View
@@ -77,10 +78,10 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
             <Separator className="my-1" />
             <DropdownMenuItem asChild>
               <button
-                className="w-full justify-start text-red-text focus:text-red-text"
+                className="justify-start w-full text-red-text focus:text-red-text"
                 onClick={() => setDialogOpen(true)}
               >
-                <Trash2 className="h-4 w-4 mr-2 cursor-pointer text-red-text focus:text-red-text " />
+                <Trash2 className="w-4 h-4 mr-2 cursor-pointer text-red-text focus:text-red-text " />
                 Delete
               </button>
             </DropdownMenuItem>
@@ -105,7 +106,7 @@ const StudentDropDown = ({ skillId }: { skillId: string }) => {
   return (
     <>
       <DropdownMenuItem asChild>
-        <Link href={`#`} className="w-full justify-start">
+        <Link href={`#`} className="justify-start w-full">
           <SquarePlay />
           Start
         </Link>
@@ -113,7 +114,7 @@ const StudentDropDown = ({ skillId }: { skillId: string }) => {
       <DropdownMenuItem asChild>
         <Link
           href={`/dashboard/skills/${skillId}`}
-          className="w-full justify-start"
+          className="justify-start w-full"
         >
           <Eye />
           View details
