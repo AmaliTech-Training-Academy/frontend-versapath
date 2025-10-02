@@ -71,7 +71,8 @@ export const OnboardingForm = () => {
         });
 
         toast.success(res.message || "You have been successfully onboarded");
-        router.push('/dashboard');
+        router.replace('/dashboard');
+        router.refresh();
     };
 
     return (
