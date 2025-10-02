@@ -12,31 +12,51 @@ import { ItemData, Route } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 type FormValues = {
     selectedRoute: string;
+    selectedTrack: string;
 };
 
 export const OnboardingForm = () => {
     const { data: session, update } = useSession();
     const firstName = session?.user.firstName || "";
-    const { routes } = useRoutes();
+    const { routes } = useRoutes(true);
     const router = useRouter();
 
-    const { handleSubmit, control, watch, formState } = useForm<FormValues>({
-        defaultValues: { selectedRoute: "" },
+    const { handleSubmit, control, watch, formState, setValue } = useForm<FormValues>({
+        defaultValues: {
+            selectedRoute: "",
+            selectedTrack: "",
+        },
         mode: "onChange",
     });
 
+    const [step, setStep] = useState<1 | 2>(1);
+
     const selectedRoute = watch("selectedRoute");
+    const selectedTrack = watch("selectedTrack");
+
+    // Derive relevant tracks from the chosen route
+    const relevantTracks = useMemo(
+        () => routes.find((r) => r.talentRouteId === selectedRoute)?.tracks || [],
+        [routes, selectedRoute]
+    );
+
+    // Reset track if user changes route
+    useEffect(() => {
+        setValue("selectedTrack", "");
+    }, [selectedRoute, setValue]);
 
     const onSubmit = async (data: FormValues) => {
         const body = {
             learnerId: session?.user.userId,
-            talentRouteId: data.selectedRoute
+            talentRouteId: data.selectedRoute,
+            growthTrackId: data.selectedTrack
         }
 
-        const res = await apiRequest<ItemData<Route>>('/roadmap', 'POST', body);
+        const res = await apiRequest<ItemData<Route>>('/roadmap/learner-onboarding', 'POST', body);
 
         if (!res.success) {
             toast.error(extractErrorMessage(res.errors as string[], res.message));
@@ -50,7 +70,7 @@ export const OnboardingForm = () => {
             }
         });
 
-        toast.success(res.message || "You have been successfully enrolled in a talent route");
+        toast.success(res.message || "You have been successfully onboarded");
         router.push('/dashboard');
     };
 
@@ -61,49 +81,112 @@ export const OnboardingForm = () => {
                     <h5 className="font-semibold text-[32px] text-gray-text-strong">
                         Hi {firstName}, ready to grow?
                     </h5>
-                    <p>Select routes that interest you and we will make recommandations for you</p>
+                    <p>Select a route and growth track that interest you and we will make recommendations for you</p>
                 </article>
 
-                <Controller
-                    name="selectedRoute"
-                    control={control}
-                    render={({ field }) => (
-                        <article className="grid grid-cols-3 gap-4">
-                            {
-                                routes.map((route) => {
-                                    const selected = field.value === route.talentRouteId;
-                                    return (
-                                        <div
-                                            key={route.talentRouteId}
-                                            className="relative w-[230px] h-[150px] rounded-xl overflow-hidden cursor-pointer"
-                                            onClick={() => field.onChange(route.talentRouteId)}
-                                            role="checkbox"
-                                            aria-checked={selected}
-                                            tabIndex={0}
-                                        >
-                                            <Image src={placeholder} alt={route.routeName} width={1000} height={667} priority className="rounded-xl object-cover" />
-                                            <div className="absolute inset-0 bg-gray-text-weak w-full h-full p-2 flex flex-col justify-between">
-                                                {/* Visual check indicator (no events, no internal state) */}
-                                                <span
-                                                    className={clsx(
-                                                        "ml-auto h-4 w-4 rounded border flex items-center justify-center bg-brand-primary-text border-brand-primary-text",
-                                                        {
-                                                            "bg-transparent border-transparent": !selected,
-                                                        },
-                                                    )}
-                                                    aria-hidden="true"
+                {/* Step indicators (optional, simple) */}
+                <div className="w-full flex items-center justify-start gap-2 text-xs">
+                    <span className={step === 1 ? "text-brand-primary-text text-white" : ""}>
+                        1. Choose Route
+                    </span>
+                    <span>→</span>
+                    <span className={step === 2 ? "text-brand-primary-text text-white" : ""}>
+                        2. Choose Track
+                    </span>
+                </div>
+
+                {/* STEP 1: Choose Route */}
+                {
+                    step === 1 && (
+                        <Controller
+                            name="selectedRoute"
+                            control={control}
+                            render={({ field }) => (
+                                <article className="grid grid-cols-3 gap-4">
+                                    {
+                                        routes.map((route) => {
+                                            const selected = field.value === route.talentRouteId;
+                                            return (
+                                                <div
+                                                    key={route.talentRouteId}
+                                                    className="relative w-[230px] h-[150px] rounded-xl overflow-hidden cursor-pointer"
+                                                    onClick={() => field.onChange(route.talentRouteId)}
+                                                    role="checkbox"
+                                                    aria-checked={selected}
+                                                    tabIndex={0}
                                                 >
-                                                    {selected ? <Check className="h-3 w-3 text-base-white" /> : null}
-                                                </span>
-                                                <p className="font-semibold text-sm text-base-white relative bottom-0">{route.routeName}</p>
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </article>
-                    )}
-                ></Controller>
+                                                    <Image src={placeholder} alt={route.routeName} width={1000} height={667} priority className="rounded-xl object-cover" />
+                                                    <div className="absolute inset-0 bg-gray-text-weak w-full h-full p-2 flex flex-col justify-between">
+                                                        {/* Visual check indicator (no events, no internal state) */}
+                                                        <span
+                                                            className={clsx(
+                                                                "ml-auto h-4 w-4 rounded border flex items-center justify-center bg-brand-primary-text border-brand-primary-text",
+                                                                {
+                                                                    "bg-transparent border-transparent": !selected,
+                                                                },
+                                                            )}
+                                                            aria-hidden="true"
+                                                        >
+                                                            {selected ? <Check className="h-3 w-3 text-base-white" /> : null}
+                                                        </span>
+                                                        <p className="font-semibold text-sm text-base-white relative bottom-0">{route.routeName}</p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </article>
+                            )}
+                        />
+                    )
+                }
+
+                {/* STEP 2: Choose Track */}
+                {
+                    step === 2 && (
+                        <Controller
+                            name="selectedTrack"
+                            control={control}
+                            render={({ field }) => (
+                                <article className="grid grid-cols-3 gap-4">
+                                    {
+                                        relevantTracks.map((track) => {
+                                            const selected = field.value === track.growthTrackId;
+                                            return (
+                                                <div
+                                                    key={track.growthTrackId}
+                                                    className="relative w-[230px] h-[150px] rounded-xl overflow-hidden cursor-pointer"
+                                                    onClick={() => field.onChange(track.growthTrackId)}
+                                                    role="checkbox"
+                                                    aria-checked={selected}
+                                                    tabIndex={0}
+                                                >
+                                                    <Image src={placeholder} alt={track.trackName} width={1000} height={667} priority className="rounded-xl object-cover" />
+                                                    <div className="absolute inset-0 bg-gray-text-weak w-full h-full p-2 flex flex-col justify-between">
+                                                        {/* Visual check indicator (no events, no internal state) */}
+                                                        <span
+                                                            className={clsx(
+                                                                "ml-auto h-4 w-4 rounded border flex items-center justify-center bg-brand-primary-text border-brand-primary-text",
+                                                                {
+                                                                    "bg-transparent border-transparent": !selected,
+                                                                },
+                                                            )}
+                                                            aria-hidden="true"
+                                                        >
+                                                            {selected ? <Check className="h-3 w-3 text-base-white" /> : null}
+                                                        </span>
+                                                        <p className="font-semibold text-sm text-base-white relative bottom-0">{track.trackName}</p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </article>
+                            )}
+                        />
+                    )
+                }
+
                 {
                     formState.isSubmitting ? (
                         <div className="flex flex-col items-center gap-2">
@@ -113,9 +196,41 @@ export const OnboardingForm = () => {
                             </p>
                         </div>
                     ) : (
-                        <Button type="submit" className="cursor-pointer" disabled={!selectedRoute}>
-                            Let's Get Started
-                        </Button>
+                        <div className="w-full flex items-center justify-center gap-2">
+                            {
+                                step === 2 && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setStep(1)}
+                                        className="cursor-pointer"
+                                    >
+                                        Back
+                                    </Button>
+                                )
+                            }
+
+                            {
+                                step === 1 ? (
+                                    <Button
+                                        type="button"
+                                        onClick={() => setStep(2)}
+                                        disabled={!selectedRoute}
+                                        className="cursor-pointer"
+                                    >
+                                        Next
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        type="submit"
+                                        disabled={!selectedTrack}
+                                        className="cursor-pointer"
+                                    >
+                                        Let&apos;s Get Started
+                                    </Button>
+                                )
+                            }
+                        </div>
                     )
                 }
             </section>
