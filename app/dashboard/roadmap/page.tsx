@@ -1,15 +1,18 @@
+"use client";
+
+import { useTrack } from "@/lib/api/use-track";
 import { DashboardHeader } from "../components/header";
-import { roadmap } from "@/lib/api/roadmap";
 import { GrowthTrackOverview } from "./components/growth-track-overview";
 import { RoadmapTimeline } from "./components/roadmap-timeline";
 
 export default function SkillClustersPage() {
-    const { name, description, progress, capsules } = roadmap;
+    const { track, loading, error } = useTrack();
+
     return (
         <div className="space-y-6">
             <DashboardHeader title="Roadmap" />
-            <GrowthTrackOverview data={{ name, description, progress }} />           
-            <RoadmapTimeline capsules={capsules} />
+            <GrowthTrackOverview track={track} loading={loading} error={error} />           
+            <RoadmapTimeline trackId={track?.trackId ?? ""} />
         </div>
     );
 }

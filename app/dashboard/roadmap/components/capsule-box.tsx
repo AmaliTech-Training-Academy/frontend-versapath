@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { MyTrackCapsule } from "@/lib/types/api"
 import { Check } from "lucide-react"
 import Link from "next/link"
 
@@ -9,25 +10,20 @@ export const CapsuleBox = ({
     isActive,
     isNextInline
 }: {
-    capsule: { name: string, description: string, progress?: number },
+    capsule: MyTrackCapsule,
     isActive: boolean,
     isNextInline: boolean
 }) => {
-    const rawProgress = capsule.progress ?? undefined;
-    const isComplete = rawProgress === 100;
-    const isInProgress = rawProgress !== undefined && rawProgress > 0 && rawProgress < 100;
-    const isNotStarted = rawProgress === undefined || rawProgress === 0;
-
-    // Show progress if:
-    //  - we already have a numeric progress, OR
-    //  - this is the next inline unlocked capsule (show 0%)
-    const showProgress = rawProgress !== undefined || (isNextInline && isActive);
-    const progress = rawProgress ?? 0;
+    const progress = capsule.progressPercentage;
+    const isComplete = capsule.status === "COMPLETED";
+    const isInProgress = capsule.status === "IN_PROGRESS";
+    const isNotStarted = capsule.status === "NOT_STARTED";
+    const showProgress = capsule.status === "IN_PROGRESS" || (isNextInline && isActive);
 
     return (
         <div className="bg-sidebar w-[344px] rounded-md space-y-4 border border-brand-primary-text-weak">
             <div className="flex items-center justify-between py-1 px-2">
-                <span className="font-semibold text-sm text-gray-text-strong">{capsule.name}</span>
+                <span className="font-semibold text-sm text-gray-text-strong">{capsule.capsuleName}</span>
                 {
                     isComplete && (
                         <div className="flex items-center gap-1 text-brand-primary-text">
