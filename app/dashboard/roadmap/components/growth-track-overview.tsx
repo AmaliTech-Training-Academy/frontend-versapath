@@ -35,7 +35,9 @@ export const GrowthTrackOverview = ({
         <section className="bg-sidebar p-4 rounded-md flex items-center justify-between">
             <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-text-strong">{track.trackName}</p>
-                <p className="text-sm text-gray-text-weak max-w-[519px] w-full">{track.description}</p>
+                <p className="text-sm text-gray-text-weak max-w-[600px] w-full">
+                    {track.description.length > 120 ? track.description.slice(0, 120) + "..." : track.description}
+                </p>
             </div>
             <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-text-weak text-center">{track.progressPercentage}%</p>

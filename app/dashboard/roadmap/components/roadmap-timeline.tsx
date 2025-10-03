@@ -3,14 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CapsuleBox } from "./capsule-box";
 import { cn } from "@/lib/utils";
-import { useTrackCapsules } from "@/lib/api/use-track";
-import { Loader } from "lucide-react";
-
-type Capsule = { name: string, description: string, progress?: number };
+import { MyTrackCapsule } from "@/lib/types/api";
 const CARD_HALF = 163 / 2;
 
-export function RoadmapTimeline({ trackId }: { trackId: string }) {
-  const { capsules, loading, error } = useTrackCapsules(trackId);
+export function RoadmapTimeline({ capsules }: { readonly capsules: MyTrackCapsule[] }) {
   const overallHeightRef = useRef<HTMLElement | null>(null);
   const [lineHeight, setLineHeight] = useState(0);
 
@@ -47,23 +43,6 @@ export function RoadmapTimeline({ trackId }: { trackId: string }) {
     const next = Math.max(0, Math.min(h, h * ratio) - CARD_HALF);
     setLineHeight(next);
   }, [capsules, leadingCompleted]);
-
-  if (loading || error) {
-    return (
-      <section className="bg-[url(/images/auth-background.jpg)] bg-cover bg-no-repeat bg-bottom rounded-md overflow-hidden bg-brand-primary-fill">
-        {
-          loading && (
-            <>
-              <Loader className="animate-spin" />
-              <span>Loading...</span>
-            </>
-          )
-        }
-
-        {error && <span>{error}</span>}
-      </section>
-    );
-  }
 
   return (
     <section className="bg-[url(/images/auth-background.jpg)] bg-cover bg-no-repeat bg-bottom rounded-md overflow-hidden bg-brand-primary-fill" >

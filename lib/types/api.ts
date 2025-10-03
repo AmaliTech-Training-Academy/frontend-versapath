@@ -86,8 +86,11 @@ export interface MyTrack {
   trackId: string;
   trackName: string;
   description: string;
+  sequenceOrder: number;
   status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
   progressPercentage: number;
+  isUnlocked: boolean;
+  capsules: MyTrackCapsule[];
 }
 
 export interface MyTrackCapsule {
@@ -95,9 +98,10 @@ export interface MyTrackCapsule {
   capsuleId: string;
   capsuleName: string;
   description: string;
+  sequenceOrder: number;
   status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
   progressPercentage: number;
-  startedAt: string;
+  isUnlocked: boolean;
 }
 
 export interface Capsule {
