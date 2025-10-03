@@ -14,6 +14,7 @@ import { SingleSkillResponse } from "@/lib/types/api";
 import { SkillAtom } from "@/lib/types/skill-atom";
 import { SkillContentProgressBar } from "./components/skill-contents-progress-bar";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
+import { useTrack } from "@/lib/api/use-track";
 
 function SingleSkillPage() {
   const { skillId } = useParams();
@@ -25,7 +26,10 @@ function SingleSkillPage() {
     isFetchingSkill,
     fetchSkillError,
   } = useFetchSingleSkill(skillId as string);
-
+  const { track } = useTrack();
+  const trackCapsule = track?.capsules.find(
+    (capsule) => capsule.capsuleId === skillId
+  );
   useEffect(() => {
     if (fetchedSkill?.data) {
       setSkill(fetchedSkill.data.item);
@@ -100,7 +104,12 @@ function SingleSkillPage() {
             <h2 className="justify-start text-2xl font-semibold leading-loose">
               {skill?.name}
             </h2>
-            {isLearner && <SkillContentProgressBar />}
+            {isLearner && (
+              <SkillContentProgressBar
+                status={trackCapsule?.status}
+                progress={trackCapsule?.progressPercentage}
+              />
+            )}
             {isAdmin && (
               <SheetWrapper
                 headerDescription="Update skill information"
@@ -122,7 +131,7 @@ function SingleSkillPage() {
           </div>
         </article>
         <div className="w-full px-4">
-          <SkillMoreInfo />
+          <SkillMoreInfo skill={skill} />
         </div>
         <div className="mt-10 text-lg font-semibold leading-relaxed text-start">
           About this skill

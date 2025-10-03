@@ -5,10 +5,13 @@ import React from "react";
 import { SkillCapsuleCardMenu } from "./skill-capsule-card-menu";
 import { SkillProgressBar } from "./skill-progress-bar";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
+import { LearningMetricsProps } from "@/lib/types/growth-track";
+import { SKillStatus } from "@/lib/types/api";
+
 export const SkillCapsuleCard: React.FC<{
   skill: SKill;
-  isActive?: boolean;
-}> = ({ skill, isActive = false }) => {
+  learningMetrics?: LearningMetricsProps;
+}> = ({ skill, learningMetrics }) => {
   const { isLearner } = useCheckRole();
   const imageUrl = skill?.image ? skill.image : "/images/javascript.png";
   return (
@@ -20,7 +23,7 @@ export const SkillCapsuleCard: React.FC<{
           alt="SKill capsule image"
           className="object-cover w-full h-full"
         />
-        {isLearner && !isActive && (
+        {isLearner && learningMetrics?.status === SKillStatus.NOT_STARTED && (
           <div className="absolute inset-0 bg-[#000]/50 z-20 border flex items-center justify-center">
             <Image
               src={"/images/material-symbols_lock.svg"}
@@ -40,15 +43,22 @@ export const SkillCapsuleCard: React.FC<{
             >
               {skill.name}
             </Link>
-            <p className="px-2 py-1 rounded-2xl  outline-1 outline-offset-[-1px] outline-gray-text-strong/10 flex items-center text-gray-text-strong/70 text-xs leading-tight">
-              {skill.status === "ACTIVE" ? "Published" : "Draft"}
-            </p>
+            {!isLearner && (
+              <p className="px-2 py-1 rounded-2xl  outline-1 outline-offset-[-1px] outline-gray-text-strong/10 flex items-center text-gray-text-strong/70 text-xs leading-tight">
+                {skill.status === "ACTIVE" ? "Published" : "Draft"}
+              </p>
+            )}
           </div>
           <p className="justify-center text-xs leading-tight text-center text-Text-Text-Weak/70">
             {new Date(skill.createdAt).toLocaleDateString("en-RW", {})}
           </p>
         </div>
-        {isLearner && <SkillProgressBar />}
+        {isLearner && (
+          <SkillProgressBar
+            progress={learningMetrics?.progress}
+            isUnlocked={learningMetrics?.isUnlocked}
+          />
+        )}
         <div className="flex justify-between w-full gap-2">
           <div className="space-x-2">
             <p className="inline-block px-2 py-1 text-xs leading-tight uppercase border w-fit bg-gray-text-strong/5 rounded-2xl border-gray-text-weak/10 text-gray-text-strong/70">
