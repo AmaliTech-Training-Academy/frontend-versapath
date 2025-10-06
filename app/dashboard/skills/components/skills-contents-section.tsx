@@ -29,6 +29,7 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
     error: fetchTracksError,
     loading: isFetchingTracks,
   } = useTrack();
+  console.log("Track data:", track);
   const { skills, isFetchingSkills, fetchSkillsError } = useFetchSkills(
     pagination.pageIndex
   );

@@ -6,7 +6,6 @@ import { SkillCapsuleCardMenu } from "./skill-capsule-card-menu";
 import { SkillProgressBar } from "./skill-progress-bar";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
 import { LearningMetricsProps } from "@/lib/types/growth-track";
-import { SKillStatus } from "@/lib/types/api";
 
 export const SkillCapsuleCard: React.FC<{
   skill: SKill;
@@ -20,10 +19,10 @@ export const SkillCapsuleCard: React.FC<{
         <Image
           src={imageUrl}
           fill
-          alt="SKill capsule image"
+          alt={`${skill?.name}'s cover image`}
           className="object-cover w-full h-full"
         />
-        {isLearner && learningMetrics?.status === SKillStatus.NOT_STARTED && (
+        {isLearner && !learningMetrics?.isUnlocked && (
           <div className="absolute inset-0 bg-[#000]/50 z-20 border flex items-center justify-center">
             <Image
               src={"/images/material-symbols_lock.svg"}

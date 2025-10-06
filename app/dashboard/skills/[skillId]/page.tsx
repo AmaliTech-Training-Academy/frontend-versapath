@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Loader, PenBox, Plus } from "lucide-react";
+import { ChevronRight, Loader, LockIcon, PenBox, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
@@ -8,15 +8,22 @@ import { SheetWrapper } from "../../components/sheet-wrapper";
 import { SkillMoreInfo } from "./components/skill-more-info";
 import { SingleLessonListCard } from "./components/single-lesson-list-card";
 import { LessonsList } from "./components/lessons-list";
-import { removeLessonDuplicates, useFetchSingleSkill } from "@/lib/api/skills";
-import { useParams } from "next/navigation";
-import { SingleSkillResponse } from "@/lib/types/api";
+import {
+  removeLessonDuplicates,
+  startSkillProgress,
+  useFetchSingleSkill,
+} from "@/lib/api/skills";
+import { useParams, useRouter } from "next/navigation";
+import { SingleSkillResponse, SKillStatus } from "@/lib/types/api";
 import { SkillAtom } from "@/lib/types/skill-atom";
 import { SkillContentProgressBar } from "./components/skill-contents-progress-bar";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
-import { useTrack } from "@/lib/api/use-track";
+import { EmptyState } from "@/components/custom/empty-state";
+import { useProgressMetadata } from "@/lib/hooks/use-progress-metadata";
+import { toast } from "sonner";
 
 function SingleSkillPage() {
+  const router = useRouter();
   const { skillId } = useParams();
   const { isLearner, isAdmin } = useCheckRole();
   const [skill, setSkill] = React.useState<SingleSkillResponse | null>(null);
@@ -26,16 +33,48 @@ function SingleSkillPage() {
     isFetchingSkill,
     fetchSkillError,
   } = useFetchSingleSkill(skillId as string);
-  const { track } = useTrack();
-  const trackCapsule = track?.capsules.find(
-    (capsule) => capsule.capsuleId === skillId
-  );
+  const { matchingCapsule, isDisabled, status, roadmap, track, startLabel } =
+    useProgressMetadata(skillId as string);
   useEffect(() => {
     if (fetchedSkill?.data) {
       setSkill(fetchedSkill.data.item);
       setLessons(removeLessonDuplicates(fetchedSkill.data.item.skillAtoms));
     }
   }, [fetchedSkill]);
+  console.log("Track data:", track);
+  const handleStartSkill = () => {
+    const firstLessonEndpoint = `/dashboard/skills/${skillId}/contents?activeLesson=${lessons?.[0].id}&moodleId=${lessons?.[0].moodlePageId}`;
+
+    if (status === SKillStatus.IN_PROGRESS) {
+      router.push(firstLessonEndpoint);
+      console.log("Reached here");
+      return;
+    }
+    if (isDisabled) {
+      toast.info("Please complete previous lessons to unlock this skill.");
+      return;
+    }
+    if (!isDisabled) {
+      const res = startSkillProgress({
+        capsuleId: skillId as string,
+        talentRouteId: roadmap?.data?.talentRouteId || "",
+        atomId: lessons && lessons.length > 0 ? lessons[0].id : "",
+        learnerId: roadmap?.data?.learnerId || "",
+        trackId: track?.trackId || "",
+      });
+      toast.promise(res, {
+        loading: "Starting skill...",
+        success: () => {
+          router.push(firstLessonEndpoint);
+          return "Skill started! Good luck on your learning journey.";
+        },
+        error: "Failed to start skill. Please try again.",
+      });
+    }
+    if (status !== SKillStatus.NOT_STARTED) {
+      router.push(`/dashboard/skills/${skillId}`);
+    }
+  };
   if (isFetchingSkill)
     return (
       <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
@@ -46,30 +85,12 @@ function SingleSkillPage() {
   if (!fetchedSkill?.success || fetchSkillError)
     return (
       <div className="w-full py-5 text-base h-full flex flex-col items-center justify-center text-center rounded-lg bg-red-fill/10 max-w-[500px] mx-auto space-y-2">
-        <Image
-          src={"/not-found.png"}
-          alt="No such skill found"
-          height={100}
-          width={100}
+        <EmptyState
+          message={
+            fetchSkillError.message ||
+            "There were unexpected error. Please refresh the page or consider going back and trying again."
+          }
         />
-        <p>
-          There were unexpected error. Please refresh the page or consider going
-          back and trying again.
-        </p>
-        <div className="flex gap-2">
-          <Link href={"/dashboard/skills"}>
-            <Button variant={"ghost"} className="bg-base-light-overlay/50">
-              Go back
-            </Button>
-          </Link>
-          <Button
-            variant={"outline"}
-            className="bg-transparent"
-            onClick={() => window.location.reload()}
-          >
-            Reload
-          </Button>
-        </div>
       </div>
     );
   const imageUrl = skill?.image ? skill.image : "/images/javascript.png";
@@ -106,8 +127,8 @@ function SingleSkillPage() {
             </h2>
             {isLearner && (
               <SkillContentProgressBar
-                status={trackCapsule?.status}
-                progress={trackCapsule?.progressPercentage}
+                status={matchingCapsule?.status}
+                progress={matchingCapsule?.progressPercentage}
               />
             )}
             {isAdmin && (
@@ -127,7 +148,12 @@ function SingleSkillPage() {
                 <div className="w-full h-96">Form goes here</div>
               </SheetWrapper>
             )}
-            {isLearner && <Button className="max-w-fit px-4">Start</Button>}
+            {isLearner && (
+              <Button className="max-w-fit px-4" onClick={handleStartSkill}>
+                {startLabel}
+                {isDisabled && <LockIcon />}
+              </Button>
+            )}
           </div>
         </article>
         <div className="w-full px-4">
@@ -179,6 +205,7 @@ function SingleSkillPage() {
               lessons?.map((data, i) => (
                 <SingleLessonListCard
                   data={{ ...data, skillId: skill?.id ?? "" }}
+                  isSkillActive={status === SKillStatus.IN_PROGRESS}
                   key={data.id}
                   index={i}
                   total={skill?.skillAtoms.length ?? 0}

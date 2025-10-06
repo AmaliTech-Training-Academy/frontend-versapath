@@ -78,7 +78,7 @@ export interface Track {
 export interface MyRoadmap {
   learnerId: string;
   roadmapId: string;
-  talentRoutId: string;
+  talentRouteId: string;
   routeName: string;
   routeDescription: string;
   enrollmentStatus: "ACTIVE" | "COMPLETED" | "DROPPED";

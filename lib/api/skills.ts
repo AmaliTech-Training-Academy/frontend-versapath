@@ -3,6 +3,7 @@ import {
   Cluster,
   ItemData,
   ListData,
+  MyRoadmap,
   SingleSkillResponse,
   Tag,
 } from "../types/api";
@@ -275,4 +276,32 @@ export const searchTags = async (
       id: tag.id,
     })) || []
   );
+};
+
+export const startSkillProgress = async (data: {
+  learnerId: string;
+  atomId: string;
+  capsuleId: string;
+  trackId: string;
+  talentRouteId: string;
+}) => {
+  const res = await apiRequest<{ message: string; success: boolean }>(
+    "/roadmap/start-progress",
+    "POST",
+    data
+  );
+
+  if (!res.success) throw new Error(res.message || "Failed to start skill");
+  return res;
+};
+export const useGetMyRoadmap = () => {
+  const res = useSWR("/learner/my-roadmap", (url) =>
+    apiRequest<MyRoadmap>(url, "GET")
+  );
+  return {
+    roadmap: res.data,
+    isLoading: res.isLoading,
+    fetchError: res.error,
+    revalidateRoadmap: () => res.mutate(),
+  };
 };

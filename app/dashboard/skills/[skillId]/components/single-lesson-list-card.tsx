@@ -1,24 +1,36 @@
 import { SkillAtom as LessonProps } from "@/lib/types/skill-atom";
-import Link from "next/link";
 
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
+import { useRouter } from "next/dist/client/components/navigation";
 
 type LessonListCardProps = {
   data: LessonProps & { skillId: string };
   index: number;
   total: number;
+  isSkillActive: boolean;
 };
 export const SingleLessonListCard = ({
   data,
   index,
   total,
+  isSkillActive,
 }: LessonListCardProps) => {
+  const router = useRouter();
   const isFirst = index === 0;
   const isLast = index === total - 1;
-
+  const handleOpenLesson = () => {
+    if (!isSkillActive) {
+      toast.error("Please start the skill to access its lessons.");
+    } else {
+      router.push(
+        `/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}&moodleId=${data.moodlePageId}`
+      );
+    }
+  };
   return (
-    <Link
-      href={`/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}&moodleId=${data.moodlePageId}`}
+    <button
+      onClick={handleOpenLesson}
       className="text-start flex justify-start w-full gap-0 even:bg-gray-stroke-weak/50 group"
     >
       {/* Number line gutter */}
@@ -46,6 +58,6 @@ export const SingleLessonListCard = ({
           {data.name}
         </h3>
       </div>
-    </Link>
+    </button>
   );
 };
