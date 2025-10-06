@@ -17,13 +17,10 @@ const sidebarItems = [
         url: "/dashboard/profile"
     },
     {
-        title: "Manage Categories",
-        url: "/dashboard/category"
-    },
-    {
-        title: "General",
+        title: "Account Settings",
         url: "#"
     },
+   
 
 ];
 

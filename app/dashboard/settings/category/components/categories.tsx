@@ -10,17 +10,38 @@ import { Pagination } from "@/components/custom/pagination";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
 import { useClusters } from "@/lib/api/clusters";
 import { useListQuery } from "@/lib/hooks/use-list-query";
-import { useEffect } from "react";
-import { SheetWrapper } from "../../components/sheet-wrapper";
+import { useEffect, useState } from "react";
+import { Cluster } from "@/lib/types/api";
+import { apiRequest } from "@/lib/api/api-request";
+import { ConfirmDialog } from "@/components/custom/confirm-dialog";
+import { toast } from "sonner";
+import { EditCategoryForm } from "./edit-category-form";
+import { SheetWrapper } from "@/app/dashboard/components/sheet-wrapper";
 
 export const CategoryList = () => {
   const [query, setQuery] = useListQuery();
+  const [categories, setCategories] = useState<Cluster[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<
+    import("@/lib/types/api").Cluster | null
+  >(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const { items = [], pageInfo } = useClusters({
+  const {
+    items = [],
+    pageInfo,
+    reload,
+  } = useClusters({
     pageIndex: query.page,
     pageSize: query.size,
     name: query.name,
   });
+
+  useEffect(() => {
+    if (items && items.length > 0) {
+      setCategories(items);
+    }
+  }, [items]);
 
   useEffect(() => {
     if (!pageInfo) return;
@@ -48,8 +69,29 @@ export const CategoryList = () => {
     },
   });
 
-  const hasData = items && items.length > 0;
+  const hasData = categories && categories.length > 0;
   const containerClass = clsx("flex flex-col gap-4 w-[823px]");
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleteLoading(true);
+    try {
+      const res = await apiRequest(`/clusters/${deleteId}`, "DELETE");
+      if (!res.success) throw new Error("Failed to delete category");
+      setCategories((prev) => prev.filter((cat) => cat.id !== deleteId));
+      toast.success("Category deleted successfully");
+      setDeleteId(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong while deleting");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const openEditForm = (category: import("@/lib/types/api").Cluster) => {
+    setSelectedCategory(category);
+  };
 
   return (
     <section className={containerClass}>
@@ -75,19 +117,18 @@ export const CategoryList = () => {
         </SheetWrapper>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto rounded-lg border">
         <table className="min-w-full">
           <thead className="bg-gray-stroke-weak px-4 text-md font-medium text-gray-text-weak">
             <tr>
-              <th className="px-4 py-2 text-left ">Category Name</th>
+              <th className="px-4 py-2 text-left">Category Name</th>
               <th className="px-4 py-2 text-left">Description</th>
-              <th className="px-4 py-2 text-center ">Action</th>
+              <th className="px-4 py-2 text-center">Action</th>
             </tr>
           </thead>
           <tbody className="bg-base-light-white divide-y divide-gray-stroke-weak py-2">
             {hasData ? (
-              items.map((category) => (
+              categories.map((category) => (
                 <tr key={category.id}>
                   <td className="px-4 py-2 font-medium text-gray-text-weak whitespace-nowrap">
                     {category.name}
@@ -96,15 +137,42 @@ export const CategoryList = () => {
                     {category.description}
                   </td>
                   <td className="px-4 py-2 text-center">
-                    <button className="inline-flex" title="Edit">
-                      <Edit className="w-4 h-4" />
-                    </button>
+                    <SheetWrapper
+                      headerTitle="Edit Category"
+                      headerDescription="Update category name or description"
+                      trigger={
+                        <button className="inline-flex" title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      }
+                    >
+                      <EditCategoryForm
+                        cluster={category}
+                        revalidateAction={reload}
+                      />
+                    </SheetWrapper>
                     <button
                       className="inline-flex items-center p-1 text-destructive hover:text-destructive/80 ml-2"
                       title="Delete"
+                      onClick={() => setDeleteId(category.id)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
+                    {/* Delete Confirmation Dialog */}
+                    <ConfirmDialog
+                      open={!!deleteId}
+                      title="Delete Category"
+                      description="Are you sure you want to delete this category? This action cannot be undone."
+                      confirmLabel="Delete"
+                      destructive
+                      loading={deleteLoading}
+                      onConfirm={handleDelete}
+                      onClose={() => {
+                        setDeleteId(null);
+                        setDeleteLoading(false);
+                      }}
+                      dialogClose
+                    />
                   </td>
                 </tr>
               ))

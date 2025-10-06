@@ -1,5 +1,6 @@
 import { Roles } from "../types";
-export const  protectedPaths = [
+export const protectedPaths = [
+
   {
     title: "Onboarding",
     url: "/onboarding",
@@ -38,23 +39,28 @@ export const  protectedPaths = [
   {
     title: "Submissions",
     url: "/dashboard/submissions",
-    role: [Roles.MENTOR]
+    role: [Roles.MENTOR],
   },
   {
     title: "Assessments",
     url: "/dashboard/assessments",
-    role: [Roles.MENTOR]
+    role: [Roles.MENTOR],
   },
   {
     title: "Learners",
     url: "/dashboard/learners",
-    role: [Roles.MENTOR]
+    role: [Roles.MENTOR],
   },
   {
     title: "Profile",
     url: "/dashboard/profile",
-    role: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER]
-  }
+    role: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
+  },
+   {
+    title: "Settings Category",
+    url: "/dashboard/settings/category",
+    role: [Roles.ADMIN],
+  },
 ];
 
 export const publicPaths = [
