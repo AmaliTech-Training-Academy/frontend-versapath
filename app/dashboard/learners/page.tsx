@@ -1,4 +1,5 @@
 import { DashboardHeader } from "../components/header";
+import { LearnerList } from "./components/learner-list";
 
 export default function LearnersPage() {
     return (
@@ -10,6 +11,7 @@ export default function LearnersPage() {
                         This page shows a list of assigned learners
                     </p>
                 </article>
+                <LearnerList />
             </section>
         </>
     );

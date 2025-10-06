@@ -6,35 +6,40 @@ export const learners = [
         fullName: "Mary Mensah",
         role: "Learner",
         email: "mary.mensah@amalitech.com",
-        image: placeholder
+        image: placeholder,
+        skills: ["JWT", "React", "JavaScript Essentials"]
     },
     {
         id:"aljdoiejwf",
         fullName: "Mary Mensah",
         role: "Learner",
         email: "mary.mensah@amalitech.com",
-        image: placeholder
+        image: placeholder,
+        skills: ["JWT", "React", "JavaScript Essentials"]
     },
     {
         id:"aidhfieowd",
         fullName: "Mary Mensah",
         role: "Learner",
         email: "mary.mensah@amalitech.com",
-        image: placeholder
+        image: placeholder,
+        skills: ["JWT", "React", "JavaScript Essentials"]
     },
     {
         id:"nzdkufjbkd",
         fullName: "Mary Mensah",
         role: "Learner",
         email: "mary.mensah@amalitech.com",
-        image: placeholder
+        image: placeholder,
+        skills: ["JWT", "React", "JavaScript Essentials"]
     },
     {
         id:"adnfiuehfndks",
         fullName: "Mary Mensah",
         role: "Learner",
         email: "mary.mensah@amalitech.com",
-        image: placeholder
+        image: placeholder,
+        skills: ["JWT", "React", "JavaScript Essentials"]
     }
 ];
 

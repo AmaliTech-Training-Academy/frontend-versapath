@@ -1,9 +1,15 @@
 import { Learner } from "@/lib/api/mentor-learners";
+import clsx from "clsx";
 import Image from "next/image";
 
-export const LearnerCard = ({ learner }: { learner: Learner }) => {
+export const LearnerCard = ({ learner, hover }: { learner: Learner, hover?: boolean }) => {
     return (
-        <div className="rounded-xl border border-gray-stroke-weak hover:border-brand-primary-text-weak bg-base-white hover:bg-brand-primary-fill p-5">
+        <div className={clsx(
+            "rounded-xl border border-gray-stroke-weak bg-base-white p-5",
+            {
+                "hover:border-brand-primary-text-weak hover:bg-brand-primary-fill": hover,
+            }
+        )}>
             <div className="flex items-center gap-[11px]">
                 <Image
                     src={learner.image}
@@ -12,7 +18,11 @@ export const LearnerCard = ({ learner }: { learner: Learner }) => {
                     alt={learner.fullName}
                     className="w-[75px] h-[75px] rounded-full object-cover"
                 />
-                <div className="space-y-2.5"></div>
+                <div className="space-y-2.5">
+                    <p className="font-semibold text-lg text-gray-text-strong">{learner.fullName}</p>
+                    <p className="text-sm text-gray-text-weak">{learner.role}</p>
+                    <p className="text-sm text-gray-text-weak">{learner.email}</p>
+                </div>
             </div>
         </div>
     );
