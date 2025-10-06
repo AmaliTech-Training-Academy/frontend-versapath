@@ -1,10 +1,18 @@
 "use client";
 import { Label } from "@/components/ui/label";
-import { removeLessonDuplicates, useFetchSingleSkill } from "@/lib/api/skills";
+import {
+  handleSKillProgress,
+  removeLessonDuplicates,
+  useFetchSingleSkill,
+  useGetRoadmapCapsuleLessons,
+} from "@/lib/api/skills";
+import { useProgressMetadata } from "@/lib/hooks/use-progress-metadata";
+import { SKillStatus } from "@/lib/types/api";
 import { cn } from "@/lib/utils";
 import { Loader, PlayCircle } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 
 export const TabSkillContents = () => {
   const router = useRouter();
@@ -13,12 +21,40 @@ export const TabSkillContents = () => {
   const { skill, isFetchingSkill, fetchSkillError } = useFetchSingleSkill(
     skillId as string
   );
+  const { roadmap, track } = useProgressMetadata(skillId as string);
+  const { capsuleLessons, revalidateCapsuleLessons } =
+    useGetRoadmapCapsuleLessons(skillId as string);
 
   const handleActivateSkill = (key: string, moodlePageId: string) => {
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
-    params.set("activeLesson", key);
-    params.set("moodleId", moodlePageId);
-    router.push(`?${params.toString()}`, { scroll: true });
+    const lessonToOpen = capsuleLessons?.data?.find((l) => l.atomId === key);
+    const navigate = () => {
+      const params = new URLSearchParams(Array.from(searchParams.entries()));
+      params.set("activeLesson", key);
+      params.set("moodleId", moodlePageId);
+      router.push(`?${params.toString()}`, { scroll: true });
+    };
+    if (
+      lessonToOpen?.completed ||
+      lessonToOpen?.status === SKillStatus.IN_PROGRESS
+    ) {
+      return navigate();
+    }
+    const res = handleSKillProgress({
+      capsuleId: skillId as string,
+      talentRouteId: roadmap?.data?.talentRouteId || "",
+      atomId: key,
+      learnerId: roadmap?.data?.learnerId || "",
+      trackId: track?.trackId || "",
+    });
+    toast.promise(res, {
+      loading: "Loading lesson...",
+      success: (data) => {
+        navigate();
+        revalidateCapsuleLessons();
+        return data?.message || "Enjoy starting the lesson successfully!";
+      },
+      error: (err) => err.message || "There was an error loading lesson.",
+    });
   };
   const skillAtoms = skill?.data?.item.skillAtoms || [];
   return (

@@ -3,6 +3,12 @@ import { SkillAtom as LessonProps } from "@/lib/types/skill-atom";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import { useRouter } from "next/dist/client/components/navigation";
+import {
+  handleSKillProgress,
+  useGetRoadmapCapsuleLessons,
+} from "@/lib/api/skills";
+import { useProgressMetadata } from "@/lib/hooks/use-progress-metadata";
+import { SKillStatus } from "@/lib/types/api";
 
 type LessonListCardProps = {
   data: LessonProps & { skillId: string };
@@ -19,14 +25,42 @@ export const SingleLessonListCard = ({
   const router = useRouter();
   const isFirst = index === 0;
   const isLast = index === total - 1;
+  const { capsuleLessons } = useGetRoadmapCapsuleLessons(data.skillId);
+  const { roadmap, track } = useProgressMetadata(data.skillId);
+  const lessonToOpen = capsuleLessons?.data?.find(
+    (lesson) => lesson.atomId === data.id
+  );
   const handleOpenLesson = () => {
-    if (!isSkillActive) {
-      toast.error("Please start the skill to access its lessons.");
-    } else {
+    const navigate = () =>
       router.push(
         `/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}&moodleId=${data.moodlePageId}`
       );
+    if (!isSkillActive) {
+      toast.error("Please start the skill to access its lessons.");
+      return;
     }
+    if (
+      lessonToOpen?.completed ||
+      lessonToOpen?.status === SKillStatus.IN_PROGRESS
+    ) {
+      return navigate();
+    }
+
+    const res = handleSKillProgress({
+      capsuleId: data.skillId,
+      talentRouteId: roadmap?.data?.talentRouteId || "",
+      atomId: data.id,
+      learnerId: roadmap?.data?.learnerId || "",
+      trackId: track?.trackId || "",
+    });
+    toast.promise(res, {
+      loading: "Opening lesson...",
+      success: (data) => {
+        navigate();
+        return data?.message || "Enjoy starting the lesson successfully!";
+      },
+      error: (err) => err.message || "There was an error opening lesson.",
+    });
   };
   return (
     <button

@@ -10,7 +10,7 @@ import { SingleLessonListCard } from "./components/single-lesson-list-card";
 import { LessonsList } from "./components/lessons-list";
 import {
   removeLessonDuplicates,
-  startSkillProgress,
+  handleSKillProgress,
   useFetchSingleSkill,
 } from "@/lib/api/skills";
 import { useParams, useRouter } from "next/navigation";
@@ -41,13 +41,11 @@ function SingleSkillPage() {
       setLessons(removeLessonDuplicates(fetchedSkill.data.item.skillAtoms));
     }
   }, [fetchedSkill]);
-  console.log("Track data:", track);
   const handleStartSkill = () => {
     const firstLessonEndpoint = `/dashboard/skills/${skillId}/contents?activeLesson=${lessons?.[0].id}&moodleId=${lessons?.[0].moodlePageId}`;
 
     if (status === SKillStatus.IN_PROGRESS) {
       router.push(firstLessonEndpoint);
-      console.log("Reached here");
       return;
     }
     if (isDisabled) {
@@ -55,7 +53,7 @@ function SingleSkillPage() {
       return;
     }
     if (!isDisabled) {
-      const res = startSkillProgress({
+      const res = handleSKillProgress({
         capsuleId: skillId as string,
         talentRouteId: roadmap?.data?.talentRouteId || "",
         atomId: lessons && lessons.length > 0 ? lessons[0].id : "",

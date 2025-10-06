@@ -12,7 +12,10 @@ export const LearnerDropdown = ({ skillId }: { skillId: string }) => {
   const { status, isNextInLine, startLabel, isDisabled } =
     useProgressMetadata(skillId);
   const handleStartSkill = () => {
-    if (!status) return;
+    if (status === SKillStatus.IN_PROGRESS) {
+      router.push(`/dashboard/skills/${skillId}`);
+      return;
+    }
     if (isDisabled) return;
     if (status === SKillStatus.NOT_STARTED && isNextInLine) {
       router.push(`/dashboard/skills/${skillId}`);
