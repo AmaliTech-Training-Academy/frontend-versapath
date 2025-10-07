@@ -4,7 +4,7 @@
 vi.mock("@/lib/schemas/add-category", () => {
   return {
     addCategorySchema: {
-      
+
       parse: (data: Record<string, unknown>) => {
         if (!data?.name || String(data.name).trim() === "") {
           const err = new Error("Invalid") as Error & {
@@ -138,8 +138,9 @@ vi.mock("@/components/ui/sheet", async () => {
   >(({ asChild, children, onClick, ...rest }, ref) => {
     const handleClick = (e: unknown) => {
       sheetCloseClickSpy();
-   
-    return <button ref={ref} onClick={handleClick} {...rest} />;
+
+      return <button ref={ref} onClick={handleClick} {...rest} />;
+    }
   });
 
   SheetClose.displayName = "SheetClose";

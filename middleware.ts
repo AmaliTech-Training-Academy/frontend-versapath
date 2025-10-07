@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { protectedPaths, publicPaths } from "./lib/constants/routes";
 import { Roles } from "./lib/types";
+import { NextAuthRequest } from "next-auth";
 
 function isBoundaryMatch(pathname: string, base: string) {
   if (!pathname.startsWith(base)) return false;
@@ -10,7 +11,7 @@ function isBoundaryMatch(pathname: string, base: string) {
 }
 
 // Authenticated middleware wrapper
-function handlePublicRoute(req: any, pathname: string, isAuthenticated: boolean, authenticatedRole: string | undefined, requiresOnboarding: boolean) {
+function handlePublicRoute(req: NextAuthRequest, pathname: string, isAuthenticated: boolean, authenticatedRole: string | undefined, requiresOnboarding: boolean) {
   const isPublic = publicPaths.some((pub) =>
     pathname === pub || pathname.startsWith(pub + "/")
   );
@@ -29,7 +30,7 @@ function handlePublicRoute(req: any, pathname: string, isAuthenticated: boolean,
   return NextResponse.next();
 }
 
-function handleLearnerOnboarding(req: any, pathname: string, authenticatedRole: string | undefined, requiresOnboarding: boolean) {
+function handleLearnerOnboarding(req: NextAuthRequest, pathname: string, authenticatedRole: string | undefined, requiresOnboarding: boolean) {
   if (authenticatedRole !== "LEARNER") return null;
 
   if (requiresOnboarding && !isBoundaryMatch(pathname, "/onboarding")) {
@@ -43,7 +44,7 @@ function handleLearnerOnboarding(req: any, pathname: string, authenticatedRole: 
   return null;
 }
 
-function handleProtectedRoute(req: any, pathname: string, authenticatedRole: string | undefined) {
+function handleProtectedRoute(req: NextAuthRequest, pathname: string, authenticatedRole: string | undefined) {
   const matches = protectedPaths.filter(({ url }) => isBoundaryMatch(pathname, url));
   const matchedRoute = [...matches].sort((a, b) => b.url.length - a.url.length)[0];
 

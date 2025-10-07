@@ -49,3 +49,5 @@ export const LearnerCard = React.forwardRef<HTMLDivElement, LearnerCardProps>(
         );
     }
 );
+
+LearnerCard.displayName = "LearnerCard";
