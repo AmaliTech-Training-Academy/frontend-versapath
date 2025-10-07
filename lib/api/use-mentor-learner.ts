@@ -17,7 +17,7 @@ export function useMentorLearners(mentorId: string, params?: Params) {
     size: String(pageSize),
   });
 
-  const { data, error, isLoading, mutate } = useSWR(`/roadmap/menotors/assigned-learners/${mentorId}?${searchQuery.toString()}`, fetcher);
+  const { data, error, isLoading, mutate } = useSWR(`/roadmap/mentors/assigned-learners/${mentorId}?${searchQuery.toString()}`, fetcher);
 
   return {
     learners: data?.data?.items ?? [],
