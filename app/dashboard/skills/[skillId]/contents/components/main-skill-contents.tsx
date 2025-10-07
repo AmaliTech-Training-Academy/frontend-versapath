@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 export const MainSkillContents = () => {
   const searchParams = useSearchParams();
   const params = useParams();
-  const { isAdmin } = useCheckRole();
+  const { isAdmin, isLearner } = useCheckRole();
   const lessonId = searchParams.get("activeLesson") as string;
   const moodleId = searchParams.get("moodleId") as string;
   const { skillId } = params as { skillId: string };
@@ -112,17 +112,19 @@ export const MainSkillContents = () => {
       <article className="w-full flex justify-between items-center">
         <h2 className="justify-start text-lg font-semibold leading-relaxed text-start text-gray-text-strong/90">
           {lesson?.name || "N/A"}{" "}
-          <span
-            className={cn(
-              "text-xs p-1 px-2 rounded-lg border  uppercase ms-5",
-              lessonStatus === SKillStatus.COMPLETED &&
-                "bg-green-fill text-green-text border-green-text",
-              lessonStatus === SKillStatus.IN_PROGRESS &&
-                "bg-amber-fill text-amber-text border-amber-text"
-            )}
-          >
-            {lessonStatusLabel}
-          </span>
+          {isLearner && (
+            <span
+              className={cn(
+                "text-xs p-1 px-2 rounded-lg border  uppercase ms-5",
+                lessonStatus === SKillStatus.COMPLETED &&
+                  "bg-green-fill text-green-text border-green-text",
+                lessonStatus === SKillStatus.IN_PROGRESS &&
+                  "bg-amber-fill text-amber-text border-amber-text"
+              )}
+            >
+              {lessonStatusLabel}
+            </span>
+          )}
         </h2>
         {isAdmin && (
           <Button variant={"ghost"} className="px-4 bg-gray-stroke-weak/60">
@@ -140,22 +142,24 @@ export const MainSkillContents = () => {
           )
         )}
       </div>
-      <div className="flex justify-end gap-4 ">
-        <Button
-          variant={"outline"}
-          onClick={handleUpdateLessonStatus}
-          disabled={matchingLesson?.status === SKillStatus.COMPLETED}
-        >
-          {matchingLesson?.status === SKillStatus.COMPLETED ? (
-            "Completed"
-          ) : (
-            <>
-              <CheckCircle />
-              Mark as complete
-            </>
-          )}
-        </Button>
-      </div>
+      {isLearner && (
+        <div className="flex justify-end gap-4 ">
+          <Button
+            variant={"outline"}
+            onClick={handleUpdateLessonStatus}
+            disabled={matchingLesson?.status === SKillStatus.COMPLETED}
+          >
+            {matchingLesson?.status === SKillStatus.COMPLETED ? (
+              "Completed"
+            ) : (
+              <>
+                <CheckCircle />
+                Mark as complete
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </section>
   );
 };

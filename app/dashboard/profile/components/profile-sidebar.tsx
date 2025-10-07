@@ -20,14 +20,7 @@ const sidebarItems = [
         title: "Account Settings",
         url: "#"
     },
-    {
-        title: "Archive",
-        url: "#"
-    },
-    {
-        title: "Badges",
-        url: "#"
-    },
+   
 
 ];
 
@@ -35,7 +28,7 @@ export const ProfileSidebar = () => {
     const pathname = usePathname();
 
     return (
-        <article className="rounded-xl p-2.5 space-y-2.5 h-fit">
+        <article className="rounded-xl p-2 border bg-base-light-white space-y-2.5 h-fit">
             <SidebarContent></SidebarContent>
             <SidebarContent>
                 <SidebarGroup>

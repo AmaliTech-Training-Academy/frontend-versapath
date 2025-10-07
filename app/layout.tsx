@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: "VersaPath.ai",
   description:
     "A modular, AI-augmented learning and career acceleration platform for software engineers",
+  icons: {
+    icon: "/Logo.svg",
+  },
 };
 
 export default function RootLayout({

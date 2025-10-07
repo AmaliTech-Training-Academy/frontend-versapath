@@ -43,8 +43,7 @@ function SingleSkillPage() {
   }, [fetchedSkill]);
   const handleStartSkill = () => {
     const firstLessonEndpoint = `/dashboard/skills/${skillId}/contents?activeLesson=${lessons?.[0].id}&moodleId=${lessons?.[0].moodlePageId}`;
-
-    if (status === SKillStatus.IN_PROGRESS) {
+    if (status === SKillStatus.IN_PROGRESS || status === SKillStatus.COMPLETED) {
       router.push(firstLessonEndpoint);
       return;
     }

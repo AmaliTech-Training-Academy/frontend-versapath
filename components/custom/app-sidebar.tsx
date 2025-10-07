@@ -153,25 +153,9 @@ const sidebarItems: SidebarItem[] = [
 ];
 
 const sidebarFooterItems: FooterItem[] = [
-  {
-    title: "Notifications",
-    url: "#",
-    icon: Bell,
-    count: 0,
-    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
-  },
-  {
-    title: "Support",
-    url: "#",
-    icon: LifeBuoy,
-    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
-  },
+  { title: "Notifications", url: "#", icon: Bell, count: 0, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
+  { title: "Support", url: "#", icon: LifeBuoy, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
+  { title: "Settings", url: "/dashboard/settings", icon: Settings, allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER] },
 ];
 
 export const canSee = (userRole: Roles, allowed?: Roles[]) =>
