@@ -7,8 +7,8 @@ import { Roles } from "@/lib/types";
 import { useSession } from "next-auth/react";
 
 export const Metrics = () => {
-    const { data: session } = useSession();
-    const userRole = session?.user?.role as Roles;
+  const { data: session } = useSession();
+  const userRole = session?.user?.role as Roles;
   const { metrics, isLoading, error } = useMetrics(userRole);
 
   if (isLoading || error) {
@@ -31,7 +31,7 @@ export const Metrics = () => {
       {metrics.map((metric) => (
         <MetricsCard
           key={metric.title}
-         title={metric.title}
+          title={metric.title}
           value={metric.value}
           icon={metric.icon}
         />
