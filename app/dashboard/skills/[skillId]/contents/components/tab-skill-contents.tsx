@@ -6,6 +6,7 @@ import {
   useFetchSingleSkill,
   useGetRoadmapCapsuleLessons,
 } from "@/lib/api/skills";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 import { useProgressMetadata } from "@/lib/hooks/use-progress-metadata";
 import { SKillStatus } from "@/lib/types/api";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 
 export const TabSkillContents = () => {
   const router = useRouter();
+  const { isAdmin } = useCheckRole();
   const searchParams = useSearchParams();
   const { skillId } = useParams();
   const { skill, isFetchingSkill, fetchSkillError } = useFetchSingleSkill(
@@ -26,13 +28,14 @@ export const TabSkillContents = () => {
     useGetRoadmapCapsuleLessons(skillId as string);
 
   const handleActivateSkill = (key: string, moodlePageId: string) => {
-    const lessonToOpen = capsuleLessons?.data?.find((l) => l.atomId === key);
     const navigate = () => {
       const params = new URLSearchParams(Array.from(searchParams.entries()));
       params.set("activeLesson", key);
       params.set("moodleId", moodlePageId);
       router.push(`?${params.toString()}`, { scroll: true });
     };
+    if (isAdmin) return navigate();
+    const lessonToOpen = capsuleLessons?.data?.find((l) => l.atomId === key);
     if (
       lessonToOpen?.completed ||
       lessonToOpen?.status === SKillStatus.IN_PROGRESS
