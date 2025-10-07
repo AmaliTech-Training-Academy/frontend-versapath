@@ -9,7 +9,7 @@ export const EmptyState = ({ message }: { message: string }) => {
                 height={100}
                 width={100}
             />
-            <span className="text-sm text-[#525252]">{message}</span>
+            <span className="text-sm text-[#525252] items-center">{message}</span>
         </>
     );
 }
