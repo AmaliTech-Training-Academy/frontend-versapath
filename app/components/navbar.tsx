@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import { SheetWrapper } from "../dashboard/components/sheet-wrapper";
+import logo from "@/public/Logo.svg";
 
 
 export const Navbar = () => {
@@ -13,7 +14,7 @@ export const Navbar = () => {
       <div className="flex h-16 items-center justify-between lg:px-16 md:px-8 px-4 py-4 w-full">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/Logo.svg"
+            src={logo}
             alt="logo"
             width={52}
             height={52}

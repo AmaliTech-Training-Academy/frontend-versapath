@@ -7,13 +7,13 @@ import { Roles } from "@/lib/types";
 import { useSession } from "next-auth/react";
 
 export const Metrics = () => {
-    const { data: session } = useSession();
-    const userRole = session?.user?.role as Roles;
+  const { data: session } = useSession();
+  const userRole = session?.user?.role as Roles;
   const { metrics, isLoading, error } = useMetrics(userRole);
 
   if (isLoading || error) {
     return (
-      <section className="w-full items-center gap-2 text-muted-foreground">
+      <section className="w-full flex items-center justify-center gap-2 text-muted-foreground">
         {isLoading && (
           <>
             <Loader className="animate-spin" />
@@ -31,7 +31,7 @@ export const Metrics = () => {
       {metrics.map((metric) => (
         <MetricsCard
           key={metric.title}
-         title={metric.title}
+          title={metric.title}
           value={metric.value}
           icon={metric.icon}
         />

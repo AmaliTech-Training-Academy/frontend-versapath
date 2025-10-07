@@ -113,7 +113,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     title: "Learners",
-    url: "#",
+    url: "/dashboard/learners",
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
   },
