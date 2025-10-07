@@ -5,6 +5,11 @@ export enum Status {
   INACTIVE = "INACTIVE",
   PENDING = "PENDING",
 }
+export enum SKillStatus {
+  NOT_STARTED = "NOT_STARTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+}
 export interface User {
   id: string;
   userId?: string;
@@ -73,7 +78,7 @@ export interface Track {
 export interface MyRoadmap {
   learnerId: string;
   roadmapId: string;
-  talentRoutId: string;
+  talentRouteId: string;
   routeName: string;
   routeDescription: string;
   enrollmentStatus: "ACTIVE" | "COMPLETED" | "DROPPED";
@@ -87,7 +92,7 @@ export interface MyTrack {
   trackName: string;
   description: string;
   sequenceOrder: number;
-  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+  status: SKillStatus;
   progressPercentage: number;
   isUnlocked: boolean;
   capsules: MyTrackCapsule[];
@@ -99,7 +104,7 @@ export interface MyTrackCapsule {
   capsuleName: string;
   description: string;
   sequenceOrder: number;
-  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+  status: SKillStatus;
   progressPercentage: number;
   isUnlocked: boolean;
 }

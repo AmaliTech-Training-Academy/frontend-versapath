@@ -1,13 +1,22 @@
-import React from "react";
+import { SKillStatus } from "@/lib/types/api";
+import { FC } from "react";
 
-export const SkillContentProgressBar = () => {
+export const SkillContentProgressBar: FC<{
+  status?: string;
+  progress?: number;
+}> = ({ status, progress }) => {
   return (
     <div className="self-stretch inline-flex justify-start items-center gap-4 my-2">
       <div className="w-80 h-2 relative bg-brand-primary-stroke-strong/20 rounded-[20px] overflow-hidden">
-        <div className="w-0 h-5 left-0 top-[-5.50px] absolute bg-brand-primary-text" />
+        <div
+          className="h-5 left-0 top-[-5.50px] absolute bg-brand-primary-text"
+          style={{ width: `${progress ?? 0}%` }}
+        />
       </div>
       <p className="text-center justify-center text-base-white text-xs font-normal leading-none">
-        0% complete
+        {status === SKillStatus.NOT_STARTED
+          ? "NOT STARTED"
+          : `${progress ?? 0}% complete`}
       </p>
     </div>
   );
