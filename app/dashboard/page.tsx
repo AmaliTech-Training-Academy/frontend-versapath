@@ -12,6 +12,7 @@ import {
   sampleDays,
 } from "@/lib/api/dummy-submissions";
 import { UpcomingAssessments } from "./components/upcoming-assessments";
+import { RoleReadinessHeatmap } from "./components/role-readiness-heatmap";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -40,6 +41,11 @@ export default async function DashboardPage() {
           </section>
         </>
       )}
+      {
+        session?.user.role === Roles.MANAGER && (
+          <RoleReadinessHeatmap />
+        )
+      }
     </>
   );
 }
