@@ -31,6 +31,7 @@ import {
   Search,
   LogOut,
   FileText,
+  FileCheck,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -116,6 +117,24 @@ const sidebarItems: SidebarItem[] = [
     url: "/dashboard/learners",
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
+  },
+  {
+    title: "Talent Readiness",
+    url: "/dashboard/talent-readiness",
+    icon: FileText,
+    allowedRoles: [Roles.MANAGER]
+  },
+  {
+    title: "Analytics",
+    url: "/dashboard/analytics",
+    icon: FileCheck,
+    allowedRoles: [Roles.MANAGER]
+  },
+  {
+    title: "Performance Report",
+    url: "/dashboard/performance-report",
+    icon: UsersIcon,
+    allowedRoles: [Roles.MANAGER]
   },
   {
     title: "Skills & Learning",

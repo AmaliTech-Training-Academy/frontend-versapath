@@ -51,6 +51,21 @@ export const  protectedPaths = [
     role: [Roles.MENTOR]
   },
   {
+    title: "Talent Readiness",
+    url: "/dashboard/talent-readiness",
+    role: [Roles.MANAGER]
+  },
+  {
+    title: "Analytics",
+    url: "/dashboard/analytics",
+    role: [Roles.MANAGER]
+  },
+  {
+    title: "Performance Report",
+    url: "/dashboard/performance-report",
+    role: [Roles.MANAGER]
+  },
+  {
     title: "Profile",
     url: "/dashboard/profile",
     role: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER]
