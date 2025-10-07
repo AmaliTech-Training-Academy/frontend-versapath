@@ -3,7 +3,7 @@ import { CustomDropdown } from "@/components/custom/custom-dropdown";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Eye, MoreVertical, PenBox, SquarePlay, Trash2 } from "lucide-react";
+import { Eye, MoreVertical, PenBox, Trash2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { SheetWrapper } from "../../components/sheet-wrapper";
@@ -14,6 +14,7 @@ import { deleteSkill } from "@/lib/api/skills";
 import { mutate } from "swr";
 import { AddSkillForm } from "./add-skill-form";
 import { useCheckRole } from "@/lib/hooks/use-check-role";
+import { LearnerDropdown } from "./learner-dropdown";
 
 export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -49,7 +50,7 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
           </Button>
         }
       >
-        {isLearner && <StudentDropDown skillId={skill.id} />}
+        {isLearner && <LearnerDropdown skillId={skill.id} />}
         {isAdmin && (
           <>
             <DropdownMenuItem asChild>
@@ -98,28 +99,6 @@ export const SkillCapsuleCardMenu: React.FC<{ skill: SKill }> = ({ skill }) => {
         preventCloseOnConfirm={true}
         dialogClose={true}
       />
-    </>
-  );
-};
-
-const StudentDropDown = ({ skillId }: { skillId: string }) => {
-  return (
-    <>
-      <DropdownMenuItem asChild>
-        <Link href={`#`} className="justify-start w-full">
-          <SquarePlay />
-          Start
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link
-          href={`/dashboard/skills/${skillId}`}
-          className="justify-start w-full"
-        >
-          <Eye />
-          View details
-        </Link>
-      </DropdownMenuItem>
     </>
   );
 };

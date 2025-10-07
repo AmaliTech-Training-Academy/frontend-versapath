@@ -6,6 +6,9 @@ import { Loader } from "lucide-react";
 import { useFetchSkills } from "@/lib/api/skills";
 import Image from "next/image";
 import { paginationCalculator } from "@/lib/hooks/pagination-calculator";
+import { useTrack } from "@/lib/api/use-track";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
+import { extractLearningMetrics } from "@/lib/utils";
 
 interface SKillsContentsSectionProps {
   searchQuery: string;
@@ -20,12 +23,23 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
     pageIndex: 0,
     pageSize: 10,
   });
-
+  const { isLearner } = useCheckRole();
+  const {
+    track,
+    error: fetchTracksError,
+    loading: isFetchingTracks,
+  } = useTrack();
   const { skills, isFetchingSkills, fetchSkillsError } = useFetchSkills(
     pagination.pageIndex
   );
+  const allItems = isLearner
+    ? skills?.data?.items?.filter((item) =>
+        track?.capsules?.find((capsule) => capsule.capsuleId === item.id)
+      ) ?? []
+    : skills?.data?.items ?? [];
 
-  const allItems = skills?.data?.items ?? [];
+  const learningMetrics = extractLearningMetrics(track?.capsules ?? []);
+
   const apiTotalElements = skills?.data?.pagination.totalElements;
   // Filter and search logic
   const filteredItems = useMemo(() => {
@@ -122,17 +136,16 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
       pageIndex,
     }));
   };
-
   let content;
 
-  if (isFetchingSkills) {
+  if (isFetchingSkills || isFetchingTracks) {
     content = (
       <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
         <Loader className="animate-spin" size={40} />
         <p className="mt-2">Loading skills...</p>
       </section>
     );
-  } else if (fetchSkillsError) {
+  } else if (fetchSkillsError || fetchTracksError) {
     content = (
       <section className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
         <Image
@@ -166,7 +179,13 @@ export const SKillsContentsSection: React.FC<SKillsContentsSectionProps> = ({
       <>
         <article className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 min-h-[60vh]">
           {filteredItems.map((skill) => (
-            <SkillCapsuleCard key={skill.id} skill={skill} />
+            <SkillCapsuleCard
+              key={skill.id}
+              skill={skill}
+              learningMetrics={
+                isLearner ? learningMetrics[skill.id] : undefined
+              }
+            />
           ))}
         </article>
 

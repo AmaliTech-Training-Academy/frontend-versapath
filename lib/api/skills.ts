@@ -3,7 +3,9 @@ import {
   Cluster,
   ItemData,
   ListData,
+  MyRoadmap,
   SingleSkillResponse,
+  SKillStatus,
   Tag,
 } from "../types/api";
 import { SKill } from "../types/skills";
@@ -275,4 +277,59 @@ export const searchTags = async (
       id: tag.id,
     })) || []
   );
+};
+
+export const handleSKillProgress = async (
+  data: {
+    learnerId: string;
+    atomId: string;
+    capsuleId: string;
+    trackId: string;
+    talentRouteId: string;
+  },
+  updatingProgress?: boolean
+) => {
+  const endpoint = updatingProgress
+    ? "/roadmap/complete-atom-progress"
+    : "/roadmap/start-progress";
+  const res = await apiRequest<{ message: string; success: boolean }>(
+    endpoint,
+    "POST",
+    data
+  );
+
+  if (!res.success) throw new Error(res.message || "Failed to start skill");
+  return res;
+};
+export const useGetMyRoadmap = () => {
+  const res = useSWR("/learner/my-roadmap", (url) =>
+    apiRequest<MyRoadmap>(url, "GET")
+  );
+  return {
+    roadmap: res.data,
+    isLoading: res.isLoading,
+    fetchError: res.error,
+    revalidateRoadmap: () => res.mutate(),
+  };
+};
+export const useGetRoadmapCapsuleLessons = (skillId: string) => {
+  const res = useSWR(`/learner/my-capsules/${skillId}/atoms`, (url) =>
+    apiRequest<
+      {
+        atomProgressId: string;
+        atomId: string;
+        name: string;
+        description: string;
+        status: SKillStatus;
+        completed: boolean;
+        isUnlocked: boolean;
+      }[]
+    >(url, "GET")
+  );
+  return {
+    capsuleLessons: res.data,
+    isLoading: res.isLoading,
+    fetchError: res.error,
+    revalidateCapsuleLessons: () => res.mutate(),
+  };
 };

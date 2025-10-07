@@ -1,4 +1,4 @@
-import { Status } from "./api";
+import { SKillStatus, Status } from "./api";
 import { SKill } from "./skills";
 
 export interface GrowthTrack {
@@ -12,3 +12,8 @@ export interface GrowthTrack {
   createdAt: string;
   updatedAt: string;
 }
+export type LearningMetricsProps = {
+  progress: number;
+  status: SKillStatus;
+  isUnlocked: boolean;
+};
