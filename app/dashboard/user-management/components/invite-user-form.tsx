@@ -1,11 +1,11 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom/custom-input";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   inviteUserSchema,
   type InviteUserInputs,
@@ -19,13 +19,20 @@ import { fetchRoles } from "@/lib/redux/slices/roles-slice";
 import { useSWRConfig } from "swr";
 import { apiRequest } from "@/lib/api/api-request";
 import { User } from "@/lib/types/api";
+import { MultipleSelectChip } from "@/components/custom/multiple-selection-input";
+import { fetchSpecializations } from "@/lib/redux/slices/specialization-slice";
+import { Roles } from "@/lib/types";
 export const InviteUserForm = () => {
   const { mutate } = useSWRConfig();
-  const [error, setError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const { isFetchingRoles, isFetchingError, roles } = useAppSelector(
     (state) => state.rolesReducer
   );
+  const {
+    specializations,
+    isFetchingError: isFetchingSpecError,
+    isFetching: isFetchingSpecs,
+  } = useAppSelector((state) => state.specializationReducer);
   const form = useForm<InviteUserInputs>({
     resolver: zodResolver(inviteUserSchema),
     defaultValues: {
@@ -35,14 +42,37 @@ export const InviteUserForm = () => {
     mode: "onChange",
   });
   const closeRef = useRef<HTMLButtonElement>(null);
+  const isMentorSelected = useWatch({
+    control: form.control,
+    name: "role",
+    compute: (role) => roles.find((r) => r.id === role)?.role === Roles.MENTOR,
+  });
   const onSubmit = async (data: InviteUserInputs) => {
-    setError(null);
+    if (
+      isMentorSelected &&
+      (!data.specialization || data.specialization.length === 0)
+    ) {
+      form.setError("specialization", {
+        type: "manual",
+        message: "Please select at least one specialization.",
+      });
+      return;
+    }
+    const specializationIds = specializations
+      .map((spec) =>
+        data.specialization?.includes(spec.specName) ? spec.specId : null
+      )
+      .filter((id) => !!id);
     const response = await apiRequest<User>("/register/invite-user", "POST", {
       email: data.email,
       roleId: data.role,
+      specializationIds,
     });
     if (!response.success) {
-      setError(response.message || "Failed to send invite. Please try again.");
+      form.setError("root", {
+        type: "manual",
+        message: response.message || "Failed to send invite. Please try again.",
+      });
     } else {
       toast.success(response.message, {
         action: {
@@ -58,28 +88,36 @@ export const InviteUserForm = () => {
     }
   };
   useEffect(() => {
-    if (roles.length === 0) {
-      dispatch(fetchRoles());
+    if (form.formState.errors.specialization && !isMentorSelected) {
+      form.clearErrors("specialization");
     }
-  }, [dispatch, roles.length]);
-  if (isFetchingRoles) {
+  }, [isMentorSelected, form]);
+  useEffect(() => {
+    if (roles.length === 0 || specializations.length === 0) {
+      dispatch(fetchRoles());
+      dispatch(fetchSpecializations());
+    }
+  }, [dispatch, roles.length, specializations.length]);
+  if (isFetchingRoles || isFetchingSpecs) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
         <Loader className="animate-spin" size={30} />
       </div>
     );
   }
-  if (isFetchingError || roles.length === 0) {
+  if (isFetchingError || roles.length === 0 || isFetchingSpecError) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full mt-4 min-h-[400px]">
-        Failed to load roles. Please try again later.
+        {isFetchingError && "  Failed to load roles. Please try again later."}
+        {isFetchingSpecError &&
+          " Failed to load specializations. Please try again later."}
       </div>
     );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormField
           control={form.control}
           name="email"
@@ -94,7 +132,25 @@ export const InviteUserForm = () => {
             <RadioGroupComponent field={field} roles={roles} />
           )}
         />
-        {error && <p className="mt-2 text-sm text-red-text">{error}</p>}
+        <FormField
+          control={form.control}
+          name="specialization"
+          render={({ field }) => (
+            <MultipleSelectChip
+              defaultTags={specializations.map((spec) => spec.specName)}
+              value={field.value || []}
+              onChange={field.onChange}
+              label="Mentor Specializations"
+              placeholder="Select Specializations"
+              disabled={!isMentorSelected}
+            />
+          )}
+        />
+        {form.formState.errors.root && (
+          <p className="mt-2 text-sm text-red-text">
+            {form.formState.errors.root.message}
+          </p>
+        )}
         <div className="flex justify-end space-x-3">
           <SheetClose asChild>
             <Button variant={"outline"} ref={closeRef}>

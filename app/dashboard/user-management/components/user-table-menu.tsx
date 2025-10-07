@@ -16,9 +16,7 @@ export const UserTableMenu: React.FC<{
   const [isResending, startResending] = React.useTransition();
   const handleResendVerification = () =>
     startResending(async () => {
-      const response = await apiRequest(`/register/resend-invitation`, "POST", {
-        email: user.email,
-      });
+      const response = await apiRequest(`/register/resend-invitation?email=${user.email}`, "POST");
       if (!response.success) {
         toast.error(
           response.message ||

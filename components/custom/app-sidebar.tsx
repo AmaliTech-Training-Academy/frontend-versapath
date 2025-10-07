@@ -1,8 +1,9 @@
 "use client";
 import {
   BookOpenIcon,
-  Squares2X2Icon,
   UsersIcon,
+  DocumentTextIcon,
+  HomeIcon
 } from "@heroicons/react/24/outline";
 import {
   Sidebar,
@@ -20,11 +21,25 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { MoreVertical, User, ChevronDown, TrendingUp, Bell, LifeBuoy, Settings, Search, LogOut, FileText, FileCheck } from "lucide-react";
+import {
+  MoreVertical,
+  User,
+  ChevronDown,
+  Bell,
+  LifeBuoy,
+  Settings,
+  Search,
+  LogOut,
+  FileText,
+} from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
 import { handleLogOut } from "@/lib/api/logout";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "../ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "../ui/collapsible";
 import { Input } from "../ui/input";
 import { useSession } from "next-auth/react";
 import { ConfirmDialog } from "./confirm-dialog";
@@ -68,37 +83,37 @@ type PopoverItem = {
   label: string;
   icon: SvgIcon;
   handleClick?: () => void;
-}
+};
 
 // Static
 const sidebarItems: SidebarItem[] = [
   {
-    title: "Dashboard",
+    title: "Overview",
     url: "/dashboard",
-    icon: Squares2X2Icon,
-    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER]
+    icon: HomeIcon,
+    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
   },
   {
     title: "User Management",
     url: "/dashboard/user-management",
     icon: UsersIcon,
-    allowedRoles: [Roles.ADMIN]
+    allowedRoles: [Roles.ADMIN],
   },
-  {
+    {
     title: "Submissions",
     url: "/dashboard/submissions",
-    icon: FileText,
-    allowedRoles: [Roles.MENTOR]
+    icon:  DocumentTextIcon,
+    allowedRoles: [Roles.MENTOR],
   },
   {
     title: "Assessments",
     url: "/dashboard/assessments",
-    icon: FileCheck,
+    icon: FileText,
     allowedRoles: [Roles.MENTOR]
   },
   {
     title: "Learners",
-    url: "/dashboard/learners",
+    url: "#",
     icon: UsersIcon,
     allowedRoles: [Roles.MENTOR]
   },
@@ -108,18 +123,35 @@ const sidebarItems: SidebarItem[] = [
     icon: BookOpenIcon,
     allowedRoles: [Roles.ADMIN, Roles.LEARNER],
     items: [
-      { title: "Skill Categories", url: "/dashboard/skill-categories?page=1&size=12", allowedRoles: [Roles.ADMIN] },
+      { title: "Talent routes", url: "/dashboard/talent-routes?page=1&size=12", allowedRoles: [Roles.ADMIN] },
+      { title: "Growth tracks", url: "/dashboard/growth-tracks?page=1&size=12", allowedRoles: [Roles.ADMIN] },
       { title: "Skills", url: "/dashboard/skills", allowedRoles: [Roles.ADMIN, Roles.LEARNER] },
       { title: "Lessons", url: "/dashboard/lessons", allowedRoles: [Roles.ADMIN] },
       { title: "Roadmap", url: "/dashboard/roadmap", allowedRoles: [Roles.LEARNER] },
       { title: "Badges", url: "/dashboard/badges", allowedRoles: [Roles.LEARNER] },
     ],
+  }
+];
+
+const sidebarFooterItems: FooterItem[] = [
+  {
+    title: "Notifications",
+    url: "#",
+    icon: Bell,
+    count: 0,
+    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
   },
   {
-    title: "Growth Track",
+    title: "Support",
     url: "#",
-    icon: TrendingUp,
-    allowedRoles: [Roles.ADMIN, Roles.LEARNER]
+    icon: LifeBuoy,
+    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    allowedRoles: [Roles.ADMIN, Roles.MANAGER, Roles.MENTOR, Roles.LEARNER],
   },
 
 ];
@@ -144,37 +176,35 @@ export function AppSidebar() {
 
   const popoverItems: PopoverItem[] = [
     {
-      label: 'Profile',
+      label: "Profile",
       icon: User,
-      handleClick: () => router.push('/dashboard/profile')
+      handleClick: () => router.push("/dashboard/profile"),
     },
     {
-      label: 'Logout',
+      label: "Logout",
       icon: LogOut,
-      handleClick: () => setIsOpen(true)
-    }
+      handleClick: () => setIsOpen(true),
+    },
   ];
 
   const userRole = session?.user?.role as Roles;
 
-  const filteredSidebarItems = sidebarItems
-    .map((item) => {
-      if (isParent(item)) {
-        // Filter children
-        const children = item.items.filter((s) =>
-          canSee(userRole, s.allowedRoles)
-        );
+  const filteredSidebarItems = sidebarItems.map((item) => {
+    if (isParent(item)) {
+      // Filter children
+      const children = item.items.filter((s) =>
+        canSee(userRole, s.allowedRoles)
+      );
 
-        // If parent is visible OR any child is visible, keep it
-        const parentVisible = canSee(userRole, item.allowedRoles);
-        if (!parentVisible && children.length === 0) return null;
+      // If parent is visible OR any child is visible, keep it
+      const parentVisible = canSee(userRole, item.allowedRoles);
+      if (!parentVisible && children.length === 0) return null;
 
-        return { ...item, items: children };
-      } else {
-        return canSee(userRole, item.allowedRoles) ? item : null;
-      }
-    });
-
+      return { ...item, items: children };
+    } else {
+      return canSee(userRole, item.allowedRoles) ? item : null;
+    }
+  });
 
   const filteredFooterItems = sidebarFooterItems.filter((f) => canSee(userRole, f.allowedRoles));
 
@@ -211,145 +241,153 @@ export function AppSidebar() {
                   type="search"
                   placeholder="Search"
                   aria-label="Search sidebar"
-                  className="border p-4 pl-10 w-full"
+                  className="w-full p-4 pl-10 border"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-text-strong/30 cursor-pointer" />
               </SidebarMenuItem>
 
-              {
-                filteredSidebarItems.map((item) => {
-                  if (!item) return null;
-                  return (
-                    isParent(item) ? (
-                      // Only render group if parent visible or any child exists
-                      (item.items.length > 0 || canSee(userRole, item.allowedRoles)) && (
-                        <Collapsible key={item.title} asChild>
-                          <SidebarMenuItem>
-                            <CollapsibleTrigger asChild>
-                              <SidebarMenuButton
-                                tooltip={item.title}
-                                className="p-4 text-gray-text-weak font-semibold"
-                              >
-                                <item.icon />
-                                <span>{item.title}</span>
-                                <ChevronDown className="ml-auto" />
-                              </SidebarMenuButton>
-                            </CollapsibleTrigger>
+              {filteredSidebarItems.map((item) => {
+                if (!item) return null;
+                return isParent(item) ? (
+                  // Only render group if parent visible or any child exists
+                  (item.items.length > 0 ||
+                    canSee(userRole, item.allowedRoles)) && (
+                    <Collapsible key={item.title} asChild>
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            className="p-4 font-semibold text-gray-text-weak"
+                          >
+                            <item.icon />
+                            <span>{item.title}</span>
+                            <ChevronDown className="ml-auto" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
 
-                            {item.items.length > 0 && (
-                              <CollapsibleContent>
-                                <SidebarMenu className="pl-8">
-                                  {item.items.map((subItem) => (
-                                    <SidebarMenuItem key={subItem.title}>
-                                      <SidebarMenuButton
-                                        asChild
-                                        className="text-gray-text-weak font-semibold"
-                                        isActive={pathname === subItem.url}
-                                      >
-                                        <Link
-                                          href={subItem.url}
-                                          aria-label={`${subItem.title} page`}
-                                        >
-                                          <span>{subItem.title}</span>
-                                        </Link>
-                                      </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                  ))}
-                                </SidebarMenu>
-                              </CollapsibleContent>
-                            )}
-                          </SidebarMenuItem>
-                        </Collapsible>
-                      )
-                    ) : (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={pathname === item.url}
-                          className="p-4 text-gray-text-weak"
-                        >
-                          <Link href={item.url} aria-label={`${item.title} page`}>
-                            {item.icon ? <item.icon strokeWidth={2} /> : null}
-                            <span className="font-semibold">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
+                        {item.items.length > 0 && (
+                          <CollapsibleContent>
+                            <SidebarMenu className="pl-8">
+                              {item.items.map((subItem) => (
+                                <SidebarMenuItem key={subItem.title}>
+                                  <SidebarMenuButton
+                                    asChild
+                                    className="font-semibold text-gray-text-weak"
+                                    isActive={
+                                      pathname === subItem.url ||
+                                      pathname ===
+                                        subItem.url.slice(
+                                          0,
+                                          subItem.url.indexOf("?")
+                                        )
+                                    }
+                                  >
+                                    <Link
+                                      href={subItem.url}
+                                      aria-label={`${subItem.title} page`}
+                                    >
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                              ))}
+                            </SidebarMenu>
+                          </CollapsibleContent>
+                        )}
                       </SidebarMenuItem>
-                    )
+                    </Collapsible>
                   )
-                }
-                )}
+                ) : (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="p-4 text-gray-text-weak"
+                    >
+                      <Link href={item.url} aria-label={`${item.title} page`}>
+                        {item.icon ? <item.icon strokeWidth={2} /> : null}
+                        <span className="font-semibold">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="pb-10 px-4 space-y-4">
+      <SidebarFooter className="w-full px-4 pb-10 space-y-4">
         <div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {
-                filteredFooterItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className=" text-gray-text-weak"
-                    >
-                      <Link href={item.url} aria-label={`${item.title} page`}>
-                        <item.icon strokeWidth={2} />
-                        <span className="font-semibold">{item.title}</span>
-                        {item.count !== undefined && (
-                          <span className="rounded-xs ml-auto py-1 px-2 bg-brand-primary-text text-base-light-white text-xs font-semibold">
-                            {item.count}
-                          </span>
-                        )}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+              {filteredFooterItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    className=" text-gray-text-weak"
+                  >
+                    <Link href={item.url} aria-label={`${item.title} page`}>
+                      <item.icon strokeWidth={2} />
+                      <span className="font-semibold">{item.title}</span>
+                      {item.count !== undefined && (
+                        <span className="px-2 py-1 ml-auto text-xs font-semibold rounded-xs bg-brand-primary-text text-base-light-white">
+                          {item.count}
+                        </span>
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </div>
 
-        <div className="flex gap-2 py-6 justify-between items-center">
-          <Image src={session?.user.profilePictureUrl ?? userPlaceholder} width={400} height={400} alt="user profile" className="w-10 h-10 object-cover rounded-full" />
-          <div className="space-y-2">
-            <p className="font-semibold text-gray-text-strong text-wrap">
-              {`${session?.user.firstName} ${session?.user.lastName}`}
-            </p>
-            <p className="text-xs text-gray-text-weak text-wrap">
-              {session?.user.email}
-            </p>
-          </div>
-
-          <CustomPopover
-            trigger={
-              <Button size="icon" variant="ghost" aria-label="User options">
-                <MoreVertical className="text-gray-text-weak" />
-              </Button>
-            }
-            classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
-          >
-            <div className="text-gray-text-weak">
-              {
-                popoverItems.map(popover => {
+        <div className="flex items-center justify-between w-full gap-2 py-6">
+          <Image
+            src={session?.user.profilePictureUrl ?? userPlaceholder}
+            width={400}
+            height={400}
+            alt="user profile"
+            className="object-cover w-10 h-10 rounded-full"
+          />
+            <div className="w-full space-y-1 ">
+              <p className="font-semibold text-gray-text-strong text-wrap">
+                {`${session?.user.firstName ?? ""} ${
+                  session?.user.lastName ?? ""
+                }`}
+              </p>
+              <p className="w-full text-xs text-gray-text-weak text-wrap line-clamp-1 text-ellipsis max-w-[132px]">
+                {session?.user.email??""}
+              </p>
+            </div>
+            <CustomPopover
+              trigger={
+                <Button size="icon" variant="ghost" aria-label="User options">
+                  <MoreVertical className="text-gray-text-weak" />
+                </Button>
+              }
+              classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
+            >
+              <div className="text-gray-text-weak">
+                {popoverItems.map((popover) => {
                   const { label, icon: Icon, handleClick } = popover;
                   return (
                     <Button
                       key={label}
                       variant="ghost"
-                      className="cursor-pointer w-full flex items-center justify-start"
+                      className="flex items-center justify-start w-full cursor-pointer"
                       aria-label={label}
-                      onClick={handleClick ?? undefined}
+                      onClick={handleClick}
                     >
                       <Icon />
                       <span>{label}</span>
                     </Button>
-                  )
-                })
-              }
-            </div>
-          </CustomPopover>
+                  );
+                })}
+              </div>
+            </CustomPopover>
         </div>
       </SidebarFooter>
 
@@ -368,4 +406,4 @@ export function AppSidebar() {
       />
     </Sidebar>
   );
-};
+}

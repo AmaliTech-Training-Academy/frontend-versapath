@@ -48,4 +48,4 @@ export const dashboardRoadmaps = [
         lessons_completed: '130/200',
         clusters: ['Beginner', 'Frontend', 'Web Development']
     }
-]
+];

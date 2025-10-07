@@ -1,13 +1,12 @@
 "use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CapsuleBox } from "./capsule-box";
 import { cn } from "@/lib/utils";
-
-type Capsule = { name: string, description: string, progress?: number };
-type RoadmapProps = { readonly capsules: Capsule[] };
+import { MyTrackCapsule } from "@/lib/types/api";
 const CARD_HALF = 163 / 2;
 
-export function RoadmapTimeline({ capsules }: RoadmapProps) {
+export function RoadmapTimeline({ capsules }: { readonly capsules: MyTrackCapsule[] }) {
   const overallHeightRef = useRef<HTMLElement | null>(null);
   const [lineHeight, setLineHeight] = useState(0);
 
@@ -15,14 +14,14 @@ export function RoadmapTimeline({ capsules }: RoadmapProps) {
   const leadingCompleted = useMemo(() => {
     let count = 0;
     for (const c of capsules) {
-      if ((c.progress ?? 0) === 100) count++;
+      if (c.progressPercentage === 100) count++;
       else break;
     }
     return count;
   }, [capsules]);
 
   // Unlocked only if all previous capsules are 100%
-  const isUnlocked = (index: number) => capsules.slice(0, index).every((c) => (c.progress ?? 0) === 100);
+  const isUnlocked = (index: number) => capsules.slice(0, index).every((c) => c.progressPercentage === 100);
 
   // first capsule that isn't fully complete
   const nextInlineIndex = useMemo(() => {
@@ -60,7 +59,7 @@ export function RoadmapTimeline({ capsules }: RoadmapProps) {
           </div>
           {
             capsules.map((capsule, i) => (
-              <div className={cn("w-full flex", (i + 1) % 2 === 0 ? 'justify-end' : 'justify-start')} key={i + capsule.name}>
+              <div className={cn("w-full flex", (i + 1) % 2 === 0 ? 'justify-end' : 'justify-start')} key={capsule.capsuleId}>
                 <CapsuleBox capsule={capsule} isActive={isUnlocked(i)} isNextInline={i === nextInlineIndex} />
               </div>
             ))
