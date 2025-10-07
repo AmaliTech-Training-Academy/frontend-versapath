@@ -31,9 +31,9 @@ export const LearnerList = () => {
     return (
         <article className="grid grid-cols-2 gap-4">
             {
-                learners.map(learner => (
+                learners.map((learner, i) => (
                     <SheetWrapper
-                        key={learner.email + learner.firstName}
+                        key={learner.firstName + learner.lastName + i}
                         trigger={<LearnerCard learner={learner} hover />}
                         headerTitle="Learner Details"
                     >

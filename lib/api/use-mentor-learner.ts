@@ -23,7 +23,7 @@ export function useMentorLearners(mentorId: string, params?: Params) {
     learners: data?.data?.items ?? [],
     pageInfo: data?.data?.pagination,
     loading: isLoading,
-    error: error ? (error as Error).message : null,
+    error: error ? (error as Error).message : data?.errors ? data.message : null,
     revalidateLearners: () => mutate(),
   };
 }
