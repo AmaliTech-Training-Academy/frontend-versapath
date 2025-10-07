@@ -9,6 +9,7 @@ import {
 } from "@/lib/api/skills";
 import { useProgressMetadata } from "@/lib/hooks/use-progress-metadata";
 import { SKillStatus } from "@/lib/types/api";
+import { useCheckRole } from "@/lib/hooks/use-check-role";
 
 type LessonListCardProps = {
   data: LessonProps & { skillId: string };
@@ -25,6 +26,7 @@ export const SingleLessonListCard = ({
   const router = useRouter();
   const isFirst = index === 0;
   const isLast = index === total - 1;
+  const { isAdmin } = useCheckRole();
   const { capsuleLessons } = useGetRoadmapCapsuleLessons(data.skillId);
   const { roadmap, track } = useProgressMetadata(data.skillId);
   const lessonToOpen = capsuleLessons?.data?.find(
@@ -35,16 +37,12 @@ export const SingleLessonListCard = ({
       router.push(
         `/dashboard/skills/${data.skillId}/contents?activeLesson=${data.id}&moodleId=${data.moodlePageId}`
       );
+    if (isAdmin || lessonToOpen?.completed) return navigate();
     if (!isSkillActive) {
       toast.error("Please start the skill to access its lessons.");
       return;
     }
-    if (
-      lessonToOpen?.completed ||
-      lessonToOpen?.status === SKillStatus.IN_PROGRESS
-    ) {
-      return navigate();
-    }
+    if (lessonToOpen?.status === SKillStatus.IN_PROGRESS) return navigate();
 
     const res = handleSKillProgress({
       capsuleId: data.skillId,
