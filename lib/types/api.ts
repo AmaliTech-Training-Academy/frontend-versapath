@@ -70,6 +70,40 @@ export interface Track {
   }[];
 }
 
+export interface MyRoadmap {
+  learnerId: string;
+  roadmapId: string;
+  talentRoutId: string;
+  routeName: string;
+  routeDescription: string;
+  enrollmentStatus: "ACTIVE" | "COMPLETED" | "DROPPED";
+  overallProgressPercentage: number;
+  enrolledAt: string;
+}
+
+export interface MyTrack {
+  trackProgressId: string;
+  trackId: string;
+  trackName: string;
+  description: string;
+  sequenceOrder: number;
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+  progressPercentage: number;
+  isUnlocked: boolean;
+  capsules: MyTrackCapsule[];
+}
+
+export interface MyTrackCapsule {
+  capsuleProgressId: string;
+  capsuleId: string;
+  capsuleName: string;
+  description: string;
+  sequenceOrder: number;
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+  progressPercentage: number;
+  isUnlocked: boolean;
+}
+
 export interface Capsule {
   id: string;
   skillCapsuleId: string;
