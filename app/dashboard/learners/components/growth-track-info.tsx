@@ -1,10 +1,10 @@
-import { MyTrack } from "@/lib/types/api";
+import { MyTrack, SKillStatus } from "@/lib/types/api";
 import { useSession } from "next-auth/react";
 
 export const GrowthTrackInfo = ({ track }: { track: MyTrack | undefined }) => {
     const { data: session } = useSession();
     const mentorName = `${session?.user.firstName} ${session?.user.lastName}`;
-    const skills_completed = track?.capsules.filter(capsule => capsule.status === "COMPLETED").length;
+    const skills_completed = track?.capsules.filter(capsule => capsule.status === SKillStatus.COMPLETED).length;
 
     if(!track) return;
 
