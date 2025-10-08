@@ -1,6 +1,11 @@
-import React from 'react'
+"use client";
+
+import { useSession } from "next-auth/react";
 
 export const GrowthTrackInfo = () => {
+    const { data: session } = useSession();
+    const mentorName = `${session?.user.firstName} ${session?.user.lastName}`;
+
     return (
         <section className="w-full rounded-xl border border-gray-stroke-weak bg-base-white py-4 px-5 space-y-4">
             <header>
@@ -25,7 +30,7 @@ export const GrowthTrackInfo = () => {
                         Assigned Mentor
                     </p>
                     <p className="text-gray-text-strong/90 text-base font-semibold  leading-normal">
-                        Fiifi Titus Appiah
+                        {mentorName}
                     </p>
                 </div>
                 <div>
