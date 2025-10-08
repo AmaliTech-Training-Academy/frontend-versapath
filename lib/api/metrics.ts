@@ -7,13 +7,14 @@ import {
   Flame,
   UsersIcon,
   LucideIcon,
+  Clock,
 } from "lucide-react";
 import { apiRequest } from "./api-request";
 import { Roles } from "@/lib/types";
 import { ListData } from "../types/api";
 import { MentorLearner } from "./use-mentor-learner";
 
-export const apiGetMetrics = async (userRole: Roles, mentorId?: string) => {
+export const apiGetMetrics = async (userRole: Roles, mentorId?: string, pathname?: string) => {
   const metricConfigs: Record<
     Roles,
     { title: string; value: number; icon: LucideIcon }[]
@@ -62,7 +63,28 @@ export const apiGetMetrics = async (userRole: Roles, mentorId?: string) => {
         icon: Flame
       },
     ],
-    [Roles.MENTOR]: [
+    [Roles.MENTOR]: pathname === "/dashboard/assessments" ? [
+      {
+        title: "Total Assessments",
+        value: 25,
+        icon: FileText
+      },
+      {
+        title: "Active Assessments",
+        value: 12,
+        icon: BookOpen
+      },
+      {
+        title: "Total Submissions",
+        value: 81,
+        icon: UsersIcon
+      },
+      {
+        title: "Pending Reviews",
+        value: 13,
+        icon: Clock
+      },
+    ] : [
       {
         title: "Assigned Learners",
         value: (await apiRequest<ListData<MentorLearner>>(`/roadmap/mentors/assigned-learners/${mentorId}`, "GET")).data?.items.length ?? 0,
@@ -70,17 +92,17 @@ export const apiGetMetrics = async (userRole: Roles, mentorId?: string) => {
       },
       {
         title: "Pending Reviews",
-        value: 8,
+        value: 0,
         icon: FileText
       },
       {
         title: "Completed Reviews",
-        value: 156,
+        value: 0,
         icon: CheckCircle
       },
       {
         title: "Active Assessments",
-        value: 12,
+        value: 0,
         icon: BookOpen
       },
     ],
