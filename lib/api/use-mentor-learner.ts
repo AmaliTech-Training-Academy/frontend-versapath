@@ -5,7 +5,7 @@ import type { ListData } from "@/lib/types/api";
 import { apiRequest } from "./api-request";
 
 type Params = { pageIndex?: number; pageSize?: number; name?: string };
-export type MentorLearner = { email: string; firstName: string; lastName: string };
+export type MentorLearner = { userId: string; email: string; firstName: string; lastName: string };
 
 const fetcher = (url: string) => apiRequest<ListData<MentorLearner>>(url, "GET");
 
