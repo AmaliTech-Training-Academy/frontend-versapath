@@ -18,6 +18,7 @@ export const QuickActions = async ({ role }: QuickActionsProps) => {
             title={action.title}
             description={action.description}
             icon={action.icon}
+            url={action.url}
           />
         ))}
       </article>

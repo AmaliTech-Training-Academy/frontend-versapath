@@ -5,32 +5,37 @@ import { DashboardHeader } from "../components/header";
 import { GrowthTrackOverview } from "./components/growth-track-overview";
 import { RoadmapTimeline } from "./components/roadmap-timeline";
 import { Loader } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function SkillClustersPage() {
-    const { track, loading, error } = useTrack();
-
-    if (loading || error || !track) {
-        return (
-            <section className="bg-[url(/images/auth-background.jpg)] bg-cover bg-no-repeat bg-bottom rounded-md overflow-hidden bg-brand-primary-fill">
-                {
-                    loading && (
-                        <>
-                            <Loader className="animate-spin" />
-                            <span>Loading...</span>
-                        </>
-                    )
-                }
-
-                {error && <span>{error}</span>}
-            </section>
-        );
-    }
+    const { data: session } = useSession();
+    const id = session?.user.userId ?? "";
+    const { track, loading, error } = useTrack(id);
 
     return (
         <div className="space-y-6">
             <DashboardHeader title="Roadmap" />
-            <GrowthTrackOverview track={track} loading={loading} error={error} />
-            <RoadmapTimeline capsules={track.capsules} />
+            {
+                (loading || error || !track) ? (
+                    <section className="bg-sidebar p-4 rounded-md flex items-center justify-center text-muted-foreground h-48">
+                        {
+                            loading && (
+                                <>
+                                    <Loader className="animate-spin" />
+                                    <span>Loading...</span>
+                                </>
+                            )
+                        }
+
+                        {error && <span>{error}</span>}
+                    </section>
+                ) : (
+                    <>
+                        <GrowthTrackOverview track={track} />
+                        <RoadmapTimeline capsules={track.capsules} />
+                    </>
+                )
+            }
         </div>
     );
 }

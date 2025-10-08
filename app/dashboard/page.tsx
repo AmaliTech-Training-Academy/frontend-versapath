@@ -16,30 +16,30 @@ import { RoleReadinessHeatmap } from "./components/role-readiness-heatmap";
 
 export default async function DashboardPage() {
   const session = await auth();
+  const role = session?.user.role;
   return (
     <>
       <DashboardHeader title="Dashboard" />
       <Metrics />
-      {session?.user.role === Roles.LEARNER && (
-        <>
-          <QuickActions role={Roles.LEARNER} />
-          <section className="grid grid-cols-3 gap-6">
-            <RoadmapList />
-            <RecentActivityList />
-          </section>
-        </>
+      {(role === Roles.LEARNER || role === Roles.MENTOR) && (
+        <QuickActions role={role} />
       )}
-      {session?.user.role === Roles.MENTOR && (
-        <>
-          <QuickActions role={Roles.MENTOR} />
-          <section className="grid grid-cols-2 gap-6">
-            <RecentSubmissions submissions={dummySubmissions} />
-            <UpcomingAssessments
-              assessments={sampleAssessments}
-              days={sampleDays}
-            />
-          </section>
-        </>
+
+      {role === Roles.LEARNER && (
+        <section className="grid grid-cols-3 gap-6">
+          <RoadmapList />
+          <RecentActivityList />
+        </section>
+      )}
+
+      {role === Roles.MENTOR && (
+        <section className="grid grid-cols-2 gap-6">
+          <RecentSubmissions submissions={dummySubmissions} />
+          <UpcomingAssessments
+            assessments={sampleAssessments}
+            days={sampleDays}
+          />
+        </section>
       )}
       {
         session?.user.role === Roles.MANAGER && (

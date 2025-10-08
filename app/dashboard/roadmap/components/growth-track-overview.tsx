@@ -1,42 +1,17 @@
 import { Progress } from "@/components/ui/progress";
-import { Loader } from "lucide-react";
 import { MyTrack } from "@/lib/types/api";
 
 export const GrowthTrackOverview = ({
-    track,
-    loading,
-    error
+    track
 }: {
-    track: MyTrack | undefined,
-    loading: boolean,
-    error: string | null
+    track: MyTrack
 }) => {
-
-    if (loading || error || !track) {
-        return (
-            <section className="bg-sidebar p-4 rounded-md flex items-center justify-center text-muted-foreground">
-                {
-                    loading && (
-                        <>
-                            <Loader className="animate-spin" />
-                            <span>Loading...</span>
-                        </>
-                    )
-                }
-
-                {error && <span>{error}</span>}
-
-                {!track && <span>Failed to fetch your track. Please refresh the tab</span>}
-            </section>
-        );
-    }
-
     return (
         <section className="bg-sidebar p-4 rounded-md flex items-center justify-between">
             <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-text-strong">{track.trackName}</p>
-                <p className="text-sm text-gray-text-weak max-w-[600px] w-full">
-                    {track.description.length > 120 ? track.description.slice(0, 120) + "..." : track.description}
+                <p className="text-sm text-gray-text-weak max-w-[700px] w-full">
+                    {track.description.split('.').slice(0, 2).join('.').trim() + '.'}
                 </p>
             </div>
             <div className="space-y-1">
