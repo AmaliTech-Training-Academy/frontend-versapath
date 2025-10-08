@@ -12,7 +12,7 @@ export function RecentSubmissions({ submissions }: RecentSubmissionsProps) {
   const recentSubmissions = dummySubmissions.slice(0, 3);
   return (
     <section className="rounded-xl p-5 space-y-4 bg-[#ffffff]">
-      <CardHeader title="Recent Submittions" url="#" />
+      <CardHeader title="Recent Submissions" url="#" />
       <div className="flex flex-wrap gap-6">
         {recentSubmissions.map(({ id, ...item }) => (
           <SubmissionCard
