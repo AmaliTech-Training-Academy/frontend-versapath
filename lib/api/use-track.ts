@@ -6,7 +6,7 @@ import { apiRequest } from "./api-request";
 
 const trackFetcher = (url: string) => apiRequest<MyTrack[]>(url, "GET");
 
-export function useTrack(learnerId: string) {
+export function useTrack(learnerId = "") {
     const { data, error, isLoading, mutate } = useSWR(`/learner/my-tracks/${learnerId}`, trackFetcher);
 
     return {
