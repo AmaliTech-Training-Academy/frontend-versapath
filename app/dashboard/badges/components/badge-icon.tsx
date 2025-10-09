@@ -13,15 +13,19 @@ export function BadgeIcon({
   subjectLine1 = "JavaScript",
   subjectLine2 = "Essentials",
 }: BadgeIconProps) {
-  // Generate unique gradient ID to avoid conflicts when multiple badges are rendered
   const uniqueGradientId = `badgeGradient-${Math.random()
     .toString(36)
     .substr(2, 9)}`;
-
-  // Scale factors based on size
   const isLarge = size > 150;
-  const textSize = isLarge ? 16 : 10;
-  const subjectTextSize = isLarge ? 20 : 12;
+  const textSize = isLarge ? 13 : 12;
+  const subjectTextSize = isLarge ? 20 : 16;
+  const logoSize = isLarge ? 46 : 32;
+
+  const logoY = showSubject ? 70 : 90;
+  const text1Y = showSubject ? 95 : 130;
+  const text2Y = showSubject ? 107 : 175;
+  const subj1Y = 140;
+  const subj2Y = 160;
 
   return (
     <svg width={size} height={size} viewBox="0 0 280 280" className={className}>
@@ -43,9 +47,17 @@ export function BadgeIcon({
         stroke="#0e7490"
         strokeWidth="2"
       />
+      <image
+        href="/Logo-white.svg"
+        x={140 - logoSize / 2}
+        y={logoY - logoSize / 2}
+        width={logoSize}
+        height={logoSize}
+        aria-label="VersaPath Logo"
+      />
       <text
         x="140"
-        y={showSubject ? "100" : "125"}
+        y={text1Y}
         textAnchor="middle"
         fill="white"
         fontSize={textSize}
@@ -55,9 +67,9 @@ export function BadgeIcon({
       </text>
       <text
         x="140"
-        y={showSubject ? "125" : "150"}
+        y={text2Y}
         textAnchor="middle"
-        fill="white"
+        fill="#FFC857"
         fontSize={textSize}
         fontWeight="600"
       >
@@ -67,7 +79,7 @@ export function BadgeIcon({
         <>
           <text
             x="140"
-            y="155"
+            y={subj1Y}
             textAnchor="middle"
             fill="white"
             fontSize={subjectTextSize}
@@ -77,7 +89,7 @@ export function BadgeIcon({
           </text>
           <text
             x="140"
-            y="180"
+            y={subj2Y}
             textAnchor="middle"
             fill="white"
             fontSize={subjectTextSize}

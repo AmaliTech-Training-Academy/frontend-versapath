@@ -1,17 +1,19 @@
-'use client'
-import Link from "next/link"
-import { BadgeCardDetail } from "./badge-card"
+"use client";
+import Link from "next/link";
+import { BadgeCardDetail } from "./badge-card";
+import { DashboardHeader } from "../../components/header";
+import { ChevronRight } from "lucide-react";
 
 interface BadgeDetailProps {
   badge?: {
-    id: string
-    title: string
-    description: string
-    dateIssued: string
-    expiresDate: string
-    skills: string[]
-    earningCriteria: string
-  }
+    id: string;
+    title: string;
+    description: string;
+    dateIssued: string;
+    expiresDate: string;
+    skills: string[];
+    earningCriteria: string;
+  };
 }
 
 export function BadgeDetail({ badge }: BadgeDetailProps) {
@@ -23,33 +25,37 @@ export function BadgeDetail({ badge }: BadgeDetailProps) {
     dateIssued: "Sep. 30, 2025",
     expiresDate: "Sep. 30, 2025",
     skills: ["React", "TypeScript", "Components"],
-    earningCriteria: "Successfully complete structured skill tracks and performance assessments.",
-  }
+    earningCriteria:
+      "Successfully complete structured skill tracks and performance assessments.",
+  };
 
-  const displayBadge = badge || defaultBadge
+  const displayBadge = badge || defaultBadge;
 
   const handleDownload = () => {
-    // console.log("[v0] Downloading badge:", displayBadge.id)
-  }
+  };
 
   const handleShare = () => {
-    // console.log("[v0] Sharing badge:", displayBadge.id)
-  }
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <Link href="/dashboard/badges" className="hover:text-cyan-600 dark:hover:text-cyan-400">
-            Badges
-          </Link>
-          <span>/</span>
-          <span className="text-cyan-600 dark:text-cyan-400">{displayBadge.title}</span>
-        </div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Badges & Achievement</h1>
+    <div className="">
+      <DashboardHeader title="Badges & Achievement" />
+      <div className="flex items-center gap-2 text-xs py-4">
+        <Link
+          href="/dashboard/badges"
+          className="hover:text-brand-primary-text"
+        >
+          Badges
+        </Link>
+        <ChevronRight size={17} />
+        <span className="text-brand-primary-text">{displayBadge.title}</span>
       </div>
 
-      <BadgeCardDetail badge={displayBadge} onDownload={handleDownload} onShare={handleShare} />
+      <BadgeCardDetail
+        badge={displayBadge}
+        onDownload={handleDownload}
+        onShare={handleShare}
+      />
     </div>
-  )
+  );
 }
