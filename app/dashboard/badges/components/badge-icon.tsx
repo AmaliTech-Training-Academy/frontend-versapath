@@ -1,17 +1,12 @@
-interface BadgeIconProps {
-  size?: number;
-  className?: string;
-  showSubject?: boolean;
-  subjectLine1?: string;
-  subjectLine2?: string;
-}
+import { BadgeIconProps } from "@/lib/types/badges";
+
 
 export function BadgeIcon({
   size = 100,
   className = "",
   showSubject = false,
-  subjectLine1 = "JavaScript",
-  subjectLine2 = "Essentials",
+  subjectLine1 =" ",
+  subjectLine2 = " ",
 }: BadgeIconProps) {
   const uniqueGradientId = `badgeGradient-${Math.random()
     .toString(36)

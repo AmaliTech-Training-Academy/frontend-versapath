@@ -1,11 +1,9 @@
-// import { BadgeDetail } from "@/components/dashboard/badge-detail"
+import  BadgeDetail  from "../components/badge-detail";
 
-import { BadgeDetail } from "../components/badge-detail";
-
-export default function BadgeDetailPage({ params }: { params: { id: string } }) {
+export default function BadgeDetailPage({params,}: {params: { id: string };}) {
   return (
-    <div className="p-6">
-      <BadgeDetail />
+    <div className="space-y-6">
+      <BadgeDetail badgeId={params.id} />
     </div>
-  )
+  );
 }

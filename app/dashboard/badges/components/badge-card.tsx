@@ -4,20 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { BadgeIcon } from "./badge-icon";
-
-interface BadgeCardDetailProps {
-  badge: {
-    id: string;
-    title: string;
-    description: string;
-    dateIssued: string;
-    expiresDate: string;
-    skills: string[];
-    earningCriteria: string;
-  };
-  onDownload?: () => void;
-  onShare?: () => void;
-}
+import { BadgeCardDetailProps } from "@/lib/types/badges";
 
 export function BadgeCardDetail({
   badge,
@@ -29,14 +16,26 @@ export function BadgeCardDetail({
       <CardContent>
         <div className="flex gap-8 items-center">
           <div className="">
-            {" "}
-            <BadgeIcon
-              size={240}
-              className=""
-              showSubject={true}
-              subjectLine1="JavaScript"
-              subjectLine2="Essentials"
-            />
+            {(() => {
+              let subjectLine1 = badge.title;
+              let subjectLine2 = "";
+              const completionMatch = badge.title.match(
+                /(.*)(Completion Badges?|Completion\s+Badges?)$/i
+              );
+              if (completionMatch) {
+                subjectLine1 = completionMatch[1].trim();
+                subjectLine2 = completionMatch[2].trim();
+              }
+              return (
+                <BadgeIcon
+                  size={240}
+                  className=""
+                  showSubject={true}
+                  subjectLine1={subjectLine1}
+                  subjectLine2={subjectLine2}
+                />
+              );
+            })()}
           </div>
           <div className="space-y-2">
             <div>
@@ -52,8 +51,6 @@ export function BadgeCardDetail({
             <p className="text-gray-text-strong/70 text-sm leading-relaxed">
               {badge.description}
             </p>
-
-            {/* Skills */}
             <div>
               <h3 className="font-semibold text-gray-text-strong mb-3">
                 Skills

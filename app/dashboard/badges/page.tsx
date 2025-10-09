@@ -1,9 +1,8 @@
 
 import { BadgesList } from "./components/badges-list";
-
 export default function BadgesPage() {
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       <BadgesList />
     </div>
   )
