@@ -38,6 +38,7 @@ export type ScoreDistributionProps = {
   readonly data: Bucket[];
   readonly yLabel?: string;    // Y axis label
   readonly xLabel?: string;    // X axis label
+  readonly yDomain?: [number, number];
   readonly averageLine?: number;   // Draw a dashed horizontal average line at this value (e.g., 48)
   readonly highlightRange?: { fromLabel: string; toLabel: string };    // Optional shaded area: pass the inclusive range on the x-axis (category labels)
   readonly height?: number;    // Height of the chart container (px)
@@ -78,6 +79,7 @@ export function ScoreDistribution({
   data,
   yLabel = "No. of Learners",
   xLabel = "Scores(%)",
+  yDomain = [0, 100],
   averageLine,
   highlightRange,
   height = 360,
@@ -104,6 +106,7 @@ export function ScoreDistribution({
               axisLine={{ fill: "#1A10151A" }}
             />
             <YAxis
+              domain={yDomain}
               tickLine={false}
               axisLine={false}
               width={60}

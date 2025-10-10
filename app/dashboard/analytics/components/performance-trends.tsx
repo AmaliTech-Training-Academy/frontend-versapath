@@ -1,6 +1,8 @@
 "use client";
 
+import { monthMapping } from "@/lib/api/analytics";
 import { cn } from "@/lib/utils";
+import { Dot } from "lucide-react";
 import * as React from "react";
 import {
   AreaChart,
@@ -10,26 +12,14 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  LegendPayload
 } from "recharts";
 
-type Datum = { label: string; career: number; skills: number };
-
-type Props = {
-  readonly data: Datum[];
-  readonly title?: string;
-  readonly height?: number;
-  readonly yDomain?: [number, number];
-  readonly curve?: "monotone" | "linear";
-  readonly showGrid?: boolean;
-  readonly className?: string;
-  // Use your brand tokens here if you like
-  readonly colors?: {
-    career: string; // stroke color
-    careerFill?: string; // gradient stop (top)
-    skills: string;
-    skillsFill?: string;
-  };
+export type Datum = {
+  readonly label: string;
+  readonly career: number;
+  readonly skills: number;
 };
 
 type CustomPayload = {
@@ -44,6 +34,26 @@ type CustomTooltipProps = {
   active?: boolean;
   label?: string;
   payload?: CustomPayload[];
+};
+
+type DotItem = Pick<LegendPayload, "value" | "color">;
+
+type DotLegendProps = { payload?: ReadonlyArray<DotItem>; }
+
+type PerformanceTrendProps = {
+  readonly data: Datum[];
+  readonly title?: string;
+  readonly height?: number;
+  readonly yDomain?: [number, number];
+  readonly curve?: "monotone" | "linear";
+  readonly showGrid?: boolean;
+  readonly className?: string;
+  readonly colors?: {
+    career: string; // stroke color
+    careerFill?: string; // gradient stop (top)
+    skills: string;
+    skillsFill?: string;
+  };
 };
 
 const defaultColors = {
@@ -64,22 +74,44 @@ const DefaultTooltip = ({
     value: p.value,
     color: p.color,
   }));
+  const toolTipLabel = monthMapping[label ?? "Jan"];
 
   return (
-    <div className="rounded-xl bg-white/95 px-3 py-2 shadow-lg ring-1 ring-black/5">
-      <div className="mb-1 font-medium text-gray-800">{label}</div>
-      <div className="space-y-1 text-sm">
-        {entries.map((e) => (
-          <div key={e.name} className="flex items-center gap-2">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: e.color }}
-            />
-            <span className="text-gray-500">{e.name}:</span>
-            <span className="font-medium text-gray-900">{e.value}</span>
-          </div>
-        ))}
+    <div className="flex items-center">
+      {/* Left arrow */}
+      <div
+        className="w-0 h-0 border-t-[8px] border-b-[8px] border-r-[12px] border-t-transparent border-b-transparent border-r-base-white shadow-lg"
+      />
+
+      {/* Info container */}
+      <div className="w-[105px] rounded-xl py-2 px-4 bg-base-white shadow-lg">
+        <div className="space-y-2 text-sm text-gray-text-weak">
+          <p>{toolTipLabel}</p>
+          {
+            entries.map((e) => (
+              <div key={e.name} className={`border-l-4 py-0.5 px-1`} style={{ borderLeftColor: e.color }}>
+                <p>{e.value}</p>
+              </div>
+            ))
+          }
+        </div>
       </div>
+    </div>
+  );
+};
+
+// Legend
+const DotLegend = (props: DotLegendProps) => {
+  const items = props.payload ?? [];
+
+  return (
+    <div className="w-full mt-6 flex items-center justify-center gap-8">
+      {items.map((item) => (
+        <div key={item.value} className="w-fit flex items-center text-gray-text-weak">
+          <Dot size={30} style={{ color: item.color }} />
+          <span className="text-base text-gray-text-weak whitespace-nowrap">{item.value}</span>
+        </div>
+      ))}
     </div>
   );
 };
@@ -87,16 +119,16 @@ const DefaultTooltip = ({
 export function PerformanceTrends({
   data,
   title = "Performance Trends",
-  height = 340,
+  height = 360,
   yDomain = [0, 100],
   curve = "monotone",
   showGrid = true,
   className,
   colors = defaultColors
-}: Props) {
+}: PerformanceTrendProps) {
   const c = { ...defaultColors, ...colors };
   return (
-    <div className={cn("rounded-xl p-6 space-y-6 bg-base-white", className)}>
+    <section className={cn("rounded-xl p-6 space-y-6 bg-base-white", className)}>
       {title && (
         <h3 className="font-semibold text-lg text-gray-text-strong">{title}</h3>
       )}
@@ -104,61 +136,53 @@ export function PerformanceTrends({
       <div className="overflow-hidden rounded-2xl bg-white p-2">
         <ResponsiveContainer width="100%" height={height}>
           <AreaChart data={data}>
-            {/* Rounded clipping for the chart visuals */}
+            {/* clip for rounded corners */}
             <defs>
-              <linearGradient id="careerGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={c.careerFill} />
-                <stop offset="100%" stopColor={c.careerFill} />
-              </linearGradient>
-
-              <linearGradient id="skillsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={c.skillsFill} />
-                <stop offset="100%" stopColor={c.skillsFill} />
-              </linearGradient>
-
               <clipPath id="roundedClip">
-                <rect x="0" y="0" width="100%" height="100%" rx="16" ry="16" />
+                <rect x="0" y="0" width="100%" height="100%" rx="24" ry="24" />
               </clipPath>
             </defs>
 
             <g clipPath="url(#roundedClip)">
               {showGrid && (
-                <CartesianGrid strokeDasharray="3 6" vertical={false} stroke="#E5E7EB" />
+                <CartesianGrid strokeDasharray="4 8" stroke="#E6E8EB" />
               )}
 
               <XAxis
                 dataKey="label"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
+                tickMargin={12}
+                stroke="#1A1015B2"
               />
               <YAxis
                 domain={yDomain}
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
+                tickMargin={12}
+                stroke="#1A1015B2"
               />
 
               <Tooltip
-                content={
-                  <DefaultTooltip />
-                }
-              />
-              <Legend
-                verticalAlign="bottom"
-                height={28}
-                wrapperStyle={{ paddingTop: 8 }}
+                cursor={{ stroke: "#FFFFFF", strokeWidth: 2, opacity: 0.8 }}
+                content={<DefaultTooltip />}
               />
 
-              {/* Stacked Areas */}
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                content={<DotLegend />}
+              />
+
+              {/* Order matters for stacked look: base (career) first */}
               <Area
                 type={curve}
                 dataKey="career"
                 name="Career Readiness"
                 stackId="1"
                 stroke={c.career}
-                fill="url(#careerGradient)"
-                strokeWidth={2}
+                fill={c.careerFill}
+                strokeWidth={0}
                 dot={false}
                 activeDot={{ r: 3 }}
               />
@@ -168,8 +192,8 @@ export function PerformanceTrends({
                 name="Skills Developed"
                 stackId="1"
                 stroke={c.skills}
-                fill="url(#skillsGradient)"
-                strokeWidth={2}
+                fill={c.skillsFill}
+                strokeWidth={0}
                 dot={false}
                 activeDot={{ r: 3 }}
               />
@@ -177,6 +201,6 @@ export function PerformanceTrends({
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </section>
   );
 }

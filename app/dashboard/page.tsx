@@ -15,28 +15,7 @@ import { UpcomingAssessments } from "./components/upcoming-assessments";
 import { RoleReadinessHeatmap } from "./components/role-readiness-heatmap";
 import { ScoreDistribution } from "./components/custom-barchart";
 import { actionSelector } from "@/components/custom/action-selector";
-
-const AssessmentScoreData = [
-  { label: "90-100", count: 73 },
-  { label: "80-89", count: 46 },
-  { label: "70-79", count: 38 },
-  { label: "60-69", count: 58 },
-  { label: "<60", count: 37 },
-];
-
-const chartSelectData = {
-  placeholder: "Talent",
-  values: [
-    {
-      label: "Talent",
-      val: "talent"
-    },
-    {
-      label: "Growth",
-      val: "growth"
-    }
-  ]
-};
+import { assessmentScoreData, chartSelectData } from "@/lib/api/analytics";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -70,7 +49,7 @@ export default async function DashboardPage() {
         session?.user.role === Roles.MANAGER && (
           <>
             <ScoreDistribution
-              data={AssessmentScoreData}
+              data={assessmentScoreData}
               yLabel="No. of Learners"
               xLabel="Scores(%)"
               averageLine={48}
