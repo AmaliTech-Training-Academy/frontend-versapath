@@ -27,7 +27,7 @@ export const Metrics = () => {
   }
 
   return (
-    <section className="w-full grid grid-cols-4 gap-6">
+    <section className={`w-full grid grid-cols-${metrics.length < 4 ? metrics.length : 4} gap-6`}>
       {metrics.map((metric) => (
         <MetricsCard
           key={metric.title}

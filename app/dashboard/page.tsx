@@ -14,9 +14,9 @@ import {
 import { UpcomingAssessments } from "./components/upcoming-assessments";
 import { RoleReadinessHeatmap } from "./components/role-readiness-heatmap";
 import { ScoreDistribution } from "./components/custom-barchart";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { actionSelector } from "@/components/custom/action-selector";
 
-const data = [
+const AssessmentScoreData = [
   { label: "90-100", count: 73 },
   { label: "80-89", count: 46 },
   { label: "70-79", count: 38 },
@@ -24,21 +24,23 @@ const data = [
   { label: "<60", count: 37 },
 ];
 
+const chartSelectData = {
+  placeholder: "Talent",
+  values: [
+    {
+      label: "Talent",
+      val: "talent"
+    },
+    {
+      label: "Growth",
+      val: "growth"
+    }
+  ]
+};
+
 export default async function DashboardPage() {
   const session = await auth();
-  const role = session?.user.role;
-
-  const action = (
-    <Select defaultValue="talent">
-      <SelectTrigger className="h-9 w-40">
-        <SelectValue placeholder="Talent" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="talent">Talent</SelectItem>
-        <SelectItem value="growth">Growth</SelectItem>
-      </SelectContent>
-    </Select>
-  );
+  const role = session?.user.role;  
 
   return (
     <>
@@ -68,11 +70,11 @@ export default async function DashboardPage() {
         session?.user.role === Roles.MANAGER && (
           <>
             <ScoreDistribution
-              data={data}
+              data={AssessmentScoreData}
               yLabel="No. of Learners"
               xLabel="Scores(%)"
               averageLine={48}
-              actionSlot={action}
+              actionSlot={actionSelector(chartSelectData)}
             />
             <RoleReadinessHeatmap />
           </>
