@@ -8,24 +8,7 @@ import { actionSelector } from "@/components/custom/action-selector";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-
-const timeSelectData = {
-  placeholder: "Monthly",
-  values: [
-    {
-      label: "Monthly",
-      val: "monthly"
-    },
-    {
-      label: "Quarterly",
-      val: "quarterly"
-    },
-    {
-      label: "Yearly",
-      val: "yearly"
-    }
-  ]
-}
+import { timeSelectData } from "@/lib/api/analytics";
 
 export const DashboardHeader = ({ title }: { title: string }) => {
   const pathname = usePathname();

@@ -1,14 +1,4 @@
-type TrendPoint = {
-  readonly label: string;
-  readonly career: number;
-  readonly skills: number;
-  readonly toolTipLabel: string;
-};
-
-type ScoreBucket = {
-  readonly label: string;
-  readonly count: number;
-};
+import { ScoreBucket, TrendPoint } from "../types/analytics";
 
 export const performanceData: TrendPoint[] = [
   { label: "Jan", career: 56, skills: 22, toolTipLabel: "January" },
@@ -60,4 +50,22 @@ export const chartSelectData = {
             val: "growth"
         }
     ]
+}
+
+export const timeSelectData = {
+  placeholder: "Monthly",
+  values: [
+    {
+      label: "Monthly",
+      val: "monthly"
+    },
+    {
+      label: "Quarterly",
+      val: "quarterly"
+    },
+    {
+      label: "Yearly",
+      val: "yearly"
+    }
+  ]
 }
