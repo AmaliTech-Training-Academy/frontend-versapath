@@ -17,7 +17,7 @@ import { MentorLearner } from "./use-mentor-learner";
 export const apiGetMetrics = async (userRole: Roles, mentorId?: string, pathname?: string) => {
   const metricConfigs: Record<
     Roles,
-    { title: string; value: number; icon: LucideIcon }[]
+    { title: string; value: number | string; icon: LucideIcon }[]
   > = {
     [Roles.ADMIN]: [
       {
@@ -106,7 +106,23 @@ export const apiGetMetrics = async (userRole: Roles, mentorId?: string, pathname
         icon: BookOpen
       },
     ],
-    [Roles.MANAGER]: [
+    [Roles.MANAGER]: pathname === "/dashboard/analytics" ? [
+      {
+        title: "Average Performance",
+        value: "81%",
+        icon: UsersIcon
+      },
+      {
+        title: "Career Ready",
+        value: 12,
+        icon: BookOpen
+      },
+      {
+        title: "Skills Verified",
+        value: 81,
+        icon: UsersIcon
+      }
+    ] : [
       {
         title: "Team Learners",
         value: 25,

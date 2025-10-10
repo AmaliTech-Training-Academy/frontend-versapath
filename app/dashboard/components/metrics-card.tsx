@@ -3,7 +3,7 @@ import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 interface MetricsCardProps {
   title: string;
-  value: number;
+  value: number | string;
   icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
 }
 

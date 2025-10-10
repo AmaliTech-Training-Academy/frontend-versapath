@@ -10,7 +10,7 @@ export function useMetrics(role: Roles) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const { data, error, isLoading, mutate } = useSWR(["metrics", role, pathname], () =>
-    role === Roles.MENTOR ? apiGetMetrics(role, session?.user.userId ?? "", pathname) : apiGetMetrics(role)
+    (role === Roles.MENTOR || role === Roles.MANAGER) ? apiGetMetrics(role, session?.user.userId ?? "", pathname) : apiGetMetrics(role)
   );
 
   return {
