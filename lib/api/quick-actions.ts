@@ -110,39 +110,36 @@ const quickActionsConfig: Record<Roles, QuickAction[]> = {
 
 export const useGetQuickActions = (userRole: Roles): QuickAction[] => {
   const base = quickActionsConfig[userRole] ?? quickActionsConfig[Roles.LEARNER];
+  const { track, loading } = useTrack();
 
   // Only learners need “next inline skill”
   if (userRole !== Roles.LEARNER) return base;
-
-  const { track, loading } = useTrack();
-
-  return useMemo(() => {
-    // While loading or if no track, use a safe fallback URL
-    if (loading || !track?.capsules?.length) {
-      return base.map(a =>
-        a.title === "Continue Learning" ? { ...a, url: "/dashboard/skills" } : a
-      );
-    }
-
-    const capsules = track.capsules;
-
-    // Find last COMPLETED index safely
-    const lastCompletedIndex = capsules.reduceRight((idx, c, i) => {
-      return idx === -1 && c.status === SKillStatus.COMPLETED ? i : idx;
-    }, -1);
-
-    // Compute the next capsule (guard both bounds)
-    const nextCapsule =
-      lastCompletedIndex + 1 >= 0 && lastCompletedIndex + 1 < capsules.length
-        ? capsules[lastCompletedIndex + 1]
-        : undefined;
-
-    const continueUrl = nextCapsule
-      ? `/dashboard/skills/${nextCapsule.capsuleId}`
-      : "/dashboard/skills";
-
+  
+  // While loading or if no track, use a safe fallback URL
+  if (loading || !track?.capsules?.length) {
     return base.map(a =>
-      a.title === "Continue Learning" ? { ...a, url: continueUrl } : a
+      a.title === "Continue Learning" ? { ...a, url: "/dashboard/skills" } : a
     );
-  }, [base, loading, track]);
+  }
+
+  const capsules = track.capsules;
+
+  // Find last COMPLETED index safely
+  const lastCompletedIndex = capsules.reduceRight((idx, c, i) => {
+    return idx === -1 && c.status === SKillStatus.COMPLETED ? i : idx;
+  }, -1);
+
+  // Compute the next capsule (guard both bounds)
+  const nextCapsule =
+    lastCompletedIndex + 1 >= 0 && lastCompletedIndex + 1 < capsules.length
+      ? capsules[lastCompletedIndex + 1]
+      : undefined;
+
+  const continueUrl = nextCapsule
+    ? `/dashboard/skills/${nextCapsule.capsuleId}`
+    : "/dashboard/skills";
+
+  return base.map(a =>
+    a.title === "Continue Learning" ? { ...a, url: continueUrl } : a
+  );
 };
