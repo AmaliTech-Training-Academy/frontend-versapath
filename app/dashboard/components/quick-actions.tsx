@@ -1,4 +1,5 @@
-import { getQuickActions } from "@/lib/api/quick-actions";
+"use client";
+import { useGetQuickActions } from "@/lib/api/quick-actions";
 import { QuickActionCard } from "./quick-action-card";
 import { Roles } from "@/lib/types";
 
@@ -6,8 +7,8 @@ type QuickActionsProps = {
   role: Roles;
 };
 
-export const QuickActions = async ({ role }: QuickActionsProps) => {
-  const quickActions = getQuickActions(role);
+export const QuickActions = ({ role }: QuickActionsProps) => {
+  const quickActions = useGetQuickActions(role);
   return (
     <section className="bg-sidebar rounded-xl p-5 space-y-4">
       <p className="font-semibold text-lg">Quick Actions</p>

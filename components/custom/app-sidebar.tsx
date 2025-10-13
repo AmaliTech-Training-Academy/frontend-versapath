@@ -32,6 +32,7 @@ import {
   LogOut,
   FileText,
   FileCheck,
+  ChevronUp,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -100,10 +101,10 @@ const sidebarItems: SidebarItem[] = [
     icon: UsersIcon,
     allowedRoles: [Roles.ADMIN],
   },
-    {
+  {
     title: "Submissions",
     url: "/dashboard/submissions",
-    icon:  DocumentTextIcon,
+    icon: DocumentTextIcon,
     allowedRoles: [Roles.MENTOR],
   },
   {
@@ -253,11 +254,11 @@ export function AppSidebar() {
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton
                             tooltip={item.title}
-                            className="p-4 font-semibold text-gray-text-weak"
+                            className="p-4 font-semibold text-gray-text-weak group"
                           >
                             <item.icon />
                             <span>{item.title}</span>
-                            <ChevronDown className="ml-auto" />
+                            <ChevronDown className="chevron ml-auto transition-transform duration-400 group-data-[state=open]:rotate-180" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
 
@@ -272,10 +273,10 @@ export function AppSidebar() {
                                     isActive={
                                       pathname === subItem.url ||
                                       pathname ===
-                                        subItem.url.slice(
-                                          0,
-                                          subItem.url.indexOf("?")
-                                        )
+                                      subItem.url.slice(
+                                        0,
+                                        subItem.url.indexOf("?")
+                                      )
                                     }
                                   >
                                     <Link
@@ -348,42 +349,41 @@ export function AppSidebar() {
             alt="user profile"
             className="object-cover w-10 h-10 rounded-full"
           />
-            <div className="w-full space-y-1 ">
-              <p className="font-semibold text-gray-text-strong text-wrap">
-                {`${session?.user.firstName ?? ""} ${
-                  session?.user.lastName ?? ""
+          <div className="w-full space-y-1 ">
+            <p className="font-semibold text-gray-text-strong text-wrap">
+              {`${session?.user.firstName ?? ""} ${session?.user.lastName ?? ""
                 }`}
-              </p>
-              <p className="w-full text-xs text-gray-text-weak text-wrap line-clamp-1 text-ellipsis max-w-[132px]">
-                {session?.user.email??""}
-              </p>
+            </p>
+            <p className="w-full text-xs text-gray-text-weak text-wrap line-clamp-1 text-ellipsis max-w-[132px]">
+              {session?.user.email ?? ""}
+            </p>
+          </div>
+          <CustomPopover
+            trigger={
+              <Button size="icon" variant="ghost" aria-label="User options">
+                <MoreVertical className="text-gray-text-weak" />
+              </Button>
+            }
+            classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
+          >
+            <div className="text-gray-text-weak">
+              {popoverItems.map((popover) => {
+                const { label, icon: Icon, handleClick } = popover;
+                return (
+                  <Button
+                    key={label}
+                    variant="ghost"
+                    className="flex items-center justify-start w-full cursor-pointer"
+                    aria-label={label}
+                    onClick={handleClick}
+                  >
+                    <Icon />
+                    <span>{label}</span>
+                  </Button>
+                );
+              })}
             </div>
-            <CustomPopover
-              trigger={
-                <Button size="icon" variant="ghost" aria-label="User options">
-                  <MoreVertical className="text-gray-text-weak" />
-                </Button>
-              }
-              classes="rounded-xl border border-gray-stroke-weak py-2.5 px-2 bg-[#ffffff] shadow-lg w-[191px]"
-            >
-              <div className="text-gray-text-weak">
-                {popoverItems.map((popover) => {
-                  const { label, icon: Icon, handleClick } = popover;
-                  return (
-                    <Button
-                      key={label}
-                      variant="ghost"
-                      className="flex items-center justify-start w-full cursor-pointer"
-                      aria-label={label}
-                      onClick={handleClick}
-                    >
-                      <Icon />
-                      <span>{label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </CustomPopover>
+          </CustomPopover>
         </div>
       </SidebarFooter>
 

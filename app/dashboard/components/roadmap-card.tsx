@@ -39,7 +39,7 @@ export const RoadmapCard = ({
                     <span className="text-sm text-gray-text-weak">{skills_completed} Lessons</span>
                     <Dot />
                     <div className="flex items-center gap-1">
-                        {["Beginner", "Frontend", "Beginner"].map((cluster) => (
+                        {["Beginner", "Frontend", "Java"].map((cluster) => (
                             <div key={cluster} className="rounded-2xl border border-gray-stroke-weak px-2 bg-gray-stroke-weaker">
                                 <span className="text-xs text-gray-text-weak">
                                     {cluster}

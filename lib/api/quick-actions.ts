@@ -1,5 +1,10 @@
-import { BadgeCheck, BookOpen, CirclePlay, LucideIcon, Map, MessageCircle,  Users } from "lucide-react";
+"use client";
+
+import { BadgeCheck, BookOpen, CirclePlay, LucideIcon, Map, MessageCircle, Users } from "lucide-react";
 import { Roles } from "@/lib/types";
+import { useTrack } from "./use-track";
+import { SKillStatus } from "../types/api";
+import { useMemo } from "react";
 
 type QuickAction = {
   title: string;
@@ -103,6 +108,38 @@ const quickActionsConfig: Record<Roles, QuickAction[]> = {
   ],
 };
 
-export const getQuickActions = (userRole: Roles): QuickAction[] => {
-  return quickActionsConfig[userRole] || quickActionsConfig[Roles.LEARNER];
+export const useGetQuickActions = (userRole: Roles): QuickAction[] => {
+  const base = quickActionsConfig[userRole] ?? quickActionsConfig[Roles.LEARNER];
+  const { track, loading } = useTrack();
+
+  // Only learners need “next inline skill”
+  if (userRole !== Roles.LEARNER) return base;
+  
+  // While loading or if no track, use a safe fallback URL
+  if (loading || !track?.capsules?.length) {
+    return base.map(a =>
+      a.title === "Continue Learning" ? { ...a, url: "/dashboard/skills" } : a
+    );
+  }
+
+  const capsules = track.capsules;
+
+  // Find last COMPLETED index safely
+  const lastCompletedIndex = capsules.reduceRight((idx, c, i) => {
+    return idx === -1 && c.status === SKillStatus.COMPLETED ? i : idx;
+  }, -1);
+
+  // Compute the next capsule (guard both bounds)
+  const nextCapsule =
+    lastCompletedIndex + 1 >= 0 && lastCompletedIndex + 1 < capsules.length
+      ? capsules[lastCompletedIndex + 1]
+      : undefined;
+
+  const continueUrl = nextCapsule
+    ? `/dashboard/skills/${nextCapsule.capsuleId}`
+    : "/dashboard/skills";
+
+  return base.map(a =>
+    a.title === "Continue Learning" ? { ...a, url: continueUrl } : a
+  );
 };
