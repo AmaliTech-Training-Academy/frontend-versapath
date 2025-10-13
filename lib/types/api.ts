@@ -199,3 +199,21 @@ export interface SingleSkillResponse {
   createdAt: string;
   updatedAt: string | null;
 }
+
+
+export type BadgeApi = {
+  badgeId: string;
+  title: string;
+  description: string;
+  issuedOn: string;
+  expiresOn: string | null;
+  verificationCode: string;
+  createdAt: string;
+  issuerName: string;
+  issuerWebsite: string;
+  learnerId: string;
+  learnerFirstName: string;
+  learnerLastName: string;
+  learnerEmail: string;
+  atoms: { name: string; sequenceOrder: number }[];
+};
