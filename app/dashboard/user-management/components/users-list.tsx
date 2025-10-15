@@ -1,5 +1,5 @@
 "use client";
-import { DataTable } from "@/components/custom/data-table";
+import { DataTable, userColumns } from "@/components/custom/data-table";
 import React, { useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useFetchUsers } from "@/lib/api/users";
@@ -74,7 +74,6 @@ export const UsersList: React.FC<UsersListProps> = ({
 
     return filtered;
   }, [allItems, searchQuery, statusFilter, roleFilter]);
-
 
   // Calculate pagination info for filtered results
   const customPageMeta = useMemo(() => {
@@ -178,8 +177,9 @@ export const UsersList: React.FC<UsersListProps> = ({
     );
   } else {
     content = (
-      <DataTable
+      <DataTable<User>
         data={filteredItems}
+        columns={userColumns}
         pagination={pagination}
         setPaginationAction={handlePaginationChange}
         pageMeta={customPageMeta}

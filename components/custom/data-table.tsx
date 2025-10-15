@@ -31,7 +31,8 @@ import { Status, type User } from "@/lib/types/api";
 import clsx from "clsx";
 import { UserTableMenu } from "@/app/dashboard/user-management/components/user-table-menu";
 
-const columns: ColumnDef<User>[] = [
+// Export the existing user-specific columns so other components can import and reuse them
+export const userColumns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -126,13 +127,19 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 
-interface DataTableProps {
-  readonly data: User[];
-  readonly pagination: { pageIndex: number; pageSize: number };
-  readonly setPaginationAction: (newPagination: {
-    pageIndex: number;
-    pageSize: number;
-  }) => void;
+interface DataTableBasePagination {
+  pageIndex: number;
+  pageSize: number;
+}
+
+interface DataTableProps<T > {
+  readonly data: T[];
+  readonly columns: ColumnDef<T>[];
+  readonly getRowId?: (row: T) => string;
+  readonly pagination: DataTableBasePagination;
+  readonly setPaginationAction: (
+    newPagination: DataTableBasePagination
+  ) => void;
   readonly pageMeta: {
     page: number;
     size: number;
@@ -144,20 +151,22 @@ interface DataTableProps {
   readonly hasFilters?: boolean;
 }
 
-export function DataTable({
+export function DataTable<T>({
   data: initialData,
+  columns,
+  getRowId,
   pagination,
   setPaginationAction: setPagination,
   pageMeta,
   allItemsCount = 0,
   filteredItemsCount = 0,
   hasFilters = false,
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const data = initialData;
   const [rowSelection, setRowSelection] = React.useState({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  const table = useReactTable({
+  const table = useReactTable<T>({
     data,
     columns,
     state: {
@@ -165,12 +174,13 @@ export function DataTable({
       rowSelection,
       pagination,
     },
-    getRowId: (row) => row.id.toString(),
+    getRowId:
+      getRowId ??
+      ((row) => (row as { id?: string | number })?.id?.toString?.() ?? ""),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onPaginationChange: (updater) => {
-      // Handle both function and object updates
       if (typeof updater === "function") {
         const newPagination = updater(pagination);
         setPagination(newPagination);
@@ -244,7 +254,7 @@ export function DataTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   No results.
