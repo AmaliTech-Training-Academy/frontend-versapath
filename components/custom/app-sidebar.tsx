@@ -32,7 +32,6 @@ import {
   LogOut,
   FileText,
   FileCheck,
-  ChevronUp,
 } from "lucide-react";
 import { CustomPopover } from "./custom-popover";
 import { Button } from "../ui/button";
@@ -265,7 +264,7 @@ export function AppSidebar() {
                         {item.items.length > 0 && (
                           <CollapsibleContent>
                             <SidebarMenu className="pl-8">
-                              {item.items.map((subItem) => (
+                              {item.items.map((subItem, idx) => (
                                 <SidebarMenuItem key={subItem.title}>
                                   <SidebarMenuButton
                                     asChild
@@ -283,7 +282,13 @@ export function AppSidebar() {
                                       href={subItem.url}
                                       aria-label={`${subItem.title} page`}
                                     >
-                                      <span>{subItem.title}</span>
+                                      <span
+                                        style={{
+                                          paddingInlineStart: `${idx * 16}px`,
+                                        }}
+                                      >
+                                        {subItem.title}
+                                      </span>
                                     </Link>
                                   </SidebarMenuButton>
                                 </SidebarMenuItem>
