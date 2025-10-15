@@ -44,7 +44,7 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-xl border-0">
+    <Card className="w-full max-w-md mx-auto bg-base-white shadow-none sm:shadow-xl border-none">
       <CardContent className="p-8">
         <div className="text-center space-y-6">
           <div className="space-y-2">

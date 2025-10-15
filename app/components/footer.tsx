@@ -19,7 +19,7 @@ function FooterLink({
 export function Footer() {
   return (
     <footer className="text-white py-12 px-16">
-      <div className="container">
+      <div className="container mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
@@ -80,9 +80,9 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-4">Follow Us</h3>
-            <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold">Connect With Us</h3>
+            <div className="flex gap-2">
               {[
                 { href: "#", icon: Facebook },
                 { href: "#", icon: Twitter },
