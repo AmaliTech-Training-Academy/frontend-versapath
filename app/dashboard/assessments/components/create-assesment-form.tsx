@@ -156,7 +156,7 @@ export const CreateAssesmentForm = () => {
             {form.formState.isSubmitting && (
               <Loader className=" animate-spin" />
             )}
-            Send Invite
+            Create Assessment
           </Button>
         </div>
       </form>
