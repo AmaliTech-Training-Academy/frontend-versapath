@@ -3,7 +3,7 @@ import { TestimonialCard } from "./testimonial-card";
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="py-10 bg-background lg:px-16 px-4">
+    <section id="testimonials" className="py-10 bg-background lg:px-16 px-4 flex flex-col items-center">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold">

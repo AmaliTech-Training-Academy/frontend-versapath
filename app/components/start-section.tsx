@@ -5,10 +5,10 @@ import { InstructorCTA } from "./instructor-cta";
 
 export const StatsSection = () => {
   return (
-    <section className="py-20 lg:px-16 md:px-8 px-4 bg-[#1A1015] ">
+    <section className="py-20 lg:px-16 md:px-8 px-4 bg-[#1A1015]">
       <div className="container mx-auto flex justify-center">
         <div className="w-full lg:max-w-5xl">
-          <div className="grid lg:grid-cols-2 gap-12 mb-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-base-light-white text-balance leading-tight">
                 Level Up Your Skills. Unlock Your Future.

@@ -45,7 +45,7 @@ export const LoginForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-[484px] w-full mx-auto rounded-lg p-6 sm:shadow-lg shadow-black/10 space-y-10"
+        className="max-w-[484px] w-full mx-auto rounded-lg p-6 sm:shadow-lg shadow-black/10 space-y-10 bg-base-white"
       >
         <div className="space-y-2 text-center">
           <h5 className="text-[32px] font-semibold text-gray-text-strong/90">
