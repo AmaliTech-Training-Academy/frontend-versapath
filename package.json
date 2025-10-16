@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:ui": "vitest --ui",
+    "test:ui": "vitest --ui --coverage.enable==true",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
