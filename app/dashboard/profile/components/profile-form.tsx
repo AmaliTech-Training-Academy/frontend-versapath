@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/lib/api/api-request";
 import { User } from "@/lib/types/api";
 import { extractErrorMessage } from "@/lib/utils";
+import { profile } from "console";
 
 export const ProfileForm = () => {
     const { data: session, status, update } = useSession();
@@ -133,7 +134,7 @@ export const ProfileForm = () => {
             return;
         }
 
-        await update({ user: { ...session?.user, image: undefined }});
+        await update({ user: { ...session?.user, profilePictureUrl: undefined }});
         setRemoved(true);
         toast.success(result.message || "Profile updated successfully");
         form.trigger();
