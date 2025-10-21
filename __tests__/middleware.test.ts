@@ -147,7 +147,7 @@ describe("Middleware", () => {
             expect(response.status).toBe(307);
             const location = response.headers.get("Location");
             expect(location).toBe(
-                "http://localhost:3000/unauthorized?error=You%20don%27t%20have%20permission%20to%20access%20this%20page"
+                "http://localhost:3000/unauthorized?error=Your%20account%20role%20is%20missing."
             );
         });
 

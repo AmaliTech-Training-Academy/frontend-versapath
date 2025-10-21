@@ -60,7 +60,7 @@ export const GrowthTrackInfo = ({ track }: { track: MyTrack | undefined }) => {
                     <div className="w-full h-2 relative bg-green-text/20 rounded-[20px] overflow-hidden">
                         <div
                             className=" h-5 left-0 top-[-6px] absolute bg-green-text"
-                            style={{ width: `${track?.progressPercentage}` }}
+                            style={{ width: `${track?.progressPercentage}%` }}
                         />
                     </div>
                     <div className=" text-gray-text-strong/70 text-xs text-nowrap  leading-tight">

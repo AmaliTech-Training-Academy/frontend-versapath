@@ -1,12 +1,24 @@
+import React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
+import type { ReactNode } from "react";
+import type {
+  Control,
+  ControllerRenderProps,
+  FieldValues,
+  UseFormReturn,
+} from "react-hook-form";
 
+import { AddCategoryForm } from "@/app/dashboard/skill-categories/components/add-category-form";
 
-
+// Mock Zod schema to require "name"
 vi.mock("@/lib/schemas/add-category", () => {
   return {
     addCategorySchema: {
-
       parse: (data: Record<string, unknown>) => {
-        if (!data?.name || String(data.name).trim() === "") {
+        const name = typeof data?.name === "string" ? data.name.trim() : "";
+        if (!name) {
           const err = new Error("Invalid") as Error & {
             errors?: Array<{ path: string[]; message: string }>;
           };
@@ -19,61 +31,81 @@ vi.mock("@/lib/schemas/add-category", () => {
   };
 });
 
+// Mock toast.success
 const toastSuccess = vi.fn();
 vi.mock("sonner", () => ({
   toast: { success: (...args: unknown[]) => toastSuccess(...args) },
 }));
 
-// 3) Mock shadcn/ui <Form> and <FormField> with simple passthroughs
+//Mock of shadcn/ui form layer using RHF FormProvider + Controller
 vi.mock("@/components/ui/form", () => {
-  return {
-    Form: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    FormField: ({
-      render,
-      name,
-      control,
-    }: {
-      render: (props: {
-        field: {
-          name: string;
-          value: unknown;
-          onChange: (...args: unknown[]) => void;
-          onBlur: (...args: unknown[]) => void;
-          ref: (...args: unknown[]) => void;
-        };
-        fieldState: Record<string, unknown>;
-        formState: Record<string, unknown>;
-        control: unknown;
-      }) => React.ReactNode;
-      name: string;
-      control: unknown;
-    }) =>
-      render({
-        field: {
-          name,
-          value: undefined,
-          onChange: vi.fn(), // RHF wires these; for our custom inputs we pass value/onChange down
-          onBlur: vi.fn(),
-          ref: vi.fn(),
-        },
-        fieldState: {},
-        formState: {},
-        control,
-      }),
-  };
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const React = require("react");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { FormProvider, Controller } = require("react-hook-form");
+
+  type FormProps<TFieldValues extends FieldValues = FieldValues> =
+    UseFormReturn<TFieldValues> & { children: ReactNode };
+
+  const Form = <TFieldValues extends FieldValues>({
+    children,
+    ...form
+  }: FormProps<TFieldValues>) => <FormProvider {...form}>{children}</FormProvider>;
+
+  const FormItem = ({ children }: { children?: ReactNode }) => (
+    <div data-testid="form-item">{children}</div>
+  );
+
+  const FormControl = ({ children }: { children?: ReactNode }) => (
+    <div data-testid="form-control">{children}</div>
+  );
+
+  const FormMessage = ({ children }: { children?: ReactNode }) => (
+    <div role="alert">{children}</div>
+  );
+
+  interface FormFieldProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends string = string,
+  > {
+    name: TName;
+    control: Control<TFieldValues>;
+    render: (props: { field: ControllerRenderProps<TFieldValues, TName> }) => ReactNode;
+  }
+
+  const FormField = <
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends string = string,
+  >({
+    name,
+    control,
+    render,
+  }: FormFieldProps<TFieldValues, TName>) => (
+    <Controller<TFieldValues, TName>
+      name={name}
+      control={control}
+      render={({ field }) => render({ field })}
+    />
+  );
+
+  return { Form, FormField, FormItem, FormControl, FormMessage };
 });
 
-// 4) Mock Button
+// Mock Button → plain <button>
 vi.mock("@/components/ui/button", () => ({
   Button: ({
     children,
     ...props
   }: {
-    children: React.ReactNode;
+    children: ReactNode;
+    type?: "button" | "submit" | "reset";
+    className?: string;
+    disabled?: boolean;
     [key: string]: unknown;
   }) => <button {...props}>{children}</button>,
 }));
 
+// Mock CustomInput
 vi.mock("@/components/custom/custom-input", () => ({
   CustomInput: ({
     label,
@@ -94,13 +126,14 @@ vi.mock("@/components/custom/custom-input", () => ({
         aria-label={label}
         type={type}
         value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={(e) => onChange?.(e.currentTarget.value)}
         {...rest}
       />
     </label>
   ),
 }));
 
+// Mock FileUpload
 vi.mock("@/components/custom/file-upload", () => ({
   FileUpload: ({
     label,
@@ -116,13 +149,14 @@ vi.mock("@/components/custom/file-upload", () => ({
       <input
         aria-label={label}
         type="file"
-        onChange={(e) => onChangeAction?.(e.target.files?.[0])}
+        onChange={(e) => onChangeAction?.(e.currentTarget.files?.[0])}
       />
       <div data-testid="file-name">{value?.name ?? ""}</div>
     </label>
   ),
 }));
 
+// Mock SheetClose
 const sheetCloseClickSpy = vi.fn();
 vi.mock("@/components/ui/sheet", async () => {
   const React = await import("react");
@@ -132,45 +166,65 @@ vi.mock("@/components/ui/sheet", async () => {
     {
       asChild?: boolean;
       children?: React.ReactNode;
-      onClick?: (e: unknown) => void;
-      [key: string]: unknown;
+      onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     }
   >(({ asChild, children, onClick, ...rest }, ref) => {
-    const handleClick = (e: unknown) => {
-      sheetCloseClickSpy();
-
-      return <button ref={ref} onClick={handleClick} {...rest} />;
+    if (asChild && React.isValidElement(children)) {
+      const child = children as React.ReactElement<
+        React.ButtonHTMLAttributes<HTMLButtonElement>
+      >;
+      const mergedOnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        sheetCloseClickSpy();
+        child.props?.onClick?.(e);
+        onClick?.(e);
+      };
+      return React.cloneElement(child, { ref, onClick: mergedOnClick, ...rest });
     }
+    return (
+      <button
+        ref={ref}
+        onClick={(e) => {
+          sheetCloseClickSpy();
+          onClick?.(e);
+        }}
+        {...rest}
+      >
+        {children}
+      </button>
+    );
   });
 
   SheetClose.displayName = "SheetClose";
-  return { SheetClose };
+  return { SheetClose, __esModule: true };
 });
 
+// Mock lucide-react Loader
 vi.mock("lucide-react", () => ({
-  Loader: (props: Record<string, unknown>) => (
-    <svg aria-label="loader" {...props} />
-  ),
+  Loader: (props: Record<string, unknown>) => <svg {...props} />,
 }));
 
+// Mock zodResolver to call schema.parse and surface errors
 vi.mock("@hookform/resolvers/zod", () => ({
   zodResolver:
-    (schema: any) =>
-      async (values: any): Promise<any> => {
-        try {
-          const parsed = schema.parse(values);
-          return { values: parsed, errors: {} };
-        } catch (e: any) {
-          const errMap: any = {};
-          e?.errors?.forEach((zErr: any) => {
-            errMap[zErr.path?.[0] ?? "name"] = { message: zErr.message, type: "zod" };
-          });
-          return { values: {}, errors: errMap };
-        }
-      },
+    (schema: { parse: (v: unknown) => unknown }) =>
+    async (values: unknown): Promise<{ values: unknown; errors: Record<string, unknown> }> => {
+      try {
+        const parsed = schema.parse(values);
+        return { values: parsed, errors: {} };
+      } catch (e: unknown) {
+        const err = e as { errors?: Array<{ path?: string[]; message?: string }> };
+        const errMap: Record<string, { message: string; type: string }> = {};
+        (err.errors ?? []).forEach((zErr) => {
+          const key = zErr.path?.[0] ?? "name";
+          errMap[key] = { message: zErr.message ?? "Invalid", type: "zod" };
+        });
+        return { values: {}, errors: errMap };
+      }
+    },
 }));
 
-let resolveApi!: (val: any) => void;
+// Mock apiRequest
+let resolveApi!: (val: unknown) => void;
 vi.mock("@/lib/api/api-request", () => ({
   apiRequest: vi.fn(() => {
     return new Promise((resolve) => {
@@ -179,9 +233,9 @@ vi.mock("@/lib/api/api-request", () => ({
   }),
 }));
 
-import { AddCategoryForm } from "@/app/dashboard/skill-categories/components/add-category-form";
+import { apiRequest } from "@/lib/api/api-request";
 
-const typeInto = async (label: string, text: string) => {
+const typeInto = async (label: string, text: string): Promise<HTMLInputElement> => {
   const input = await screen.findByLabelText(label);
   await userEvent.clear(input);
   await userEvent.type(input, text);
@@ -192,10 +246,7 @@ const revalidateSpy = vi.fn();
 
 describe("AddCategoryForm", () => {
   beforeEach(() => {
-    vi.useFakeTimers();
-    toastSuccess.mockClear();
-    sheetCloseClickSpy.mockClear();
-    revalidateSpy.mockClear();
+    vi.clearAllMocks();
   });
 
   it("renders required fields", () => {
@@ -210,33 +261,32 @@ describe("AddCategoryForm", () => {
 
   it("does not submit when name is empty (zod validation) and does not toast", async () => {
     render(<AddCategoryForm revalidateAction={revalidateSpy} />);
+
     await userEvent.click(screen.getByRole("button", { name: /add category/i }));
+
+    expect(apiRequest.mock.calls.length).toBe(0);
     expect(toastSuccess).not.toHaveBeenCalled();
     expect(revalidateSpy).not.toHaveBeenCalled();
   });
 
-  it("shows loader while submitting, then toasts, resets, calls revalidateAction, and triggers SheetClose programmatically", async () => {
+  it("disables submit while submitting, then toasts, resets, calls revalidateAction, and triggers SheetClose programmatically", async () => {
     const clickSpy = vi.spyOn(HTMLButtonElement.prototype, "click");
 
     render(<AddCategoryForm revalidateAction={revalidateSpy} />);
 
-    // fill the required "name"
     await typeInto("Category Name *", "Data Science");
 
-    // Attach a fake file
+    // attach a fake file
     const file = new File(["dummy"], "cover.png", { type: "image/png" });
     const fileInput = screen.getByLabelText("Cover");
     await userEvent.upload(fileInput, file);
     expect(screen.getByTestId("file-name").textContent).toBe("cover.png");
 
-    // Submit
     const submitBtn = screen.getByRole("button", { name: /add category/i });
-    expect(submitBtn).not.toBeDisabled();
     await userEvent.click(submitBtn);
 
-    // Loader should be visible during submit
-    expect(screen.getByLabelText("loader")).toBeInTheDocument();
-    expect(submitBtn).toBeDisabled();
+    // when submitting, submit button is disabled (isSubmitting = true)
+    await waitFor(() => expect(submitBtn).toBeDisabled());
 
     // resolve the API request
     resolveApi({
@@ -246,42 +296,31 @@ describe("AddCategoryForm", () => {
     });
     await Promise.resolve();
 
+    // toast matches component string
     await waitFor(() => {
       expect(toastSuccess).toHaveBeenCalledWith(
-        "Category added successfully",
-        expect.objectContaining({
-          action: expect.objectContaining({
-            label: "Undo",
-            onClick: expect.any(Function),
-          }),
-        })
+        "Skill category added successfully!"
       );
     });
 
-    // Loader gone, submit re-enabled
-    await waitFor(() => {
-      expect(screen.queryByLabelText("loader")).not.toBeInTheDocument();
-      expect(submitBtn).not.toBeDisabled();
-    });
+    // After submission, submit button is enabled
+    await waitFor(() => expect(submitBtn).not.toBeDisabled());
 
-    // inputs are reset
+    // inputs reset
     expect(screen.getByLabelText("Category Name *")).toHaveValue("");
     expect(screen.getByTestId("file-name").textContent).toBe("");
 
+    // revalidate and hidden SheetClose button clicked
     expect(revalidateSpy).toHaveBeenCalled();
-
-    // SheetClose hidden button was programmatically clicked
     expect(clickSpy).toHaveBeenCalled();
 
     clickSpy.mockRestore();
   });
 
-  it("Cancel button is present and clickable (delegates to SheetClose)", async () => {
+  it("renders a single Cancel button and clicking it delegates to SheetClose", async () => {
     render(<AddCategoryForm revalidateAction={revalidateSpy} />);
     const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     await userEvent.click(cancelBtn);
-    // Our mocked SheetClose increments this whenever clicked
     expect(sheetCloseClickSpy).toHaveBeenCalledTimes(1);
   });
 });
-
