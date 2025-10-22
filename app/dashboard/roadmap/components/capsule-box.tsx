@@ -63,14 +63,14 @@ export const CapsuleBox = ({
                 {/* Action on the right */}
                 {/* Completed → Retake */}
                 {isComplete && (
-                    <Link href={`/dashboard/skills/${capsule.capsuleId}`}>
+                    <Link href={`/dashboard/skills/${capsule.capsuleId}`} className="ml-auto text-sm text-gray-text-strong font-medium tracking-normal">
                         <GrayButton>Retake</GrayButton>
                     </Link>
                 )}
 
                 {/* In-progress → Resume */}
                 {isInProgress && (
-                    <Link href={`/dashboard/skills/${capsule.capsuleId}`}>
+                    <Link href={`/dashboard/skills/${capsule.capsuleId}`} className="ml-auto text-sm text-gray-text-strong font-medium tracking-normal">
                         <Button>Resume</Button>
                     </Link>
                 )}
