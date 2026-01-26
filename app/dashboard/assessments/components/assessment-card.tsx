@@ -37,7 +37,9 @@ export const AssessmentCard = ({
                 <span>Created:</span>
                 <span>{assessment.createdAt}</span>
             </div>
-            <div className="flex items-center gap-1">
+            {/* This are commmented out for now, because the assigned field is not available in the API response */}
+            
+            {/* <div className="flex items-center gap-1">
                 <span className="text-sm text-gray-text-weak">Assigned:</span>
                 <div className="flex -space-x-2">
                     {
@@ -53,7 +55,9 @@ export const AssessmentCard = ({
                         ))
                     }
                 </div>
-            </div>
+                
+            </div> */}
+            
             <p className="text-sm text-gray-text-weak">{assessment.description}</p>
             <div className="flex flex-wrap gap-1">
                 {
